@@ -30,7 +30,7 @@ If you fork this for a normal human-driven workflow, treat the “Project overri
 
 Designed **local-first** (`127.0.0.1`); a later hosted/upload mode is not built yet, but I/O goes through a `FileSource` so that path stays open. Scanning never executes skills, scripts, or MCP servers. MCP secret values are redacted and must not appear in graph JSON, API responses, or the UI.
 
-Formats: [`docs/supported-formats.md`](docs/supported-formats.md). MVP plan (M0–M3 done): [`docs/mvp-plan.md`](docs/mvp-plan.md).
+Formats: [`docs/supported-formats.md`](docs/supported-formats.md). MVP plan (M0–M3 done): [`docs/mvp-plan.md`](docs/mvp-plan.md). Post-MVP roadmap: [`docs/post-mvp-plan.md`](docs/post-mvp-plan.md).
 
 ---
 
@@ -98,7 +98,7 @@ Pure modules (`core`, `scanner`, `layout`, `source-editing`) must not import `no
 
 ## Status
 
-MVP milestones **M0–M3** are complete (scaffold → scanner → read-only viewer → skill edit with local auth). “Later” items (watchers, more adapters, hosted upload, etc.) are listed in the plan but not scheduled.
+MVP milestones **M0–M3** are complete (scaffold → scanner → read-only viewer → skill edit with local auth). Post-MVP work is in progress per [`docs/post-mvp-plan.md`](docs/post-mvp-plan.md) (Cursor semantics → multi-engine → visual system → MD surfaces).
 
 ---
 
