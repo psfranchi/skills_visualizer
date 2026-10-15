@@ -62,11 +62,13 @@ Today’s Cursor adapter already **discovers** `.claude` / `.codex` / `.agents` 
 
 **Accept:**
 
-- [ ] Rule activation visible in inspector and graph chrome.
-- [ ] Glob/paths → discovered-path derived edges with fan-out cap and empty-match diagnostics.
-- [ ] Edge labels distinguish link / `@mention` / backtick / contains / glob-apply.
-- [ ] Focus selection dims non-neighborhood; toggle restores full graph.
-- [ ] Tests + goldens + `supported-formats.md` updated; `pnpm check` green.
+- [x] Rule activation visible in inspector and graph chrome.
+- [x] Glob/paths → discovered-path derived edges with fan-out cap and empty-match diagnostics.
+- [x] Edge labels distinguish link / `@mention` / backtick / contains / glob-apply.
+- [x] Focus selection dims non-neighborhood; toggle restores full graph.
+- [x] Tests + goldens + `supported-formats.md` updated; `pnpm check` green.
+
+**Status (2026-10-15): done.** Verifier: `pnpm check` (339 tests) + `pnpm build` green; activation badges in inspector/list/graph (`activation.ts`, `graph-render` marks); glob/paths `applies-to` edges with fan-out cap 50 + empty/capped diagnostics (`glob-edges.ts`, adapter tests); edge labels + legend for markdown / `@mention` / backtick / contains / glob-apply; Focus selection default-on dims non-neighborhood (`focusNeighborhood`, toolbar toggle); goldens + `supported-formats.md` updated; secrets clear on P1 diff; no `Co-authored-by` on P1 commits. Residual: optional path-to-nearest-`AGENTS.md` not implemented (plan marked optional).
 
 ---
 
