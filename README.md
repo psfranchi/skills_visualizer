@@ -1,6 +1,6 @@
 # Skills Visualizer
 
-Local tool that turns a repo’s **Cursor agent configuration** into an interactive graph: skills, rules, subagents, `AGENTS.md`, MCP — with provenance on every edge, and safe raw edits to `SKILL.md` (diff → hash-checked apply → rescan).
+Local tool that turns a repo’s **agent configuration** into an interactive graph across **Cursor, Claude, and Codex**: skills, rules/instructions, subagents, `AGENTS.md` / `CLAUDE.md`, MCP — with provenance on every edge, engine tags + filters, and safe raw edits to `SKILL.md` (diff → hash-checked apply → rescan).
 
 ---
 
@@ -24,8 +24,8 @@ If you fork this for a normal human-driven workflow, treat the “Project overri
 
 ## What it does
 
-1. **Scan** Cursor-shaped config (and related skill/agent roots) into a versioned graph JSON with explicit / derived / inferred evidence.
-2. **View** the graph in the browser (D3 + Dagre): filter kinds, inspect attributes, jump to source ranges, pin layout.
+1. **Scan** Cursor, Claude, and Codex surfaces into one versioned graph JSON with explicit / derived / inferred evidence and per-node `engine` tags.
+2. **View** the full picture in the browser (D3 + Dagre): filter by engine or kind, inspect attributes, jump to source ranges, pin layout.
 3. **Edit** discovered `SKILL.md` files when writes are enabled: preview unified diff + diagnostics + edge impact, then apply only if the content hash still matches.
 
 Designed **local-first** (`127.0.0.1`); a later hosted/upload mode is not built yet, but I/O goes through a `FileSource` so that path stays open. Scanning never executes skills, scripts, or MCP servers. MCP secret values are redacted and must not appear in graph JSON, API responses, or the UI.

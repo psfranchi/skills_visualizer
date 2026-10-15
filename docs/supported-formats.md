@@ -1,54 +1,64 @@
 # Supported formats
 
-What the scanner reads for each client. Verified against [Cursor docs](https://cursor.com/docs) and the [Agent Skills specification](https://agentskills.io/specification) on 2026-10-15. Scanning never writes files and never executes anything (no scripts, no MCP servers).
+What the scanner reads for each AI engine. Verified against [Cursor docs](https://cursor.com/docs), [Claude Code docs](https://code.claude.com/docs), [Codex / ChatGPT agent docs](https://learn.chatgpt.com/docs), and the [Agent Skills specification](https://agentskills.io/specification) (checked 2026-10-15). Scanning never writes files and never executes anything (no scripts, no MCP servers).
 
-## Cursor (MVP adapter)
+Every graph node carries an **`engine`** attribute: `cursor` | `claude` | `codex` | `shared`. Adapters run together (`SUPPORTED_ADAPTERS = cursor, claude, codex`) and merge into one graph with path-based IDs.
+
+## Cursor
+
+**Engine tag:** `cursor` (`.agents` skills are `shared`).
 
 ### Verified
 
-- **`AGENTS.md`:** at the repo root and in any subdirectory. Nested files combine with their parents; the more specific file wins.
-- **Rules:** `.cursor/rules/**/*.mdc` (subfolders allowed; `.md` files are ignored). Frontmatter: `description`, `globs` (comma-separated string), `alwaysApply`. Their combination gives four activation modes:
+- **`AGENTS.md`:** at the repo root and in any subdirectory. Nested files combine with their parents; the more specific file wins. Tagged `engine: cursor` (also consumed by Codex as project guidance — same file, one node).
+- **Rules:** `.cursor/rules/**/*.mdc` only (subfolders allowed; `.md` ignored). Frontmatter: `description`, `globs`, `alwaysApply` → four activation modes. `@file` mentions are explicit edges. **Not** applied to Claude/Codex files.
+- **Skills:** `.cursor/skills/` and `.agents/skills/` (shared), walked recursively. Nested `.cursor/skills/` is scoped to that directory. Agent Skills + Cursor extras (`paths` / legacy `globs`, etc.). **Editable:** discovered `SKILL.md` only.
+- **Subagents:** `.cursor/agents/*.md`.
+- **MCP:** `.cursor/mcp.json` only (stdio / remote; secrets redacted).
 
-  | Mode | Frontmatter |
-  | --- | --- |
-  | Always Apply | `alwaysApply: true` |
-  | Apply to Specific Files | `globs` set, `alwaysApply: false` |
-  | Apply Intelligently | `description` set, no `globs`, `alwaysApply: false` |
-  | Apply Manually | none of the above (only via `@rule-name`) |
+### Not verified / diagnostics only
 
-  `@file` in a rule body tells the agent to read that file; it is not inlined.
-- **Skills:** roots `.cursor/skills/`, `.agents/skills/`, `.claude/skills/`, `.codex/skills/`, walked recursively. A nested `.cursor/skills/` in a subdirectory is scoped to that directory.
-  - `name` must match the folder name: lowercase letters, digits, single hyphens, at most 64 characters.
-  - `description` is required, at most 1024 characters.
-  - Cursor extras: `paths` (legacy fallback `globs`), `disable-model-invocation`, `icon`, `color`, `metadata`.
-  - Agent Skills extras: `license`, `compatibility`, `allowed-tools` (experimental).
-  - **Editable (M3):** discovered `SKILL.md` files only (raw text → preview → hash-checked apply); MCP configs, rules, agents, and `AGENTS.md` are not editable through the app.
-- **Subagents:** `.cursor/agents/*.md`, `.claude/agents/`, `.codex/agents/`; `.cursor` wins on a name conflict. Fields: `name` (defaults to the filename), `description`, `model` (defaults to `inherit`), `readonly`, `is_background`.
-- **MCP:** `.cursor/mcp.json` = `{ "mcpServers": { "<name>": { … } } }`.
-  - stdio servers: `type`, `command`, `args`, `env`, `envFile`.
-  - Remote servers: `url`, `headers`, `auth` (`CLIENT_ID`, `CLIENT_SECRET`, `scopes`).
-  - `${env:NAME}` interpolation.
-  - Secret values never reach graph JSON, API responses, logs, or the UI: `env` / `headers` / `auth` show keys only unless the value is a pure `${env:…}` reference; `url` loses userinfo and query string; `args` after secret-looking flags are masked.
+- Nested `.cursor/rules/` or `.cursor/agents/`; `AGENTS.md` case variants; rule `@path` base ambiguity; `mcp.json` comments; Cursor runtime attach beyond discovered-path glob matching.
 
-### Not verified
+### How the scanner treats Cursor (M1 + P1)
 
-The scanner reports these as diagnostics or attributes and builds no semantics on them:
+- **Edges:** Markdown links / `@mentions` explicit; backtick paths inferred; rule `globs` / skill `paths` → derived `applies-to` (`linkKind: glob-apply`) against the scan path list (caps + warnings as in P1).
+- Near misses are diagnostics, not nodes. Symlinks skipped; files over 1 MB skipped; binary UTF-8 failures diagnosed.
 
-- Nested `.cursor/rules/` or `.cursor/agents/` in subdirectories.
-- Case sensitivity of `AGENTS.md`.
-- Base directory for rule `@path` resolution (default: repo root, then relative to the file; ambiguity gives a diagnostic).
-- Whether `mcp.json` allows comments (parsed with strict `JSON.parse`; failure gives an error diagnostic).
-- Nested directory-scoped rule activation beyond matching discovered paths (no Cursor runtime simulation).
+## Claude
 
-### How the scanner treats these (M1 + post-MVP P1)
+**Engine tag:** `claude`. Verified against [Claude Code memory / CLAUDE.md docs](https://code.claude.com/docs/en/claude-md) and [`.claude` directory docs](https://code.claude.com/docs/en/claude-directory).
 
-- **Edges:** Markdown links, images, and reference definitions, plus rule `@path` mentions, are `explicit` with source offsets. Inline-code text that matches an existing file is `inferred` (confidence 0.5, with an explanation); unmatched inline code is ignored. Explicit targets that don't exist give `unresolved-reference`.
-- **Glob / paths match edges (P1):** rule `globs` and skill `paths` (legacy `globs`) produce derived `applies-to` edges (`linkKind: glob-apply`) to matching **discovered** file paths only (no filesystem walk beyond the scan list). Caps: 50 matches per pattern, 32 patterns per node, 256 chars per pattern, 500 glob edges per scan. Warnings: `glob-no-match`, `glob-match-capped`, `glob-pattern-too-long`, `glob-patterns-capped`, `glob-edges-budget`. This is path matching, not a claim about Cursor’s exact attach runtime.
-- **Rule `@path` base:** repo root first, then relative to the rule; both existing gives `ambiguous-reference`.
-- **Rule frontmatter** that isn't strict YAML (e.g. `globs: *.ts`) is read as plain `key: value` lines with an info diagnostic; other files report `malformed-frontmatter`.
-- **Near misses are diagnostics, not nodes:** `SKILL.md` outside a skill root, `.md` files in `.cursor/rules`, `AGENTS.md` with different casing, nested `.cursor/rules` / agent dirs / `mcp.json` (unverified).
-- **Files:** symlinks are neither listed nor followed; files over 1 MB are skipped with `file-too-large`; binary or invalid UTF-8 config files give `undecodable-file`.
+### Verified
 
-### Not read (MVP)
+- **`CLAUDE.md`:** project root `CLAUDE.md` or `.claude/CLAUDE.md` (and nested project scopes). Parsed as `instruction` with reference edges and scope `applies-to` — **not** Cursor rule activation.
+- **Skills:** `.claude/skills/**/SKILL.md` (Agent Skills shape; editable like other skills).
+- **Subagents:** `.claude/agents/*.md`.
 
-User-level config (`~/.cursor`), hooks, commands, `.gitignore` (a fixed ignore list is used instead: `node_modules`, `.git`, `dist`, `build`, `coverage`, `.next`, `.venv`, `vendor`).
+### Not given Cursor semantics
+
+- **`.claude/rules/*`:** documented by Claude Code but surfaced as `unverified-claude-rules` diagnostics only — no `activation` / Cursor glob modes.
+- User-level `~/.claude`, hooks, settings.json, auto-memory: not read.
+
+## Codex
+
+**Engine tag:** `codex`. Skills/agents under `.codex/` are discovered. Repo `AGENTS.md` is owned by the Cursor adapter (Codex also reads it per [Codex AGENTS.md docs](https://learn.chatgpt.com/docs/agent-configuration/agents-md)); no separate Codex-only instruction filename is given extra semantics in-repo. User-level `~/.codex` is not read.
+
+### Verified (this pass)
+
+- **Skills:** `.codex/skills/**/SKILL.md`.
+- **Subagents:** `.codex/agents/*.md`.
+
+### Shared / elsewhere
+
+- **`.agents/skills`:** tagged `engine: shared` (Cursor adapter discovery; used by Codex skill layouts too).
+
+## Cross-engine
+
+- **Shadowing:** same agent or skill **name** at repo scope across roots → `agent-shadowed` / `skill-shadowed` warnings. Precedence: `.cursor` > `.claude` > `.codex` > `.agents`.
+- **UI:** toolbar engine chips (All / Cursor / Claude / Codex); node badges and graph stroke tint by engine; legend lists engines.
+- **Edit policy:** unchanged — any discovered editable `SKILL.md` via `adapter.editable()`, hash-checked apply.
+
+## Not read (all engines)
+
+User-level config (`~/.cursor`, `~/.claude`, `~/.codex`), hooks, commands, `.gitignore` (fixed ignore list: `node_modules`, `.git`, `dist`, `build`, `coverage`, `.next`, `.venv`, `vendor`).
