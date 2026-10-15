@@ -1,4 +1,4 @@
-import { mkdtemp, readdir, readFile, rm, symlink, writeFile } from 'node:fs/promises';
+import { mkdir, mkdtemp, readdir, readFile, rm, symlink, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
@@ -261,5 +261,180 @@ describe('edit apply on a real local tree', () => {
     ).toEqual({ ok: false, reason: 'missing' });
 
     await rm(stateDir, { recursive: true, force: true });
+  });
+
+  it('invalidates the graph cache so GET /api/graph reflects the apply', async () => {
+    const repo = await materializeFixture('cursor-basic');
+    const stateDir = await mkdtemp(path.join(tmpdir(), 'sv-edit-inv-'));
+    try {
+      const services = await createLocalServices(repo, { stateDir });
+      const app = createApp(services);
+      const skillPath = path.join(repo, '.cursor', 'skills', 'code-review', 'SKILL.md');
+      // Warm the cache with the pre-edit graph.
+      const beforeGraph = (await (
+        await app.request('/api/graph', { headers: { host: HOST } })
+      ).json()) as AgentGraph;
+      const beforeDesc = beforeGraph.nodes.find((n) => n.id === 'skill:.cursor/skills/code-review')
+        ?.attributes.description;
+
+      const beforeText = await readFile(skillPath, 'utf8');
+      const hash = await sha256Hex(new TextEncoder().encode(beforeText));
+      const newText = beforeText.replace(/description: .*/, 'description: Cache busted skill');
+      const apply = await send(app, '/api/edits/apply', {
+        path: SKILL,
+        expectedHash: hash,
+        newText,
+      });
+      expect(apply.status).toBe(200);
+
+      const afterGraph = (await (
+        await app.request('/api/graph', { headers: { host: HOST } })
+      ).json()) as AgentGraph;
+      const afterDesc = afterGraph.nodes.find((n) => n.id === 'skill:.cursor/skills/code-review')
+        ?.attributes.description;
+      expect(afterDesc).toBe('Cache busted skill');
+      expect(afterDesc).not.toBe(beforeDesc);
+    } finally {
+      await rm(repo, { recursive: true, force: true });
+      await rm(stateDir, { recursive: true, force: true });
+    }
+  });
+
+  it('returns 409 when the file changes between preview and apply', async () => {
+    const repo = await materializeFixture('cursor-basic');
+    const stateDir = await mkdtemp(path.join(tmpdir(), 'sv-edit-race-'));
+    try {
+      const app = createApp(await createLocalServices(repo, { stateDir }));
+      const skillPath = path.join(repo, '.cursor', 'skills', 'code-review', 'SKILL.md');
+      const beforeText = await readFile(skillPath, 'utf8');
+      const hash = await sha256Hex(new TextEncoder().encode(beforeText));
+      const previewText = beforeText.replace('Review', 'Preview-edit');
+
+      const preview = await send(app, '/api/edits/preview', {
+        path: SKILL,
+        expectedHash: hash,
+        newText: previewText,
+      });
+      expect(preview.status).toBe(200);
+
+      await writeFile(skillPath, `${beforeText}\n# external write\n`);
+      const afterExternal = await readFile(skillPath, 'utf8');
+
+      const apply = await send(app, '/api/edits/apply', {
+        path: SKILL,
+        expectedHash: hash,
+        newText: previewText,
+      });
+      expect(apply.status).toBe(409);
+      expect(await readFile(skillPath, 'utf8')).toBe(afterExternal);
+    } finally {
+      await rm(repo, { recursive: true, force: true });
+      await rm(stateDir, { recursive: true, force: true });
+    }
+  });
+
+  it('rejects apply when SKILL.md is a symlink', async () => {
+    const repo = await materializeFixture('cursor-basic');
+    const stateDir = await mkdtemp(path.join(tmpdir(), 'sv-edit-sym-'));
+    const out = await mkdtemp(path.join(tmpdir(), 'sv-edit-sym-out-'));
+    const skillDir = path.join(repo, '.cursor', 'skills', 'sym-skill');
+    const outsideSkill = path.join(out, 'sym-SKILL.md');
+    try {
+      await writeFile(
+        outsideSkill,
+        '---\nname: sym-skill\ndescription: Outside skill body for symlink test.\n---\n\n# Sym\n',
+      );
+      await mkdir(skillDir, { recursive: true });
+      await symlink(outsideSkill, path.join(skillDir, 'SKILL.md'));
+
+      const app = createApp(await createLocalServices(repo, { stateDir }));
+      const graph = (await (
+        await app.request('/api/graph', { headers: { host: HOST } })
+      ).json()) as AgentGraph;
+      const node = graph.nodes.find((n) => n.id === 'skill:.cursor/skills/sym-skill');
+      // Symlinked skills are not editable; if listed, apply must still refuse the write.
+      const res = await send(app, '/api/edits/apply', {
+        path: '.cursor/skills/sym-skill/SKILL.md',
+        expectedHash: node?.source?.contentHash ?? 'a'.repeat(64),
+        newText:
+          '---\nname: sym-skill\ndescription: Outside skill body for symlink test.\n---\n\n# Hijacked\n',
+      });
+      expect(res.status).toBeGreaterThanOrEqual(400);
+      expect(await readFile(outsideSkill, 'utf8')).not.toContain('Hijacked');
+    } finally {
+      await rm(repo, { recursive: true, force: true });
+      await rm(stateDir, { recursive: true, force: true });
+      await rm(out, { recursive: true, force: true });
+    }
+  });
+});
+
+describe('edit routes with write disabled', () => {
+  it('returns 403 for preview and apply', async () => {
+    const files = new Map<string, Uint8Array | string>(readFixtureFiles('cursor-basic'));
+    const source = new WritableMemoryFileSource(files, { id: 'memory:ro' });
+    Object.defineProperty(source, 'capabilities', {
+      value: { write: false, watch: false },
+    });
+    const services: Services = {
+      meta: async () => ({
+        displayName: 'repo',
+        capabilities: source.capabilities,
+        schemaVersion: 1,
+      }),
+      graph: async () => scan(source),
+      file: async () => null,
+      getView: async () => ({ schemaVersion: 1, pinned: {} }),
+      putView: async () => {},
+      source: () => source,
+      invalidateGraph: () => {},
+    };
+    const app = createApp(services);
+    const text = new TextDecoder().decode(files.get(SKILL) as Uint8Array);
+    const hash = await sha256Hex(new TextEncoder().encode(text));
+    for (const route of ['/api/edits/preview', '/api/edits/apply']) {
+      expect(
+        (
+          await send(app, route, {
+            path: SKILL,
+            expectedHash: hash,
+            newText: text,
+          })
+        ).status,
+      ).toBe(403);
+    }
+  });
+});
+
+describe('apply with non-blocking skill-name-mismatch', () => {
+  it('succeeds and surfaces the warning in preview', async () => {
+    const files = new Map<string, Uint8Array | string>(readFixtureFiles('cursor-basic'));
+    const fake = writableServices(files);
+    const app = createApp(fake.services);
+    const originalText = await readText(fake.source, SKILL);
+    const originalHash = await sha256Hex(new TextEncoder().encode(originalText));
+    // Frontmatter name disagrees with the folder (code-review) → warning, not blocker.
+    const mismatched = originalText.replace(/^name: .*$/m, 'name: other-name');
+
+    const preview = await send(app, '/api/edits/preview', {
+      path: SKILL,
+      expectedHash: originalHash,
+      newText: mismatched,
+    });
+    expect(preview.status).toBe(200);
+    const previewBody = (await preview.json()) as {
+      blocking: boolean;
+      diagnostics: { code: string }[];
+    };
+    expect(previewBody.blocking).toBe(false);
+    expect(previewBody.diagnostics.some((d) => d.code === 'skill-name-mismatch')).toBe(true);
+
+    const apply = await send(app, '/api/edits/apply', {
+      path: SKILL,
+      expectedHash: originalHash,
+      newText: mismatched,
+    });
+    expect(apply.status).toBe(200);
+    expect(await readText(fake.source, SKILL)).toBe(mismatched);
   });
 });
