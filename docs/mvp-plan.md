@@ -161,9 +161,9 @@ interface SourceLocation { path: RepoPath; start?: Span; end?: Span; contentHash
 
 ```ts
 interface Services {   // src/server/node implements it; a hosted mode would implement it differently
-  meta(): Promise<{ sourceId: string; capabilities: FileSource['capabilities']; schemaVersion: 1 }>;
+  meta(): Promise<{ displayName: string; capabilities: FileSource['capabilities']; schemaVersion: 1 }>;  // folder name, never the absolute path
   graph(opts?: { rescan?: boolean }): Promise<AgentGraph>;
-  file(path: RepoPath): Promise<{ path: RepoPath; text: string; hash: string }>;  // graph-known paths only; mcp.json → redacted text
+  file(path: RepoPath): Promise<RawFile | null>;  // plain read; createApp enforces graph-known paths, secret-file denylist, and mcp.json redaction
   getView(): Promise<GraphViewState>; putView(v: GraphViewState): Promise<void>;
 }
 // Routes (chained Hono app, export type AppType):
@@ -220,6 +220,17 @@ High and Medium findings were fixed before M2. Deferred Low items, to address be
 - TOCTOU in `LocalFileSource.read`: open with `O_NOFOLLOW`, `fh.stat()` for regular file + size, read at most limit + 1 bytes, compare dev/inode with listing-time `lstat`.
 - Multiline MCP args (`--token=X\ny`, `API_KEY=X\r`) bypass the flag / `NAME=` regexes in `redact.ts`; use the `s` flag and fail closed on args with control characters.
 - `contentHash` of secret-bearing files (`.env*`, `*.pem`, `*.key`, `id_*`, `.npmrc`, `credentials*`) is exposed; omit it or use a per-process HMAC.
+
+Deferred from the M2 reviews (fix before hosted mode or when touching the code):
+
+- No authentication against other local OS users (any local user can call the API with a valid Host header). Known trade-off for single-user machines; required before shared/hosted mode: per-process token in the printed URL → `HttpOnly; SameSite=Strict` cookie, required on `/api/*`.
+- View-state writes aren't serialized (an older save can land after "Reset layout"); queue writes in `ViewStateStore`.
+- Pins for deleted/renamed nodes are never pruned; prune unknown IDs before saving.
+- `schedule()` called inside a `setPinned` updater (StrictMode double-run); move to an effect.
+- Self-loops keep the old route while dragging; stale edge focus causes one extra fetch on selection change.
+- `src/server/app.ts` knows Cursor-specific file names for redaction; move to an adapter-owned `displayText(path, text)` hook when a second adapter lands.
+- Client validates `fetchMeta`/`fetchFile` responses without zod and drops server error bodies.
+- `id_.*` in the secret-file denylist also blocks harmless files like `id_conventions.md`.
 
 M2 requirements from the same review: the UI renders only `http`/`https` links (no `javascript:` etc.), and `source.id` (`local:<absolute path>`) must not be shown or exported where graphs could be shared.
 
