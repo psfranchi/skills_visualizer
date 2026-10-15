@@ -94,7 +94,10 @@ async function runServer(
   const root = path.resolve(io.cwd, parsed.dir);
   const start = command === 'dev' ? startDevServer : startStaticServer;
   const server = await start({ root, ...(parsed.port === undefined ? {} : { port: parsed.port }) });
-  io.stderr(`skills-visualizer ${command}: ${server.url} (root: ${path.basename(root)})`);
+  // Token only appears in this terminal line; never in API responses or the graph.
+  io.stderr(
+    `skills-visualizer ${command}: ${server.url}?token=${server.token} (root: ${path.basename(root)})`,
+  );
   return 0;
 }
 

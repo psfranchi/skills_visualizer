@@ -1,6 +1,6 @@
 // Edit planning, diff, validation, EOL/BOM restore (M3).
 
-export { unifiedDiff } from './diff';
+export { MAX_DIFF_CHARS, MAX_DIFF_LINES, type UnifiedDiffResult, unifiedDiff } from './diff';
 export { editableSkillPaths, isEditableSkill, nodeIsEditable } from './editable';
 export { type EdgeImpact, edgeImpact } from './impact';
 export {

@@ -6,6 +6,7 @@ import { serveStatic } from '@hono/node-server/serve-static';
 import { Hono } from 'hono';
 import { createServer as createViteServer, type Plugin } from 'vite';
 import { createApp } from '../app';
+import { createAuthToken, isTokenExchangePath } from '../auth';
 import { FRAME_HEADERS } from '../frame-headers';
 import { createLocalServices } from './services';
 
@@ -18,6 +19,8 @@ const WEB_DIST = fileURLToPath(new URL('../../../dist/web', import.meta.url));
 
 export interface RunningServer {
   url: string;
+  /** Present so tests can use Bearer auth; never printed except via `url`. */
+  token: string;
   close(): Promise<void>;
 }
 
@@ -27,6 +30,8 @@ export interface ServerOptions {
   stateDir?: string;
   /** Built UI directory for `startStaticServer`; defaults to `dist/web`. */
   webDir?: string;
+  /** Override the process token (tests). When omitted, a random token is generated. */
+  authToken?: string;
 }
 
 function isApiPath(url: string | undefined): boolean {
@@ -35,13 +40,15 @@ function isApiPath(url: string | undefined): boolean {
 
 /** One process: Vite (JS API) for the UI with the Hono app mounted on `/api`, bound to 127.0.0.1. */
 export async function startDevServer(options: ServerOptions): Promise<RunningServer> {
+  const token = options.authToken ?? createAuthToken();
   const services = await createLocalServices(options.root, { stateDir: options.stateDir });
-  const listener = getRequestListener(createApp(services).fetch);
+  const app = createApp(services, { auth: { token } });
+  const listener = getRequestListener(app.fetch);
   const api: Plugin = {
     name: 'skills-visualizer-api',
     configureServer(server) {
       server.middlewares.use((req, res, next) => {
-        if (isApiPath(req.url)) void listener(req, res);
+        if (isApiPath(req.url) || isTokenExchangePath(req.url)) void listener(req, res);
         else next();
       });
     },
@@ -53,8 +60,10 @@ export async function startDevServer(options: ServerOptions): Promise<RunningSer
   });
   await vite.listen();
   const address = vite.httpServer?.address() as AddressInfo | null;
+  const port = address?.port ?? options.port ?? DEFAULT_DEV_PORT;
   return {
-    url: `http://${HOST}:${address?.port ?? options.port ?? DEFAULT_DEV_PORT}/`,
+    url: `http://${HOST}:${port}/`,
+    token,
     close: () => vite.close(),
   };
 }
@@ -63,13 +72,14 @@ export async function startDevServer(options: ServerOptions): Promise<RunningSer
 export async function startStaticServer(options: ServerOptions): Promise<RunningServer> {
   const webDir = options.webDir ?? WEB_DIST;
   if (!existsSync(webDir)) throw new Error('dist/web not found; run `pnpm build` first.');
+  const token = options.authToken ?? createAuthToken();
   const services = await createLocalServices(options.root, { stateDir: options.stateDir });
   const app = new Hono()
     .use('*', async (c, next) => {
       await next();
       for (const [name, value] of Object.entries(FRAME_HEADERS)) c.res.headers.set(name, value);
     })
-    .route('/', createApp(services))
+    .route('/', createApp(services, { auth: { token } }))
     .use('/*', serveStatic({ root: webDir }));
   return new Promise((resolve, reject) => {
     const server = serve(
@@ -77,6 +87,7 @@ export async function startStaticServer(options: ServerOptions): Promise<Running
       (info) => {
         resolve({
           url: `http://${HOST}:${info.port}/`,
+          token,
           close: () =>
             new Promise<void>((done, fail) => server.close((err) => (err ? fail(err) : done()))),
         });

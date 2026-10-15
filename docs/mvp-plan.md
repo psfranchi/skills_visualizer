@@ -223,9 +223,12 @@ High and Medium findings were fixed before M2. Deferred Low items, to address be
 - Multiline MCP args (`--token=X\ny`, `API_KEY=X\r`) bypass the flag / `NAME=` regexes in `redact.ts`; use the `s` flag and fail closed on args with control characters.
 - `contentHash` of secret-bearing files (`.env*`, `*.pem`, `*.key`, `id_*`, `.npmrc`, `credentials*`) is exposed; omit it or use a per-process HMAC.
 
+Done (local auth, M3 fix pass):
+
+- Per-process random token for `dev`/`serve`: printed only as `http://127.0.0.1:<port>/?token=<t>` on stderr; `GET /?token=` sets `sv_token` (`HttpOnly; SameSite=Strict; Path=/`) and redirects; `/api/*` requires cookie or `Authorization: Bearer`. Residual: other local OS users who can read the terminal / process table can still obtain the token; no multi-user / hosted auth yet. On macOS, parent-dir rename still re-verifies the lstat chain immediately before rename (no `/proc/self/fd` binding) — residual TOCTOU documented from the write hardening.
+
 Deferred from the M2 reviews (fix before hosted mode or when touching the code):
 
-- No authentication against other local OS users (any local user can call the API with a valid Host header). Known trade-off for single-user machines; required before shared/hosted mode: per-process token in the printed URL → `HttpOnly; SameSite=Strict` cookie, required on `/api/*`.
 - View-state writes aren't serialized (an older save can land after "Reset layout"); queue writes in `ViewStateStore`.
 - Pins for deleted/renamed nodes are never pruned; prune unknown IDs before saving.
 - `schedule()` called inside a `setPinned` updater (StrictMode double-run); move to an effect.

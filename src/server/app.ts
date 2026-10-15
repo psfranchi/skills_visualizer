@@ -16,6 +16,7 @@ import {
   type SCHEMA_VERSION,
 } from '../core';
 import { redactMcpConfigText } from '../scanner';
+import { handleTokenExchange, requireAuth } from './auth';
 import { applyEdit, type EditInput, previewEdit } from './edits';
 
 // Must stay runtime-agnostic: the web app imports `AppType`, and a hosted mode would supply other `Services`.
@@ -40,6 +41,8 @@ export interface FileResponse extends RawFile {
 
 export interface EditPreviewResponse {
   diff: string;
+  /** True when the unified diff was omitted because the file was too large. */
+  diffTruncated: boolean;
   diagnostics: GraphDiagnostic[];
   impact: { edgesAdded: string[]; edgesRemoved: string[] };
   blocking: boolean;
@@ -95,8 +98,13 @@ export function isSecretBearingPath(path: string): boolean {
   return SECRET_BEARING_FILE.test(basename(path)) || SECRET_BEARING_CONFIG.test(path);
 }
 
-function error(c: Context, status: 400 | 403 | 404 | 413 | 415 | 500, message: string) {
+function error(c: Context, status: 400 | 401 | 403 | 404 | 413 | 415 | 500, message: string) {
   return c.json({ error: message }, status);
+}
+
+export interface AppOptions {
+  /** When set, `/api/*` requires the cookie or Bearer token; `GET /?token=` exchanges it. */
+  auth?: { token: string };
 }
 
 /**
@@ -200,10 +208,14 @@ function servablePaths(graph: AgentGraph): Map<string, { redact: boolean }> {
   return paths;
 }
 
-export function createApp(services: Services) {
-  return new Hono()
-    .basePath('/api')
-    .use(guard)
+function createApiApp(services: Services, authToken: string | undefined) {
+  const app = new Hono().basePath('/api');
+  app.use('*', async (c, next) => {
+    if (authToken) return requireAuth(authToken)(c, next);
+    await next();
+  });
+  return app
+    .use('*', guard)
     .get('/meta', async (c) => c.json(await services.meta()))
     .get('/graph', async (c) => c.json(publicGraph(await services.graph())))
     .post(
@@ -280,4 +292,27 @@ export function createApp(services: Services) {
     .notFound((c) => error(c, 404, 'Not found'));
 }
 
-export type AppType = ReturnType<typeof createApp>;
+/**
+ * Full app: optional `GET /?token=` exchange, then `/api/*`.
+ * `AppType` is the `/api` tree so the hc client keeps `client.api.*` paths.
+ */
+export function createApp(services: Services, options: AppOptions = {}) {
+  const authToken = options.auth?.token;
+  const api = createApiApp(services, authToken);
+  const root = new Hono();
+  root.use('*', async (c, next) => {
+    if (
+      authToken &&
+      c.req.method === 'GET' &&
+      (c.req.path === '/' || c.req.path === '') &&
+      c.req.query('token') !== undefined
+    ) {
+      return handleTokenExchange(c, authToken);
+    }
+    await next();
+  });
+  return root.route('/', api);
+}
+
+/** Typed `/api` surface for the web hc client (not the root wrapper). */
+export type AppType = ReturnType<typeof createApiApp>;

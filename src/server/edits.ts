@@ -17,6 +17,7 @@ import {
   unifiedDiff,
   validateSkillBytes,
 } from '../source-editing';
+import { editLock } from './edit-lock';
 
 export interface EditInput {
   path: RepoPath;
@@ -26,6 +27,7 @@ export interface EditInput {
 
 export interface EditPreviewResult {
   diff: string;
+  diffTruncated: boolean;
   diagnostics: GraphDiagnostic[];
   impact: { edgesAdded: string[]; edgesRemoved: string[] };
   blocking: boolean;
@@ -70,7 +72,18 @@ async function currentBytes(
   return { bytes };
 }
 
-export async function previewEdit(source: FileSource, input: EditInput): Promise<PreviewOutcome> {
+async function conflictHash(
+  source: FileSource,
+  path: RepoPath,
+  reported: string | undefined,
+): Promise<string | EditFailure> {
+  if (reported) return reported;
+  const bytes = await source.read(path);
+  if (!bytes) return { status: 404, message: 'File not readable after conflict' };
+  return sha256Hex(bytes);
+}
+
+async function previewEditUnlocked(source: FileSource, input: EditInput): Promise<PreviewOutcome> {
   if (!source.capabilities.write) return { ok: false, status: 403, message: 'Source is read-only' };
   const paths = await source.list();
   const graph = await scan(source);
@@ -98,10 +111,12 @@ export async function previewEdit(source: FileSource, input: EditInput): Promise
   const decoded = decodeUtf8Strict(current.bytes);
   const beforeText = decoded.ok ? decoded.text : '';
   const after = await scan(new OverlayFileSource(source, new Map([[input.path, plan.bytes]])));
+  const { diff, diffTruncated } = unifiedDiff(input.path, beforeText, plan.text);
   return {
     ok: true,
     preview: {
-      diff: unifiedDiff(input.path, beforeText, plan.text),
+      diff,
+      diffTruncated,
       diagnostics: validation.diagnostics,
       impact: edgeImpact(graph, after),
       blocking: validation.blocking,
@@ -109,7 +124,7 @@ export async function previewEdit(source: FileSource, input: EditInput): Promise
   };
 }
 
-export async function applyEdit(source: FileSource, input: EditInput): Promise<ApplyOutcome> {
+async function applyEditUnlocked(source: FileSource, input: EditInput): Promise<ApplyOutcome> {
   if (!isWritable(source)) return { ok: false, status: 403, message: 'Source is read-only' };
   const paths = await source.list();
   const graph = await scan(source);
@@ -150,15 +165,21 @@ export async function applyEdit(source: FileSource, input: EditInput): Promise<A
   );
   if (!replaced.ok) {
     if (replaced.reason === 'conflict') {
-      return {
-        ok: false,
-        status: 409,
-        currentHash: replaced.currentHash ?? (await sha256Hex(current.bytes)),
-      };
+      const hash = await conflictHash(source, input.path, replaced.currentHash);
+      if (typeof hash !== 'string') return { ok: false, ...hash };
+      return { ok: false, status: 409, currentHash: hash };
     }
     return { ok: false, status: 404, message: 'File not writable' };
   }
 
   const nextGraph = await scan(source);
   return { ok: true, hash: replaced.hash, graph: nextGraph };
+}
+
+export function previewEdit(source: FileSource, input: EditInput): Promise<PreviewOutcome> {
+  return editLock.run(() => previewEditUnlocked(source, input));
+}
+
+export function applyEdit(source: FileSource, input: EditInput): Promise<ApplyOutcome> {
+  return editLock.run(() => applyEditUnlocked(source, input));
 }

@@ -33,9 +33,14 @@ describe('startStaticServer', () => {
     const page = await fetch(server.url);
     expect(page.status).toBe(200);
     expect(await page.text()).toContain('<title>sv</title>');
-    const meta = await fetch(new URL('api/meta', server.url));
+    expect((await fetch(new URL('api/meta', server.url))).status).toBe(401);
+    const meta = await fetch(new URL('api/meta', server.url), {
+      headers: { authorization: `Bearer ${server.token}` },
+    });
     expect(meta.status).toBe(200);
-    expect(await meta.json()).toMatchObject({ displayName: path.basename(repo) });
+    const body = await meta.json();
+    expect(body).toMatchObject({ displayName: path.basename(repo) });
+    expect(JSON.stringify(body)).not.toContain(server.token);
   });
 
   it('forbids framing the UI', async () => {

@@ -5,7 +5,6 @@ import {
   type FileHandle,
   lstat,
   open,
-  readFile,
   realpath,
   rename,
   unlink,
