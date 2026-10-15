@@ -1,0 +1,6 @@
+# Root-anchored so fixtures/cursor-edge/node_modules/ stays tracked.
+/node_modules/
+/dist/
+/coverage/
+*.log
+.env*

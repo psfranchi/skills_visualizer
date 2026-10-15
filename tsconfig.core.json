@@ -1,0 +1,17 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "composite": true,
+    "tsBuildInfoFile": "./node_modules/.cache/tsc/core.tsbuildinfo",
+    "lib": ["ES2024", "DOM"],
+    "types": []
+  },
+  "include": [
+    "src/core/**/*.ts",
+    "src/scanner/**/*.ts",
+    "src/layout/**/*.ts",
+    "src/source-editing/**/*.ts"
+  ],
+  "exclude": ["src/**/*.test.ts"],
+  "references": []
+}

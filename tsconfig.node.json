@@ -1,0 +1,22 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "composite": true,
+    "tsBuildInfoFile": "./node_modules/.cache/tsc/node.tsbuildinfo",
+    "lib": ["ES2024"],
+    "types": ["node"]
+  },
+  "include": [
+    "src/core/**/*.ts",
+    "src/scanner/**/*.ts",
+    "src/layout/**/*.ts",
+    "src/source-editing/**/*.ts",
+    "src/server/**/*.ts",
+    "src/cli/**/*.ts",
+    "src/test-support/**/*.ts",
+    "src/*.test.ts",
+    "*.config.ts"
+  ],
+  "exclude": ["src/web/**"],
+  "references": []
+}

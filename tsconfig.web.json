@@ -1,0 +1,26 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "composite": true,
+    "tsBuildInfoFile": "./node_modules/.cache/tsc/web.tsbuildinfo",
+    "lib": ["ES2024", "DOM", "DOM.Iterable"],
+    "jsx": "react-jsx",
+    "types": ["vite/client"]
+  },
+  "include": [
+    "src/core/**/*.ts",
+    "src/scanner/**/*.ts",
+    "src/layout/**/*.ts",
+    "src/source-editing/**/*.ts",
+    "src/web/**/*.ts",
+    "src/web/**/*.tsx",
+    "src/server/app.ts"
+  ],
+  "exclude": [
+    "src/core/**/*.test.ts",
+    "src/scanner/**/*.test.ts",
+    "src/layout/**/*.test.ts",
+    "src/source-editing/**/*.test.ts"
+  ],
+  "references": []
+}
