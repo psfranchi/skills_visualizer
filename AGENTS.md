@@ -103,7 +103,7 @@ Boundary: `src/core`, `src/scanner`, `src/layout`, `src/source-editing` are pure
 - Per milestone: **planner** (only if the plan needs detail) → **builder** → **reviewer** + **security** once (parallel) → Critical/High findings to **builder** once → **verifier** against the milestone's acceptance criteria → next milestone. No open-ended loops.
 - Commands run without asking the owner (experiment); safety comes from the git hook and these rules.
 - Commit small and often to the **local** repo: one logical change per commit, only with `pnpm check` green. Commits are made by **builder** in conventional-commit style (`feat(scanner): …`, `fix(server): …`, `chore: …`), using the configured git identity and no AI trailers. Orchestrator still does not run git writes itself.
-- **Never push** or touch remotes (the git hook also blocks push).
+- **Push allowed only to this GitHub repo:** agents may `git push` to `git@github.com:psfranchi/skills_visualizer.git` (usually `origin`). Force-push and any other remote/URL stay blocked by `.cursor/hooks/block-dangerous-git.py`.
 - Ask the owner only for decisions that block progress; otherwise take the plan's recommended option and record it in `docs/mvp-plan.md`.
 - Do not edit `~/projects/agentic_base` unless the owner asks.
 
