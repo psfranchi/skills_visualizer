@@ -1,0 +1,27 @@
+---
+description: Stack-specific conventions — replace placeholders when creating an overlay
+alwaysApply: true
+---
+
+# Stack (`<stack>`)
+
+## Commands
+
+- Test: `<cmd>`
+- Lint/format: `<cmd>`
+- Dev: `<cmd>`
+- Build: `<cmd>`
+
+## Layout
+
+- Source: `<paths>`
+- Tests: `<paths>`
+
+## Do
+
+- Follow existing patterns in this repo for the stack above.
+
+## Don't
+
+- Invent scripts or folder layouts not present in the project.
+- Commit `.env` or secrets.
