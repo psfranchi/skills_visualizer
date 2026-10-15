@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
 import type { AgentGraph, AgentNode, GraphDiagnostic } from '../core';
 import { applyEdit, fetchFile, previewEdit } from './api';
+import { CodeMirrorEditor } from './CodeMirrorEditor';
 import { canApply, type EditDraft, interpretApplyResponse, type PreviewState } from './edit-model';
+import { MarkdownPreview } from './MarkdownPreview';
 
 interface SkillEditorProps {
   node: AgentNode;
@@ -15,6 +17,7 @@ export function SkillEditor({ node, onApplied }: SkillEditorProps) {
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [conflict, setConflict] = useState(false);
+  const [redacted, setRedacted] = useState(false);
 
   const contentHash = node.source?.contentHash;
   useEffect(() => {
@@ -24,9 +27,11 @@ export function SkillEditor({ node, onApplied }: SkillEditorProps) {
     setPreview(null);
     setMessage(null);
     setConflict(false);
+    setRedacted(false);
     fetchFile(path).then(
       (file) => {
         if (cancelled) return;
+        setRedacted(file.redacted);
         setDraft({ path, expectedHash: file.hash, text: file.text });
       },
       (error: unknown) => {
@@ -42,6 +47,13 @@ export function SkillEditor({ node, onApplied }: SkillEditorProps) {
 
   if (!path) return null;
   if (!draft) return <p className="muted">{message ?? 'Loading skill for editing…'}</p>;
+
+  const onTextChange = (text: string) => {
+    setDraft({ ...draft, text });
+    setPreview(null);
+    setConflict(false);
+    setMessage(null);
+  };
 
   const onPreview = () => {
     setBusy(true);
@@ -119,6 +131,7 @@ export function SkillEditor({ node, onApplied }: SkillEditorProps) {
     setBusy(true);
     fetchFile(path)
       .then((file) => {
+        setRedacted(file.redacted);
         setDraft({ path, expectedHash: file.hash, text: file.text });
         setPreview(null);
         setConflict(false);
@@ -141,21 +154,26 @@ export function SkillEditor({ node, onApplied }: SkillEditorProps) {
   return (
     <section className="skill-editor" aria-label="Edit skill">
       <h3>Edit</h3>
-      <textarea
-        className="skill-editor-text"
-        value={draft.text}
-        disabled={busy}
-        spellCheck={false}
-        onChange={(event) => {
-          setDraft({ ...draft, text: event.target.value });
-          setPreview(null);
-          setConflict(false);
-          setMessage(null);
-        }}
-      />
+      <div className="skill-editor-split">
+        <CodeMirrorEditor
+          key={path}
+          className="skill-editor-cm"
+          value={draft.text}
+          editable={!busy}
+          onChange={onTextChange}
+        />
+        <div className="skill-editor-live">
+          <h4>Live preview</h4>
+          {redacted ? (
+            <p className="muted">Rich preview disabled for redacted or secret-bearing content.</p>
+          ) : (
+            <MarkdownPreview markdown={draft.text} />
+          )}
+        </div>
+      </div>
       <div className="skill-editor-actions">
         <button type="button" disabled={busy} onClick={onPreview}>
-          Preview
+          Preview diff
         </button>
         <button type="button" disabled={busy || !canApply(draft, preview)} onClick={onApply}>
           Apply
