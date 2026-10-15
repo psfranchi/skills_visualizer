@@ -18,8 +18,8 @@
   --info: #0369a1;
   --warning: #b45309;
   --error: #b91c1c;
-  --font-sans: "Source Sans 3", "Segoe UI", sans-serif;
-  --font-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  --font-sans: "Segoe UI", system-ui, -apple-system, sans-serif;
+  --font-mono: ui-monospace, "Cascadia Code", "SF Mono", Menlo, monospace;
   font-family: var(--font-sans);
   font-size: 14px;
   color: var(--text);

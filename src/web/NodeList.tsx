@@ -74,13 +74,6 @@ export function NodeList({ nodes, selectedId, severities, onSelect }: NodeListPr
             >
               <span className={`kind-badge kind-${node.kind}`}>{node.kind}</span>
               <span className={`engine-badge engine-${engine}`}>{ENGINE_LABELS[engine]}</span>
-              {activation && (
-                <span
-                  className={`activation-badge activation-${String(node.attributes.activation)}`}
-                >
-                  {activation}
-                </span>
-              )}
               <span className="name">{node.name}</span>
               {severities.has(node.id) && (
                 <span className={`severity-dot severity-${severities.get(node.id)}`} />

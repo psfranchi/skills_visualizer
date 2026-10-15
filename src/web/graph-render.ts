@@ -177,7 +177,7 @@ export function renderGraph(
     .text((d) => KIND_CHIP[d.node.kind]);
   nodeSel
     .select('text.label')
-    .attr('y', (d) => d.box.h / 2 - 14)
+    .attr('y', (d) => d.box.h / 2 - 16)
     .text((d) => truncate(d.node.name, d.box));
   nodeSel
     .select('rect.activation-mark')

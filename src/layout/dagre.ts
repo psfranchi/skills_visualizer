@@ -32,13 +32,13 @@ export interface LayoutOptions {
   pinned?: Readonly<Record<string, Position>>;
 }
 
-export const NODE_HEIGHT = 44;
+export const NODE_HEIGHT = 50;
 const CHAR_WIDTH = 7;
-const MIN_WIDTH = 96;
+const MIN_WIDTH = 112;
 const MAX_WIDTH = 280;
 
 export function nodeSize(name: string): { width: number; height: number } {
-  const width = Math.min(MAX_WIDTH, Math.max(MIN_WIDTH, name.length * CHAR_WIDTH + 40));
+  const width = Math.min(MAX_WIDTH, Math.max(MIN_WIDTH, name.length * CHAR_WIDTH + 48));
   return { width, height: NODE_HEIGHT };
 }
 
