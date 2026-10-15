@@ -87,6 +87,20 @@ describe('layoutHierarchy', () => {
     expectEndpointsOnBoxes(graph, result);
   });
 
+  it('pinning one node leaves the other nodes where they were', () => {
+    const graph = graphOf(
+      ['a', 'b', 'c', 'd'],
+      [
+        ['ab', 'a', 'b'],
+        ['bc', 'b', 'c'],
+        ['cd', 'c', 'd'],
+      ],
+    );
+    const before = layoutHierarchy(graph);
+    const after = layoutHierarchy(graph, { pinned: { b: { x: 1000, y: -500 } } });
+    for (const id of ['a', 'c', 'd']) expect(after.nodes[id], id).toEqual(before.nodes[id]);
+  });
+
   it('lays out only visible nodes and edges', () => {
     const graph = graphOf(
       ['a', 'b', 'c'],

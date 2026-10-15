@@ -9,9 +9,11 @@ const S = 'SENTINEL-NOT-A-SECRET-E2E';
 
 const prefixed = (prefix: string, suffix: string) => [prefix, S, suffix].join('');
 
-export function leakyMcpConfig(): { mcpServers: Record<string, unknown> } {
+export function leakyMcpConfig(): { mcpServers: Record<string, unknown>; secrets: unknown } {
   return {
+    secrets: { token: `${S}20` },
     mcpServers: {
+      'unknown-field': { command: 'npx', customApiKey: `${S}21` },
       'docker-env': {
         command: 'docker',
         args: ['run', '-e', `DATABASE_URL=postgres://app:${S}1@localhost/app`, 'img'],

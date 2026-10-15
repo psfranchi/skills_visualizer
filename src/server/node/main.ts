@@ -24,6 +24,8 @@ export interface ServerOptions {
   root: string;
   port?: number;
   stateDir?: string;
+  /** Built UI directory for `startStaticServer`; defaults to `dist/web`. */
+  webDir?: string;
 }
 
 function isApiPath(url: string | undefined): boolean {
@@ -58,9 +60,10 @@ export async function startDevServer(options: ServerOptions): Promise<RunningSer
 
 /** Serves the built UI from `dist/web` plus the API, bound to 127.0.0.1. */
 export async function startStaticServer(options: ServerOptions): Promise<RunningServer> {
-  if (!existsSync(WEB_DIST)) throw new Error('dist/web not found; run `pnpm build` first.');
+  const webDir = options.webDir ?? WEB_DIST;
+  if (!existsSync(webDir)) throw new Error('dist/web not found; run `pnpm build` first.');
   const services = await createLocalServices(options.root, { stateDir: options.stateDir });
-  const app = new Hono().route('/', createApp(services)).use('/*', serveStatic({ root: WEB_DIST }));
+  const app = new Hono().route('/', createApp(services)).use('/*', serveStatic({ root: webDir }));
   return new Promise((resolve, reject) => {
     const server = serve(
       { fetch: app.fetch, hostname: HOST, port: options.port ?? DEFAULT_SERVE_PORT },
