@@ -123,21 +123,32 @@ export function renderGraph(
   nodeSel.select('title').text((d) => `${d.node.kind}: ${d.node.id}`);
 }
 
+/** Movement below this many pixels is a click, not a drag. */
+const CLICK_DISTANCE = 4;
+
+/** Only a release past the click distance (total displacement since start) pins the node. */
+export function shouldPin(dx: number, dy: number): boolean {
+  return Math.hypot(dx, dy) >= CLICK_DISTANCE;
+}
+
 /** Dragging moves the node and its edges (drawn straight); release pins it. */
 function dragBehavior(
   edgeLayer: Selection<SVGGElement, unknown, null, undefined>,
   callbacks: { current: RenderCallbacks },
 ) {
-  let moved = false;
+  let totalX = 0;
+  let totalY = 0;
   return drag<SVGGElement, NodeDatum>()
-    .clickDistance(4)
+    .clickDistance(CLICK_DISTANCE)
     .on('start', (event) => {
-      moved = false;
+      totalX = 0;
+      totalY = 0;
       event.sourceEvent?.stopPropagation();
     })
     .on('drag', function (event, d) {
       if (event.dx === 0 && event.dy === 0) return;
-      moved = true;
+      totalX += event.dx;
+      totalY += event.dy;
       d.box = { ...d.box, x: d.box.x + event.dx, y: d.box.y + event.dy };
       select(this).attr('transform', `translate(${d.box.x},${d.box.y})`);
       const boxes = new Map<string, Box>();
@@ -157,7 +168,9 @@ function dragBehavior(
         });
     })
     .on('end', (_event, d) => {
-      if (moved) callbacks.current.onPin(d.node.id, { x: d.box.x, y: d.box.y });
+      if (shouldPin(totalX, totalY)) {
+        callbacks.current.onPin(d.node.id, { x: d.box.x, y: d.box.y });
+      }
     });
 }
 
