@@ -13,7 +13,7 @@
   --accent-hover: #0d9488;
   --explicit: #0e7490;
   --derived: #64748b;
-  --inferred: #b45309;
+  --inferred: #d97706;
   --annotation: #be123c;
   --info: #0369a1;
   --warning: #b45309;
@@ -606,7 +606,9 @@ button.link.small {
 }
 
 .edge.evidence-inferred {
-  stroke-dasharray: 2 4;
+  stroke: var(--inferred);
+  stroke-width: 2.25;
+  stroke-dasharray: 6 3.5;
 }
 
 .edge.evidence-annotation {
@@ -642,6 +644,13 @@ button.link.small {
   display: flex;
   align-items: center;
   gap: 6px;
+}
+
+.legend-note {
+  margin: 6px 12px 4px;
+  font-size: 11px;
+  line-height: 1.35;
+  max-width: 220px;
 }
 
 /* Inspector */

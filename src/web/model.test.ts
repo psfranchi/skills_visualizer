@@ -3,6 +3,7 @@ import type { AgentEdge, AgentGraph, AgentNode, GraphDiagnostic, NodeKind } from
 import {
   defaultFilters,
   diagnosticsForNode,
+  filtersChangingFit,
   focusNeighborhood,
   incidentEdges,
   inferredOnlyNodeIds,
@@ -128,6 +129,17 @@ describe('visibleGraph', () => {
     const shown = visibleGraph(inferredGraph, { ...defaultFilters(), showInferred: true });
     expect(shown.nodeIds.size).toBe(inferredGraph.nodes.length);
     expect(shown.edgeIds.has('i1')).toBe(true);
+    expect(shown.edgeIds.size).toBeGreaterThan(hidden.edgeIds.size);
+  });
+});
+
+describe('filtersChangingFit', () => {
+  it('is true only when showInferred flips', () => {
+    const base = defaultFilters();
+    expect(filtersChangingFit(base, { ...base, showInferred: true })).toBe(true);
+    expect(filtersChangingFit({ ...base, showInferred: true }, base)).toBe(true);
+    expect(filtersChangingFit(base, { ...base, focusSelection: false })).toBe(false);
+    expect(filtersChangingFit(base, { ...base, search: 'x' })).toBe(false);
   });
 });
 

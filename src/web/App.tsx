@@ -17,6 +17,7 @@ import { Legend } from './Legend';
 import {
   defaultFilters,
   type Filters,
+  filtersChangingFit,
   focusNeighborhood,
   listedNodes,
   nodeSeverities,
@@ -197,14 +198,22 @@ export function App() {
     if (selectedId && !next.nodes.some((n) => n.id === selectedId)) setSelectedId(null);
   };
 
+  const onFilters = (next: Filters) => {
+    if (filtersChangingFit(filters, next)) setFitToken((t) => t + 1);
+    setFilters(next);
+  };
+
+  const inferredEdgeCount = graph.edges.filter((e) => e.evidence === 'inferred').length;
+
   return (
     <div className="app">
       <Toolbar
         title={meta?.displayName ?? 'Skills Visualizer'}
         filters={filters}
         kindCounts={kindCounts}
+        inferredEdgeCount={inferredEdgeCount}
         busy={busy}
-        onFilters={setFilters}
+        onFilters={onFilters}
         onFit={() => setFitToken((t) => t + 1)}
         onResetLayout={onResetLayout}
         onRescan={onRescan}

@@ -5,6 +5,8 @@ interface ToolbarProps {
   title: string;
   filters: Filters;
   kindCounts: ReadonlyMap<NodeKind, number>;
+  /** Inferred edges in the full graph (for the toggle label). */
+  inferredEdgeCount: number;
   busy: boolean;
   onFilters(filters: Filters): void;
   onFit(): void;
@@ -33,6 +35,7 @@ export function Toolbar({
   title,
   filters,
   kindCounts,
+  inferredEdgeCount,
   busy,
   onFilters,
   onFit,
@@ -108,7 +111,7 @@ export function Toolbar({
           checked={filters.showInferred}
           onChange={(event) => onFilters({ ...filters, showInferred: event.target.checked })}
         />
-        Show inferred edges
+        Show inferred edges <span className="count">({inferredEdgeCount})</span>
       </label>
       <label className="chip">
         <input

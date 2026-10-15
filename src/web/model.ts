@@ -80,6 +80,14 @@ export function inferredOnlyNodeIds(graph: AgentGraph): Set<string> {
   );
 }
 
+/**
+ * Filter changes that expand or shrink the laid-out graph enough that the
+ * camera should re-fit (e.g. revealing inferred-only file/script nodes).
+ */
+export function filtersChangingFit(prev: Filters, next: Filters): boolean {
+  return prev.showInferred !== next.showInferred;
+}
+
 /** Kind / engine filters and the inferred-edge toggle. Search does not hide nodes (see `searchMatches`). */
 export function visibleGraph(graph: AgentGraph, filters: Filters): VisibleGraph {
   const hidden = filters.showInferred ? new Set<string>() : inferredOnlyNodeIds(graph);

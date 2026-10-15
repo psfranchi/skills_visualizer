@@ -5,7 +5,8 @@ import { ENGINE_FILTERS, ENGINE_LABELS } from './model';
 const DESCRIPTIONS: Record<Evidence, string> = {
   explicit: 'Declared in a source file (link, @mention, mcp.json entry)',
   derived: 'Follows from file layout, scope, or glob/paths match',
-  inferred: 'Heuristic guess (inline-code path); hidden by default',
+  inferred:
+    'Heuristic guess (inline-code path); hidden by default. Focus selection dims inferred edges outside the neighborhood.',
   annotation: 'User annotation',
 };
 
@@ -36,6 +37,10 @@ export function Legend() {
           </li>
         ))}
       </ul>
+      <p className="legend-note muted">
+        Focus dims unrelated nodes and edges (including inferred). Turn Focus off to see the full
+        inferred set bright.
+      </p>
       <h2>Edge kinds</h2>
       <ul className="edge-kind-list">
         {EDGE_LABEL_LEGEND.map((item) => (
