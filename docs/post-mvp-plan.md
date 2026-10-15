@@ -92,10 +92,12 @@ Today’s Cursor adapter already **discovers** `.claude` / `.codex` / `.agents` 
 
 **Accept:**
 
-- [ ] Claude + Codex surfaces visible in one graph with `engine` tags.
-- [ ] Engine filter UI works; legend explains engines.
-- [ ] No false Cursor rule/MCP semantics on foreign files.
-- [ ] Fixtures + goldens + per-engine docs; `pnpm check` green.
+- [x] Claude + Codex surfaces visible in one graph with `engine` tags.
+- [x] Engine filter UI works; legend explains engines.
+- [x] No false Cursor rule/MCP semantics on foreign files.
+- [x] Fixtures + goldens + per-engine docs; `pnpm check` green.
+
+**Status (2026-10-15): done.** Verifier: `pnpm check` (355 tests) + `pnpm build` green; multi-engine adapters merge Cursor/Claude/Codex with per-node `engine` (`multi.ts`, `claude`/`codex` adapters); toolbar All/Cursor/Claude/Codex chips + badges/tints + legend (`Toolbar.tsx`, `Legend.tsx`, `model.ts`); `.claude/rules` diagnostic-only / MCP Cursor-only (no foreign rule activation); fixtures `claude-basic` + `codex-basic` goldens; per-engine `supported-formats.md` + README full-picture blurb; secrets clear on P2 diff; no `Co-authored-by` on P2 commits.
 
 ---
 
