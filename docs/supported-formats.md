@@ -22,6 +22,7 @@ What the scanner reads for each client. Verified against [Cursor docs](https://c
   - `description` is required, at most 1024 characters.
   - Cursor extras: `paths` (legacy fallback `globs`), `disable-model-invocation`, `icon`, `color`, `metadata`.
   - Agent Skills extras: `license`, `compatibility`, `allowed-tools` (experimental).
+  - **Editable (M3):** discovered `SKILL.md` files only (raw text → preview → hash-checked apply); MCP configs, rules, agents, and `AGENTS.md` are not editable through the app.
 - **Subagents:** `.cursor/agents/*.md`, `.claude/agents/`, `.codex/agents/`; `.cursor` wins on a name conflict. Fields: `name` (defaults to the filename), `description`, `model` (defaults to `inherit`), `readonly`, `is_background`.
 - **MCP:** `.cursor/mcp.json` = `{ "mcpServers": { "<name>": { … } } }`.
   - stdio servers: `type`, `command`, `args`, `env`, `envFile`.

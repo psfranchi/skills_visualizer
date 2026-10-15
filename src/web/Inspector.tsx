@@ -16,13 +16,16 @@ import {
   safeHref,
   sourceDisplay,
 } from './model';
+import { SkillEditor } from './SkillEditor';
 
 interface InspectorProps {
   graph: AgentGraph;
   node: AgentNode | null;
   severities: ReadonlySet<Severity>;
   visibleEdgeIds: ReadonlySet<string>;
+  canEdit: boolean;
   onSelect(id: string): void;
+  onGraphApplied(graph: AgentGraph): void;
 }
 
 function location(source: SourceLocation): string {
@@ -208,7 +211,15 @@ function SourceView({ focus }: { focus: SourceLocation }) {
   );
 }
 
-export function Inspector({ graph, node, severities, visibleEdgeIds, onSelect }: InspectorProps) {
+export function Inspector({
+  graph,
+  node,
+  severities,
+  visibleEdgeIds,
+  canEdit,
+  onSelect,
+  onGraphApplied,
+}: InspectorProps) {
   const [focusedEdge, setFocusedEdge] = useState<AgentEdge | null>(null);
   // biome-ignore lint/correctness/useExhaustiveDependencies: reset the edge focus when the selection changes.
   useEffect(() => setFocusedEdge(null), [node?.id]);
@@ -278,6 +289,7 @@ export function Inspector({ graph, node, severities, visibleEdgeIds, onSelect }:
       )}
       <h3>Source</h3>
       {focus ? <SourceView focus={focus} /> : <p className="muted">No source file.</p>}
+      {canEdit && node.kind === 'skill' && <SkillEditor node={node} onApplied={onGraphApplied} />}
     </aside>
   );
 }

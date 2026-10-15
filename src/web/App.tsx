@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import type { AgentGraph, NodeKind, Position } from '../core';
+import type { AgentGraph, NodeKind, Position, RepoPath } from '../core';
 import { layoutHierarchy } from '../layout';
 import type { Meta } from '../server/app';
+import { editableSkillPaths, nodeIsEditable } from '../source-editing';
 import {
   fetchGraph,
   fetchMeta,
@@ -116,6 +117,13 @@ export function App() {
     for (const n of graph?.nodes ?? []) counts.set(n.kind, (counts.get(n.kind) ?? 0) + 1);
     return counts;
   }, [graph]);
+  const editablePaths = useMemo(() => {
+    if (!graph || !meta?.capabilities.write) return new Set<string>();
+    return editableSkillPaths(
+      graph,
+      graph.nodes.flatMap((n) => (n.source ? [n.source.path as RepoPath] : [])),
+    );
+  }, [graph, meta?.capabilities.write]);
 
   const onPin = useCallback(
     (id: string, position: Position) => {
@@ -157,6 +165,13 @@ export function App() {
   const selected = graph.nodes.find((n) => n.id === selectedId) ?? null;
   const shownNodes = graph.nodes.filter((n) => visible.nodeIds.has(n.id));
   const shownEdges = graph.edges.filter((e) => visible.edgeIds.has(e.id));
+  const canEdit = nodeIsEditable(selected, meta?.capabilities.write === true, editablePaths);
+
+  const onGraphApplied = (next: AgentGraph) => {
+    setGraph(next);
+    setError(null);
+    if (selectedId && !next.nodes.some((n) => n.id === selectedId)) setSelectedId(null);
+  };
 
   return (
     <div className="app">
@@ -200,7 +215,9 @@ export function App() {
         node={selected}
         severities={filters.severities}
         visibleEdgeIds={visible.edgeIds}
+        canEdit={canEdit}
         onSelect={setSelectedId}
+        onGraphApplied={onGraphApplied}
       />
     </div>
   );
