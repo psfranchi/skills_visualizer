@@ -1,6 +1,12 @@
 import { realpath } from 'node:fs/promises';
 import path from 'node:path';
-import { type AgentGraph, decodeUtf8Strict, SCHEMA_VERSION, sha256Hex } from '../../core';
+import {
+  type AgentGraph,
+  decodeUtf8Strict,
+  type FileSource,
+  SCHEMA_VERSION,
+  sha256Hex,
+} from '../../core';
 import { scan } from '../../scanner';
 import type { Services } from '../app';
 import { LocalFileSource } from './local-file-source';
@@ -9,6 +15,8 @@ import { stateBaseDir, ViewStateStore, viewStateFile } from './view-state-store'
 export interface LocalServicesOptions {
   /** Defaults to `stateBaseDir()` (SV_STATE_DIR / XDG / macOS Application Support). */
   stateDir?: string;
+  /** Defaults to `LocalFileSource.open`; tests substitute failing sources. */
+  openSource?: (realRoot: string) => Promise<FileSource>;
 }
 
 /** Read-only services over a local directory; only the view state is written, outside the repo. */
@@ -17,7 +25,8 @@ export async function createLocalServices(
   options: LocalServicesOptions = {},
 ): Promise<Services> {
   const realRoot = await realpath(path.resolve(root));
-  let source = await LocalFileSource.open(realRoot);
+  const openSource = options.openSource ?? ((dir: string) => LocalFileSource.open(dir));
+  let source = await openSource(realRoot);
   let graph: Promise<AgentGraph> | undefined;
   const store = new ViewStateStore(viewStateFile(options.stateDir ?? stateBaseDir(), realRoot));
 
@@ -29,8 +38,12 @@ export async function createLocalServices(
     }),
     graph: async (opts) => {
       if (opts?.rescan || !graph) {
-        if (opts?.rescan) source = await LocalFileSource.open(realRoot);
-        graph = scan(source);
+        if (opts?.rescan) source = await openSource(realRoot);
+        const pending: Promise<AgentGraph> = scan(source).catch((error: unknown) => {
+          if (graph === pending) graph = undefined;
+          throw error;
+        });
+        graph = pending;
       }
       return graph;
     },
