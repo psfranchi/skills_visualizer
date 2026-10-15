@@ -23,6 +23,31 @@ export function canApply(draft: EditDraft, preview: PreviewState | null): boolea
   return preview !== null && !preview.blocking && preview.previewedText === draft.text;
 }
 
+/**
+ * Editor typing while `conflict` is true must not dismiss the conflict UI — only
+ * Load disk / Keep draft clear it. Preview/message stay until those actions.
+ */
+export function afterEditorChange(
+  draft: EditDraft,
+  text: string,
+  conflict: boolean,
+): { draft: EditDraft; conflict: boolean; clearAncillary: boolean } {
+  return {
+    draft: { ...draft, text },
+    conflict,
+    clearAncillary: !conflict,
+  };
+}
+
+/** Skip refetch when the draft already matches the node's content hash (e.g. just applied). */
+export function shouldReloadSkillFile(
+  path: string,
+  contentHash: string,
+  draft: EditDraft | null,
+): boolean {
+  return draft === null || draft.path !== path || draft.expectedHash !== contentHash;
+}
+
 export type ApplyOutcome =
   | { kind: 'ok'; hash: string }
   | { kind: 'conflict'; currentHash: string }

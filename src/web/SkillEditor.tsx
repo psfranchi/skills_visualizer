@@ -1,8 +1,15 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { AgentGraph, AgentNode, GraphDiagnostic } from '../core';
 import { applyEdit, fetchFile, previewEdit } from './api';
 import { CodeMirrorEditor } from './CodeMirrorEditor';
-import { canApply, type EditDraft, interpretApplyResponse, type PreviewState } from './edit-model';
+import {
+  afterEditorChange,
+  canApply,
+  type EditDraft,
+  interpretApplyResponse,
+  type PreviewState,
+  shouldReloadSkillFile,
+} from './edit-model';
 import { MarkdownPreview } from './MarkdownPreview';
 
 interface SkillEditorProps {
@@ -18,10 +25,14 @@ export function SkillEditor({ node, onApplied }: SkillEditorProps) {
   const [message, setMessage] = useState<string | null>(null);
   const [conflict, setConflict] = useState(false);
   const [redacted, setRedacted] = useState(false);
+  const draftRef = useRef(draft);
+  draftRef.current = draft;
 
   const contentHash = node.source?.contentHash;
   useEffect(() => {
     if (!path || !contentHash) return;
+    if (!shouldReloadSkillFile(path, contentHash, draftRef.current)) return;
+
     let cancelled = false;
     setDraft(null);
     setPreview(null);
@@ -49,10 +60,13 @@ export function SkillEditor({ node, onApplied }: SkillEditorProps) {
   if (!draft) return <p className="muted">{message ?? 'Loading skill for editing…'}</p>;
 
   const onTextChange = (text: string) => {
-    setDraft({ ...draft, text });
-    setPreview(null);
-    setConflict(false);
-    setMessage(null);
+    const next = afterEditorChange(draft, text, conflict);
+    setDraft(next.draft);
+    setConflict(next.conflict);
+    if (next.clearAncillary) {
+      setPreview(null);
+      setMessage(null);
+    }
   };
 
   const onPreview = () => {
@@ -101,11 +115,14 @@ export function SkillEditor({ node, onApplied }: SkillEditorProps) {
       .then(({ status, body }) => {
         const outcome = interpretApplyResponse(status, body);
         if (outcome.kind === 'ok' && body.graph) {
-          onApplied(body.graph);
-          setDraft({ path: draft.path, expectedHash: outcome.hash, text: draft.text });
+          // Sync ref before onApplied so the reload effect skips when contentHash updates.
+          const nextDraft = { path: draft.path, expectedHash: outcome.hash, text: draft.text };
+          draftRef.current = nextDraft;
+          setDraft(nextDraft);
           setPreview(null);
           setConflict(false);
           setMessage('Applied.');
+          onApplied(body.graph);
           return;
         }
         if (outcome.kind === 'conflict') {
@@ -151,15 +168,20 @@ export function SkillEditor({ node, onApplied }: SkillEditorProps) {
     setMessage('Re-preview against the new hash before applying.');
   };
 
+  const editorLocked = busy || conflict || redacted;
+
   return (
     <section className="skill-editor" aria-label="Edit skill">
       <h3>Edit</h3>
+      {redacted && (
+        <p className="muted">Editing disabled — file content was redacted for secrets.</p>
+      )}
       <div className="skill-editor-split">
         <CodeMirrorEditor
           key={path}
           className="skill-editor-cm"
           value={draft.text}
-          editable={!busy}
+          editable={!editorLocked}
           onChange={onTextChange}
         />
         <div className="skill-editor-live">
@@ -172,10 +194,14 @@ export function SkillEditor({ node, onApplied }: SkillEditorProps) {
         </div>
       </div>
       <div className="skill-editor-actions">
-        <button type="button" disabled={busy} onClick={onPreview}>
+        <button type="button" disabled={busy || redacted || conflict} onClick={onPreview}>
           Preview diff
         </button>
-        <button type="button" disabled={busy || !canApply(draft, preview)} onClick={onApply}>
+        <button
+          type="button"
+          disabled={busy || redacted || conflict || !canApply(draft, preview)}
+          onClick={onApply}
+        >
           Apply
         </button>
       </div>

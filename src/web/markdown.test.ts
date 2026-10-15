@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { hastHrefs, hastTagNames, markdownToHast } from './markdown';
+import { hastHrefs, hastImgSrcs, hastTagNames, markdownToHast } from './markdown';
 
 describe('markdownToHast sanitization', () => {
   it('strips script elements from raw HTML in markdown', () => {
@@ -19,5 +19,17 @@ describe('markdownToHast sanitization', () => {
   it('drops data: and other non-http schemes', () => {
     const tree = markdownToHast('[x](data:text/html,hi) [y](vbscript:msg)');
     expect(hastHrefs(tree)).toEqual([]);
+  });
+
+  it('strips javascript: and data: image sources', () => {
+    const tree = markdownToHast(
+      '<img src="javascript:alert(1)" alt="x" /> <img src="data:image/png;base64,xx" alt="y" /> ![z](https://example.com/z.png)',
+    );
+    expect(hastImgSrcs(tree)).toEqual(['https://example.com/z.png']);
+  });
+
+  it('removes iframe elements', () => {
+    const tree = markdownToHast('<iframe src="https://evil.example"></iframe>\n\nSafe');
+    expect(hastTagNames(tree)).not.toContain('iframe');
   });
 });

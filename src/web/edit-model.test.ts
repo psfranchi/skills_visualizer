@@ -1,9 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import {
+  afterEditorChange,
   canApply,
   interpretApplyResponse,
   type PreviewState,
   selectionAfterApply,
+  shouldReloadSkillFile,
 } from './edit-model';
 
 const draft = { path: 'a', expectedHash: 'h', text: 'hello' };
@@ -47,5 +49,29 @@ describe('selectionAfterApply', () => {
     );
     expect(selectionAfterApply('gone', { nodes: [{ id: 'skill:a' }] })).toBeNull();
     expect(selectionAfterApply(null, { nodes: [{ id: 'skill:a' }] })).toBeNull();
+  });
+});
+
+describe('afterEditorChange', () => {
+  it('keeps conflict locked and does not clear ancillary state', () => {
+    const next = afterEditorChange(draft, 'typed', true);
+    expect(next.conflict).toBe(true);
+    expect(next.clearAncillary).toBe(false);
+    expect(next.draft.text).toBe('typed');
+  });
+
+  it('clears ancillary flags when not in conflict', () => {
+    const next = afterEditorChange(draft, 'typed', false);
+    expect(next.conflict).toBe(false);
+    expect(next.clearAncillary).toBe(true);
+  });
+});
+
+describe('shouldReloadSkillFile', () => {
+  it('skips reload when draft already matches path and hash', () => {
+    expect(shouldReloadSkillFile('a', 'h', draft)).toBe(false);
+    expect(shouldReloadSkillFile('a', 'new', draft)).toBe(true);
+    expect(shouldReloadSkillFile('b', 'h', draft)).toBe(true);
+    expect(shouldReloadSkillFile('a', 'h', null)).toBe(true);
   });
 });
