@@ -69,9 +69,15 @@ export function renderGraph(
     const route = input.layout.edges[edge.id];
     return route ? [{ edge, points: route.points }] : [];
   });
-  const dimmed = (id: string) =>
-    (input.matches !== null && !input.matches.has(id)) ||
-    (input.focusIds !== null && !input.focusIds.has(id));
+  /**
+   * Focus wins over search for graph dimming: the selection neighborhood stays bright
+   * even when a search query is active (search still filters the node list).
+   */
+  const dimmed = (id: string) => {
+    if (input.focusIds !== null) return !input.focusIds.has(id);
+    if (input.matches !== null) return !input.matches.has(id);
+    return false;
+  };
 
   const edgeSel = edgeLayer
     .selectAll<SVGPathElement, EdgeDatum>('path.edge')

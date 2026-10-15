@@ -90,6 +90,8 @@ export function searchMatches(nodes: readonly AgentNode[], query: string): Set<s
 /**
  * Selected node plus its neighbors over visible edges.
  * `null` when focus is off or nothing is selected (full graph stays bright).
+ * Graph dimming prefers this set over `searchMatches` so the neighborhood stays
+ * bright while searching (search still filters the node list).
  */
 export function focusNeighborhood(
   graph: AgentGraph,
