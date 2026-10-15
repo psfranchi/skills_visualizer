@@ -1,0 +1,481 @@
+{
+  "nodes": [
+    {
+      "id": "agent:.cursor/agents/builder.md",
+      "name": "builder"
+    },
+    {
+      "id": "agent:.cursor/agents/explorer.md",
+      "name": "explorer"
+    },
+    {
+      "id": "agent:.cursor/agents/planner.md",
+      "name": "planner"
+    },
+    {
+      "id": "agent:.cursor/agents/reviewer.md",
+      "name": "reviewer"
+    },
+    {
+      "id": "agent:.cursor/agents/security.md",
+      "name": "security"
+    },
+    {
+      "id": "agent:.cursor/agents/verifier.md",
+      "name": "verifier"
+    },
+    {
+      "id": "directory:.",
+      "name": "."
+    },
+    {
+      "id": "file:.cursor/BUGBOT.md",
+      "name": "BUGBOT.md"
+    },
+    {
+      "id": "file:.cursor/hooks.json",
+      "name": "hooks.json"
+    },
+    {
+      "id": "file:.cursor/hooks/block-dangerous-git.py",
+      "name": "block-dangerous-git.py"
+    },
+    {
+      "id": "file:.nvmrc",
+      "name": ".nvmrc"
+    },
+    {
+      "id": "file:docs/adopt-dry-run.md",
+      "name": "adopt-dry-run.md"
+    },
+    {
+      "id": "file:docs/cloud-and-automations.md",
+      "name": "cloud-and-automations.md"
+    },
+    {
+      "id": "file:docs/mcp.md",
+      "name": "mcp.md"
+    },
+    {
+      "id": "file:docs/mvp-plan.md",
+      "name": "mvp-plan.md"
+    },
+    {
+      "id": "file:docs/overlay-guide.md",
+      "name": "overlay-guide.md"
+    },
+    {
+      "id": "file:docs/post-mvp-plan.md",
+      "name": "post-mvp-plan.md"
+    },
+    {
+      "id": "file:docs/recommended-skills.md",
+      "name": "recommended-skills.md"
+    },
+    {
+      "id": "file:docs/supported-formats.md",
+      "name": "supported-formats.md"
+    },
+    {
+      "id": "file:docs/workflow.md",
+      "name": "workflow.md"
+    },
+    {
+      "id": "file:overlays/typescript/AGENTS.stack.md",
+      "name": "AGENTS.stack.md"
+    },
+    {
+      "id": "file:overlays/typescript/rules/stack.mdc",
+      "name": "stack.mdc"
+    },
+    {
+      "id": "file:package.json",
+      "name": "package.json"
+    },
+    {
+      "id": "file:src/test-support/fixtures.ts",
+      "name": "fixtures.ts"
+    },
+    {
+      "id": "file:tsconfig.core.json",
+      "name": "tsconfig.core.json"
+    },
+    {
+      "id": "instruction:AGENTS.md",
+      "name": "AGENTS.md"
+    },
+    {
+      "id": "rule:.cursor/rules/00-core.mdc",
+      "name": "00-core"
+    },
+    {
+      "id": "rule:.cursor/rules/10-sdlc.mdc",
+      "name": "10-sdlc"
+    },
+    {
+      "id": "rule:.cursor/rules/15-orchestrator.mdc",
+      "name": "15-orchestrator"
+    },
+    {
+      "id": "rule:.cursor/rules/20-communication.mdc",
+      "name": "20-communication"
+    },
+    {
+      "id": "rule:.cursor/rules/90-stack.mdc",
+      "name": "90-stack"
+    },
+    {
+      "id": "skill:.cursor/skills/add-test",
+      "name": "add-test"
+    },
+    {
+      "id": "skill:.cursor/skills/adopt-base",
+      "name": "adopt-base"
+    },
+    {
+      "id": "skill:.cursor/skills/debug-incident",
+      "name": "debug-incident"
+    },
+    {
+      "id": "skill:.cursor/skills/explore-codebase",
+      "name": "explore-codebase"
+    },
+    {
+      "id": "skill:.cursor/skills/fill-stack-overlay",
+      "name": "fill-stack-overlay"
+    },
+    {
+      "id": "skill:.cursor/skills/migrate-schema",
+      "name": "migrate-schema"
+    },
+    {
+      "id": "skill:.cursor/skills/pr-review",
+      "name": "pr-review"
+    },
+    {
+      "id": "skill:.cursor/skills/ship-checklist",
+      "name": "ship-checklist"
+    },
+    {
+      "id": "skill:.cursor/skills/stack-commands",
+      "name": "stack-commands"
+    }
+  ],
+  "edges": [
+    {
+      "id": "applies-to:instruction:AGENTS.md->directory:.#0",
+      "source": "instruction:AGENTS.md",
+      "target": "directory:."
+    },
+    {
+      "id": "references:instruction:AGENTS.md->file:.cursor/BUGBOT.md#0",
+      "source": "instruction:AGENTS.md",
+      "target": "file:.cursor/BUGBOT.md"
+    },
+    {
+      "id": "references:instruction:AGENTS.md->file:.cursor/hooks/block-dangerous-git.py#0",
+      "source": "instruction:AGENTS.md",
+      "target": "file:.cursor/hooks/block-dangerous-git.py"
+    },
+    {
+      "id": "references:instruction:AGENTS.md->file:docs/mcp.md#0",
+      "source": "instruction:AGENTS.md",
+      "target": "file:docs/mcp.md"
+    },
+    {
+      "id": "references:instruction:AGENTS.md->file:docs/mcp.md#1",
+      "source": "instruction:AGENTS.md",
+      "target": "file:docs/mcp.md"
+    },
+    {
+      "id": "references:instruction:AGENTS.md->file:docs/mvp-plan.md#0",
+      "source": "instruction:AGENTS.md",
+      "target": "file:docs/mvp-plan.md"
+    },
+    {
+      "id": "references:instruction:AGENTS.md->file:docs/mvp-plan.md#1",
+      "source": "instruction:AGENTS.md",
+      "target": "file:docs/mvp-plan.md"
+    },
+    {
+      "id": "references:instruction:AGENTS.md->file:docs/mvp-plan.md#2",
+      "source": "instruction:AGENTS.md",
+      "target": "file:docs/mvp-plan.md"
+    },
+    {
+      "id": "references:instruction:AGENTS.md->file:docs/mvp-plan.md#3",
+      "source": "instruction:AGENTS.md",
+      "target": "file:docs/mvp-plan.md"
+    },
+    {
+      "id": "references:instruction:AGENTS.md->file:docs/mvp-plan.md#4",
+      "source": "instruction:AGENTS.md",
+      "target": "file:docs/mvp-plan.md"
+    },
+    {
+      "id": "references:instruction:AGENTS.md->file:docs/post-mvp-plan.md#0",
+      "source": "instruction:AGENTS.md",
+      "target": "file:docs/post-mvp-plan.md"
+    },
+    {
+      "id": "references:instruction:AGENTS.md->file:docs/post-mvp-plan.md#1",
+      "source": "instruction:AGENTS.md",
+      "target": "file:docs/post-mvp-plan.md"
+    },
+    {
+      "id": "references:instruction:AGENTS.md->file:docs/recommended-skills.md#0",
+      "source": "instruction:AGENTS.md",
+      "target": "file:docs/recommended-skills.md"
+    },
+    {
+      "id": "references:instruction:AGENTS.md->file:docs/supported-formats.md#0",
+      "source": "instruction:AGENTS.md",
+      "target": "file:docs/supported-formats.md"
+    },
+    {
+      "id": "references:instruction:AGENTS.md->file:docs/supported-formats.md#1",
+      "source": "instruction:AGENTS.md",
+      "target": "file:docs/supported-formats.md"
+    },
+    {
+      "id": "references:instruction:AGENTS.md->file:overlays/typescript/AGENTS.stack.md#0",
+      "source": "instruction:AGENTS.md",
+      "target": "file:overlays/typescript/AGENTS.stack.md"
+    },
+    {
+      "id": "references:instruction:AGENTS.md->file:overlays/typescript/rules/stack.mdc#0",
+      "source": "instruction:AGENTS.md",
+      "target": "file:overlays/typescript/rules/stack.mdc"
+    },
+    {
+      "id": "references:instruction:AGENTS.md->file:package.json#0",
+      "source": "instruction:AGENTS.md",
+      "target": "file:package.json"
+    },
+    {
+      "id": "references:instruction:AGENTS.md->file:tsconfig.core.json#0",
+      "source": "instruction:AGENTS.md",
+      "target": "file:tsconfig.core.json"
+    },
+    {
+      "id": "references:instruction:AGENTS.md->rule:.cursor/rules/00-core.mdc#0",
+      "source": "instruction:AGENTS.md",
+      "target": "rule:.cursor/rules/00-core.mdc"
+    },
+    {
+      "id": "references:instruction:AGENTS.md->rule:.cursor/rules/00-core.mdc#1",
+      "source": "instruction:AGENTS.md",
+      "target": "rule:.cursor/rules/00-core.mdc"
+    },
+    {
+      "id": "references:instruction:AGENTS.md->rule:.cursor/rules/15-orchestrator.mdc#0",
+      "source": "instruction:AGENTS.md",
+      "target": "rule:.cursor/rules/15-orchestrator.mdc"
+    },
+    {
+      "id": "references:instruction:AGENTS.md->rule:.cursor/rules/20-communication.mdc#0",
+      "source": "instruction:AGENTS.md",
+      "target": "rule:.cursor/rules/20-communication.mdc"
+    },
+    {
+      "id": "references:instruction:AGENTS.md->rule:.cursor/rules/90-stack.mdc#0",
+      "source": "instruction:AGENTS.md",
+      "target": "rule:.cursor/rules/90-stack.mdc"
+    },
+    {
+      "id": "references:instruction:AGENTS.md->skill:.cursor/skills/stack-commands#0",
+      "source": "instruction:AGENTS.md",
+      "target": "skill:.cursor/skills/stack-commands"
+    },
+    {
+      "id": "references:rule:.cursor/rules/00-core.mdc->instruction:AGENTS.md#0",
+      "source": "rule:.cursor/rules/00-core.mdc",
+      "target": "instruction:AGENTS.md"
+    },
+    {
+      "id": "references:rule:.cursor/rules/10-sdlc.mdc->file:docs/workflow.md#0",
+      "source": "rule:.cursor/rules/10-sdlc.mdc",
+      "target": "file:docs/workflow.md"
+    },
+    {
+      "id": "references:rule:.cursor/rules/10-sdlc.mdc->instruction:AGENTS.md#0",
+      "source": "rule:.cursor/rules/10-sdlc.mdc",
+      "target": "instruction:AGENTS.md"
+    },
+    {
+      "id": "references:rule:.cursor/rules/10-sdlc.mdc->rule:.cursor/rules/15-orchestrator.mdc#0",
+      "source": "rule:.cursor/rules/10-sdlc.mdc",
+      "target": "rule:.cursor/rules/15-orchestrator.mdc"
+    },
+    {
+      "id": "references:rule:.cursor/rules/15-orchestrator.mdc->file:.cursor/BUGBOT.md#0",
+      "source": "rule:.cursor/rules/15-orchestrator.mdc",
+      "target": "file:.cursor/BUGBOT.md"
+    },
+    {
+      "id": "references:rule:.cursor/rules/15-orchestrator.mdc->instruction:AGENTS.md#0",
+      "source": "rule:.cursor/rules/15-orchestrator.mdc",
+      "target": "instruction:AGENTS.md"
+    },
+    {
+      "id": "references:rule:.cursor/rules/15-orchestrator.mdc->instruction:AGENTS.md#1",
+      "source": "rule:.cursor/rules/15-orchestrator.mdc",
+      "target": "instruction:AGENTS.md"
+    },
+    {
+      "id": "references:rule:.cursor/rules/90-stack.mdc->file:src/test-support/fixtures.ts#0",
+      "source": "rule:.cursor/rules/90-stack.mdc",
+      "target": "file:src/test-support/fixtures.ts"
+    },
+    {
+      "id": "references:skill:.cursor/skills/add-test->skill:.cursor/skills/stack-commands#0",
+      "source": "skill:.cursor/skills/add-test",
+      "target": "skill:.cursor/skills/stack-commands"
+    },
+    {
+      "id": "references:skill:.cursor/skills/adopt-base->file:.cursor/BUGBOT.md#0",
+      "source": "skill:.cursor/skills/adopt-base",
+      "target": "file:.cursor/BUGBOT.md"
+    },
+    {
+      "id": "references:skill:.cursor/skills/adopt-base->file:.cursor/hooks.json#0",
+      "source": "skill:.cursor/skills/adopt-base",
+      "target": "file:.cursor/hooks.json"
+    },
+    {
+      "id": "references:skill:.cursor/skills/adopt-base->file:docs/adopt-dry-run.md#0",
+      "source": "skill:.cursor/skills/adopt-base",
+      "target": "file:docs/adopt-dry-run.md"
+    },
+    {
+      "id": "references:skill:.cursor/skills/adopt-base->file:docs/adopt-dry-run.md#1",
+      "source": "skill:.cursor/skills/adopt-base",
+      "target": "file:docs/adopt-dry-run.md"
+    },
+    {
+      "id": "references:skill:.cursor/skills/adopt-base->file:docs/adopt-dry-run.md#2",
+      "source": "skill:.cursor/skills/adopt-base",
+      "target": "file:docs/adopt-dry-run.md"
+    },
+    {
+      "id": "references:skill:.cursor/skills/adopt-base->file:docs/cloud-and-automations.md#0",
+      "source": "skill:.cursor/skills/adopt-base",
+      "target": "file:docs/cloud-and-automations.md"
+    },
+    {
+      "id": "references:skill:.cursor/skills/adopt-base->file:docs/cloud-and-automations.md#1",
+      "source": "skill:.cursor/skills/adopt-base",
+      "target": "file:docs/cloud-and-automations.md"
+    },
+    {
+      "id": "references:skill:.cursor/skills/adopt-base->file:docs/mcp.md#0",
+      "source": "skill:.cursor/skills/adopt-base",
+      "target": "file:docs/mcp.md"
+    },
+    {
+      "id": "references:skill:.cursor/skills/adopt-base->file:docs/mcp.md#1",
+      "source": "skill:.cursor/skills/adopt-base",
+      "target": "file:docs/mcp.md"
+    },
+    {
+      "id": "references:skill:.cursor/skills/adopt-base->file:docs/overlay-guide.md#0",
+      "source": "skill:.cursor/skills/adopt-base",
+      "target": "file:docs/overlay-guide.md"
+    },
+    {
+      "id": "references:skill:.cursor/skills/adopt-base->file:docs/recommended-skills.md#0",
+      "source": "skill:.cursor/skills/adopt-base",
+      "target": "file:docs/recommended-skills.md"
+    },
+    {
+      "id": "references:skill:.cursor/skills/adopt-base->file:docs/workflow.md#0",
+      "source": "skill:.cursor/skills/adopt-base",
+      "target": "file:docs/workflow.md"
+    },
+    {
+      "id": "references:skill:.cursor/skills/adopt-base->instruction:AGENTS.md#0",
+      "source": "skill:.cursor/skills/adopt-base",
+      "target": "instruction:AGENTS.md"
+    },
+    {
+      "id": "references:skill:.cursor/skills/adopt-base->instruction:AGENTS.md#1",
+      "source": "skill:.cursor/skills/adopt-base",
+      "target": "instruction:AGENTS.md"
+    },
+    {
+      "id": "references:skill:.cursor/skills/adopt-base->instruction:AGENTS.md#2",
+      "source": "skill:.cursor/skills/adopt-base",
+      "target": "instruction:AGENTS.md"
+    },
+    {
+      "id": "references:skill:.cursor/skills/adopt-base->rule:.cursor/rules/00-core.mdc#0",
+      "source": "skill:.cursor/skills/adopt-base",
+      "target": "rule:.cursor/rules/00-core.mdc"
+    },
+    {
+      "id": "references:skill:.cursor/skills/debug-incident->skill:.cursor/skills/stack-commands#0",
+      "source": "skill:.cursor/skills/debug-incident",
+      "target": "skill:.cursor/skills/stack-commands"
+    },
+    {
+      "id": "references:skill:.cursor/skills/explore-codebase->agent:.cursor/agents/explorer.md#0",
+      "source": "skill:.cursor/skills/explore-codebase",
+      "target": "agent:.cursor/agents/explorer.md"
+    },
+    {
+      "id": "references:skill:.cursor/skills/fill-stack-overlay->file:docs/overlay-guide.md#0",
+      "source": "skill:.cursor/skills/fill-stack-overlay",
+      "target": "file:docs/overlay-guide.md"
+    },
+    {
+      "id": "references:skill:.cursor/skills/fill-stack-overlay->file:package.json#0",
+      "source": "skill:.cursor/skills/fill-stack-overlay",
+      "target": "file:package.json"
+    },
+    {
+      "id": "references:skill:.cursor/skills/fill-stack-overlay->file:package.json#1",
+      "source": "skill:.cursor/skills/fill-stack-overlay",
+      "target": "file:package.json"
+    },
+    {
+      "id": "references:skill:.cursor/skills/fill-stack-overlay->instruction:AGENTS.md#0",
+      "source": "skill:.cursor/skills/fill-stack-overlay",
+      "target": "instruction:AGENTS.md"
+    },
+    {
+      "id": "references:skill:.cursor/skills/fill-stack-overlay->rule:.cursor/rules/90-stack.mdc#0",
+      "source": "skill:.cursor/skills/fill-stack-overlay",
+      "target": "rule:.cursor/rules/90-stack.mdc"
+    },
+    {
+      "id": "references:skill:.cursor/skills/fill-stack-overlay->skill:.cursor/skills/stack-commands#0",
+      "source": "skill:.cursor/skills/fill-stack-overlay",
+      "target": "skill:.cursor/skills/stack-commands"
+    },
+    {
+      "id": "references:skill:.cursor/skills/fill-stack-overlay->skill:.cursor/skills/stack-commands#1",
+      "source": "skill:.cursor/skills/fill-stack-overlay",
+      "target": "skill:.cursor/skills/stack-commands"
+    },
+    {
+      "id": "references:skill:.cursor/skills/migrate-schema->skill:.cursor/skills/stack-commands#0",
+      "source": "skill:.cursor/skills/migrate-schema",
+      "target": "skill:.cursor/skills/stack-commands"
+    },
+    {
+      "id": "references:skill:.cursor/skills/ship-checklist->file:docs/workflow.md#0",
+      "source": "skill:.cursor/skills/ship-checklist",
+      "target": "file:docs/workflow.md"
+    },
+    {
+      "id": "references:skill:.cursor/skills/stack-commands->file:.nvmrc#0",
+      "source": "skill:.cursor/skills/stack-commands",
+      "target": "file:.nvmrc"
+    },
+    {
+      "id": "references:skill:.cursor/skills/stack-commands->file:docs/mvp-plan.md#0",
+      "source": "skill:.cursor/skills/stack-commands",
+      "target": "file:docs/mvp-plan.md"
+    }
+  ]
+}

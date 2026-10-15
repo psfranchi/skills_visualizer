@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { Position } from '../core';
 import { type Box, boxBoundaryPoint, type LayoutGraph, layoutHierarchy, nodeSize } from './dagre';
+import denseMultiedge from './dense-multiedge.fixture.json';
 
 const EPSILON = 0.5;
 
@@ -122,6 +123,34 @@ describe('layoutHierarchy', () => {
     const graph = graphOf(['a'], []);
     const result = layoutHierarchy(graph, { pinned: { gone: { x: 1, y: 2 } } });
     expect(Object.keys(result.nodes)).toEqual(['a']);
+  });
+
+  it('layouts multiple self-loops without feeding them to Dagre', () => {
+    const graph = graphOf(
+      ['a', 'b'],
+      [
+        ['aa0', 'a', 'a'],
+        ['aa1', 'a', 'a'],
+        ['ab', 'a', 'b'],
+        ['bb', 'b', 'b'],
+      ],
+    );
+    const result = layoutHierarchy(graph);
+    expect(result.edges.aa0?.points).toHaveLength(4);
+    expect(result.edges.aa1?.points).toHaveLength(4);
+    expect(result.edges.aa0?.points[1]?.y).toBeGreaterThan(result.edges.aa1?.points[1]?.y ?? 0);
+    expectEndpointsOnBoxes(graph, result);
+  });
+
+  it('layouts the inferred-heavy multi-edge shape that used to crash Dagre', () => {
+    const graph: LayoutGraph = {
+      nodes: denseMultiedge.nodes,
+      edges: denseMultiedge.edges,
+    };
+    const result = layoutHierarchy(graph);
+    expect(Object.keys(result.nodes)).toHaveLength(denseMultiedge.nodes.length);
+    expect(Object.keys(result.edges)).toHaveLength(denseMultiedge.edges.length);
+    expectEndpointsOnBoxes(graph, result);
   });
 });
 

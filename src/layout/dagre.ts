@@ -36,6 +36,10 @@ export const NODE_HEIGHT = 50;
 const CHAR_WIDTH = 7;
 const MIN_WIDTH = 112;
 const MAX_WIDTH = 280;
+const FALLBACK_COLS = 4;
+const FALLBACK_COL_GAP = 200;
+const FALLBACK_ROW_GAP = 100;
+const FALLBACK_ORIGIN = 100;
 
 export function nodeSize(name: string): { width: number; height: number } {
   const width = Math.min(MAX_WIDTH, Math.max(MIN_WIDTH, name.length * CHAR_WIDTH + 48));
@@ -74,7 +78,41 @@ export function selfLoopRoute(box: Box, index = 0): EdgeRoute {
   };
 }
 
-/** Hierarchical (left → right) layout with Dagre; multi-edges and self-loops are kept. */
+function pairKey(source: string, target: string): string {
+  return `${source}\0${target}`;
+}
+
+/** Grid placement when Dagre throws (never blank the UI). */
+function fallbackBoxes(
+  nodes: LayoutGraph['nodes'],
+  pinned: Readonly<Record<string, Position>>,
+): Record<string, Box> {
+  const boxes: Record<string, Box> = {};
+  nodes.forEach((node, i) => {
+    const size = nodeSize(node.name);
+    const pin = pinned[node.id];
+    if (pin) {
+      boxes[node.id] = { x: pin.x, y: pin.y, w: size.width, h: size.height };
+      return;
+    }
+    const col = i % FALLBACK_COLS;
+    const row = Math.floor(i / FALLBACK_COLS);
+    boxes[node.id] = {
+      x: FALLBACK_ORIGIN + col * FALLBACK_COL_GAP,
+      y: FALLBACK_ORIGIN + row * FALLBACK_ROW_GAP,
+      w: size.width,
+      h: size.height,
+    };
+  });
+  return boxes;
+}
+
+/**
+ * Hierarchical (left → right) layout with Dagre.
+ * Self-loops and duplicate multi-edges are kept out of `dagre.layout` (known crash sources);
+ * self-loops use {@link selfLoopRoute}; extra parallels share the representative route or go straight.
+ * If Dagre still throws, nodes fall back to a grid and all edges use straight / self-loop routes.
+ */
 export function layoutHierarchy(graph: LayoutGraph, options: LayoutOptions = {}): LayoutResult {
   const { visibleIds, visibleEdgeIds, pinned = {} } = options;
   const nodes = graph.nodes.filter((n) => !visibleIds || visibleIds.has(n.id));
@@ -87,16 +125,35 @@ export function layoutHierarchy(graph: LayoutGraph, options: LayoutOptions = {})
   g.setGraph({ rankdir: 'LR', nodesep: 24, ranksep: 90, edgesep: 12, marginx: 20, marginy: 20 });
   g.setDefaultEdgeLabel(() => ({}));
   for (const node of nodes) g.setNode(node.id, nodeSize(node.name));
-  for (const edge of edges) g.setEdge(edge.source, edge.target, {}, edge.id);
-  dagre.layout(g);
 
-  const boxes: Record<string, Box> = {};
-  for (const node of nodes) {
-    const label = g.node(node.id);
-    const box = { x: label.x ?? 0, y: label.y ?? 0, w: label.width, h: label.height };
-    const pin = pinned[node.id];
-    boxes[node.id] = pin ? { ...box, x: pin.x, y: pin.y } : box;
+  /** First non-self-loop edge id per (source, target) — the only edges fed to Dagre. */
+  const representativeId = new Map<string, string>();
+  for (const edge of edges) {
+    if (edge.source === edge.target) continue;
+    const key = pairKey(edge.source, edge.target);
+    if (representativeId.has(key)) continue;
+    representativeId.set(key, edge.id);
+    g.setEdge(edge.source, edge.target, {}, edge.id);
   }
+
+  let layoutOk = false;
+  try {
+    dagre.layout(g);
+    layoutOk = true;
+  } catch {
+    layoutOk = false;
+  }
+
+  const boxes: Record<string, Box> = layoutOk
+    ? Object.fromEntries(
+        nodes.map((node) => {
+          const label = g.node(node.id);
+          const box = { x: label.x ?? 0, y: label.y ?? 0, w: label.width, h: label.height };
+          const pin = pinned[node.id];
+          return [node.id, pin ? { ...box, x: pin.x, y: pin.y } : box] as const;
+        }),
+      )
+    : fallbackBoxes(nodes, pinned);
 
   const routes: Record<string, EdgeRoute> = {};
   const loopsPerNode = new Map<string, number>();
@@ -110,9 +167,14 @@ export function layoutHierarchy(graph: LayoutGraph, options: LayoutOptions = {})
       routes[edge.id] = selfLoopRoute(source, index);
       continue;
     }
-    const dagrePoints: Position[] = (g.edge(edge.source, edge.target, edge.id)?.points ?? []).map(
-      (p: Position) => ({ x: p.x, y: p.y }),
-    );
+    const repId = representativeId.get(pairKey(edge.source, edge.target));
+    const dagrePoints: Position[] =
+      layoutOk && repId
+        ? (g.edge(edge.source, edge.target, repId)?.points ?? []).map((p: Position) => ({
+            x: p.x,
+            y: p.y,
+          }))
+        : [];
     const touchesPin = pinned[edge.source] !== undefined || pinned[edge.target] !== undefined;
     if (touchesPin || dagrePoints.length < 2) {
       routes[edge.id] = straightRoute(source, target);
