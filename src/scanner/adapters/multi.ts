@@ -6,7 +6,10 @@ import { codexAdapter } from './codex';
 import { cursorAdapter } from './cursor';
 import { globApplyFragment } from './cursor/glob-edges';
 
-const ENGINE_ADAPTERS: readonly ClientAdapter[] = [cursorAdapter, claudeAdapter, codexAdapter];
+export const ENGINE_ADAPTERS = [cursorAdapter, claudeAdapter, codexAdapter] as const;
+
+/** Ids of per-engine adapters (excludes the `multi` composite). */
+export const SUPPORTED_ADAPTERS = ENGINE_ADAPTERS.map((a) => a.id);
 
 function byId(id: string): ClientAdapter {
   const adapter = ENGINE_ADAPTERS.find((a) => a.id === id);
@@ -46,5 +49,3 @@ export const multiEngineAdapter: ClientAdapter = {
   enrich: globApplyFragment,
   editable: (d) => byId(d.adapterId).editable(d),
 };
-
-export { ENGINE_ADAPTERS };

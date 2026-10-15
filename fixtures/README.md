@@ -44,3 +44,11 @@ Root and nested (`packages/api/`) `AGENTS.md`; three skills with `references/` a
 ## `agentic-base-snapshot/`
 
 Frozen copy of `~/projects/agentic_base` `.cursor/` and `AGENTS.md` (commit `0a466ad`, VERSION 0.4.0, copied 2026-10-15; `__pycache__` excluded). Used for golden tests; never refresh it silently — regenerate the golden file in the same change.
+
+## `claude-basic/`
+
+Claude Code surfaces: root `CLAUDE.md`; `.claude/skills/code-review` and `.claude/agents/explorer`; a Cursor skill with the same name (`.cursor/skills/code-review`) so multi-engine scan emits `skill-shadowed`. No Cursor rule-activation on Claude files.
+
+## `codex-basic/`
+
+Codex surfaces only: `.codex/skills/ship` and `.codex/agents/reviewer` (no separate Codex instruction file in-repo; `AGENTS.md` stays Cursor-owned when present).
