@@ -1,5 +1,5 @@
 import { curveBasis, drag, line, type Selection, select } from 'd3';
-import type { AgentEdge, AgentNode, Position, Severity } from '../core';
+import type { AgentEdge, AgentNode, NodeKind, Position, Severity } from '../core';
 import { type Box, type LayoutResult, straightRoute } from '../layout';
 import { activationLabel } from './activation';
 import { edgeLabel } from './edge-labels';
@@ -31,13 +31,25 @@ interface EdgeDatum {
   points: Position[];
 }
 
+const KIND_CHIP: Record<NodeKind, string> = {
+  instruction: 'instr',
+  rule: 'rule',
+  skill: 'skill',
+  agent: 'agent',
+  'mcp-config': 'mcp',
+  'mcp-server': 'srv',
+  directory: 'dir',
+  file: 'file',
+  script: 'script',
+};
+
 const pathOf = line<Position>()
   .x((p) => p.x)
   .y((p) => p.y)
   .curve(curveBasis);
 
 function truncate(text: string, box: Box): string {
-  const max = Math.max(4, Math.floor((box.w - 16) / 7));
+  const max = Math.max(4, Math.floor((box.w - 28) / 7));
   return text.length > max ? `${text.slice(0, max - 1)}…` : text;
 }
 
@@ -108,7 +120,13 @@ export function renderGraph(
     .data(nodeData, (d) => d.node.id)
     .join((enter) => {
       const g = enter.append('g');
-      g.append('rect').attr('rx', 6);
+      g.append('rect').attr('class', 'node-body').attr('rx', 8);
+      g.append('rect').attr('class', 'engine-stripe').attr('width', 4).attr('rx', 1);
+      g.append('rect').attr('class', 'kind-chip-bg').attr('rx', 3).attr('height', 12);
+      g.append('text')
+        .attr('class', 'kind-chip')
+        .attr('text-anchor', 'middle')
+        .attr('dominant-baseline', 'central');
       g.append('text').attr('class', 'label').attr('text-anchor', 'middle').attr('dy', '0.35em');
       g.append('circle').attr('class', 'severity').attr('r', 4);
       g.append('rect')
@@ -136,27 +154,47 @@ export function renderGraph(
     .classed('dimmed', (d) => dimmed(d.node.id))
     .attr('transform', (d) => `translate(${d.box.x},${d.box.y})`);
   nodeSel
-    .select('rect:not(.activation-mark)')
+    .select('rect.node-body')
     .attr('x', (d) => -d.box.w / 2)
     .attr('y', (d) => -d.box.h / 2)
     .attr('width', (d) => d.box.w)
     .attr('height', (d) => d.box.h);
-  nodeSel.select('text.label').text((d) => truncate(d.node.name, d.box));
+  nodeSel
+    .select('rect.engine-stripe')
+    .attr('x', (d) => -d.box.w / 2 + 3)
+    .attr('y', (d) => -d.box.h / 2 + 5)
+    .attr('height', (d) => d.box.h - 10);
+  const chipW = 34;
+  nodeSel
+    .select('rect.kind-chip-bg')
+    .attr('x', (d) => -d.box.w / 2 + 10)
+    .attr('y', (d) => -d.box.h / 2 + 5)
+    .attr('width', chipW);
+  nodeSel
+    .select('text.kind-chip')
+    .attr('x', (d) => -d.box.w / 2 + 10 + chipW / 2)
+    .attr('y', (d) => -d.box.h / 2 + 11)
+    .text((d) => KIND_CHIP[d.node.kind]);
+  nodeSel
+    .select('text.label')
+    .attr('y', (d) => d.box.h / 2 - 14)
+    .text((d) => truncate(d.node.name, d.box));
   nodeSel
     .select('rect.activation-mark')
-    .attr('x', (d) => -d.box.w / 2 + 4)
-    .attr('y', (d) => -d.box.h / 2 + 4)
+    .attr('x', (d) => -d.box.w / 2 + 10 + chipW + 4)
+    .attr('y', (d) => -d.box.h / 2 + 8)
     .attr('display', (d) => (activationLabel(d.node.attributes.activation) ? null : 'none'));
   nodeSel
     .select('circle.severity')
-    .attr('cx', (d) => d.box.w / 2 - 8)
-    .attr('cy', (d) => -d.box.h / 2 + 8)
+    .attr('cx', (d) => d.box.w / 2 - 10)
+    .attr('cy', (d) => -d.box.h / 2 + 11)
     .attr('class', (d) => `severity severity-${input.severities.get(d.node.id) ?? 'none'}`);
   nodeSel.select('title').text((d) => {
     const activation = activationLabel(d.node.attributes.activation);
+    const engine = nodeEngine(d.node);
     return activation
-      ? `${d.node.kind}: ${d.node.id} · ${activation}`
-      : `${d.node.kind}: ${d.node.id}`;
+      ? `${d.node.kind} · ${engine}: ${d.node.id} · ${activation}`
+      : `${d.node.kind} · ${engine}: ${d.node.id}`;
   });
 }
 

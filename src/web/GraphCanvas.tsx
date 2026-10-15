@@ -61,6 +61,25 @@ export function GraphCanvas({ fitToken, onSelect, onPin, ...input }: GraphCanvas
   return (
     <svg ref={svgRef} className="graph-canvas" role="img" aria-label="Agent configuration graph">
       <defs>
+        <filter id="node-depth" x="-30%" y="-30%" width="160%" height="160%">
+          <feDropShadow
+            dx="0"
+            dy="1"
+            stdDeviation="1.25"
+            floodColor="#1a2332"
+            floodOpacity="0.16"
+          />
+        </filter>
+        <filter id="node-focus" x="-40%" y="-40%" width="180%" height="180%">
+          <feDropShadow dx="0" dy="0" stdDeviation="2.5" floodColor="#0f766e" floodOpacity="0.35" />
+          <feDropShadow
+            dx="0"
+            dy="1"
+            stdDeviation="1.25"
+            floodColor="#1a2332"
+            floodOpacity="0.12"
+          />
+        </filter>
         {EVIDENCE.map((evidence) => (
           <marker
             key={evidence}
