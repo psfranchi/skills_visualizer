@@ -17,6 +17,9 @@ Local web app (one dev command; Node server + browser UI) that scans a repo's Cu
 | Ignore policy | Fixed ignore list in MVP; `.gitignore` support later. |
 | OS support | Linux and macOS. |
 | Real-world fixture | Commit a frozen snapshot of `~/projects/agentic_base` `.cursor/` + `AGENTS.md`. |
+| Local path exposure | Graph `source.id` is `local:<folder name>` everywhere, including `pnpm scan` output, never the absolute path (graphs may be shared later). |
+| Redaction over-masking | Keep fail-closed choices: `-p<x>` also masks the next arg when `<x>` looks secret-like; `-port=80` may display as `-p[redacted]`. |
+| Inferred-only nodes | With "show inferred edges" off, `file`/`script` nodes connected only by inferred edges are hidden too; config nodes (instruction, rule, skill, agent, MCP) always show. |
 | Fixture isolation | Fixtures are stored with renamed agent-config names (e.g. `dot-cursor/`, `AGENTS.fixture.md`) so Cursor never loads them as real config; a test helper maps them back to real names when loading into `MemoryFileSource` or materializing a temp dir. |
 | Visualization | D3 (SVG) owns the graph subtree; React owns panels. Dagre for hierarchy. Not React Flow. |
 | Packaging | Single package (no monorepo), module folders with enforced boundaries. |
