@@ -4,8 +4,8 @@ import {
   decodeUtf8Strict,
   emptyViewState,
   type GraphViewState,
-  MemoryFileSource,
   sha256Hex,
+  WritableMemoryFileSource,
 } from '../core';
 import { scan } from '../scanner';
 import { readFixtureFiles } from '../test-support/fixtures';
@@ -22,11 +22,11 @@ import {
 const ORIGIN = 'http://127.0.0.1:5173';
 const HOST = '127.0.0.1:5173';
 
-/** Fake services over an in-memory repo; records view-state writes. */
+/** Fake services over an in-memory writable repo; records view-state writes. */
 function fakeServices(files: Map<string, Uint8Array | string>, sourceId: string) {
-  const source = new MemoryFileSource(files, { id: sourceId });
+  const source = new WritableMemoryFileSource(files, { id: sourceId });
   let view: GraphViewState = emptyViewState();
-  const calls = { rescans: 0, puts: 0, reads: [] as string[] };
+  const calls = { rescans: 0, puts: 0, reads: [] as string[], invalidations: 0 };
   const services: Services = {
     meta: async () => ({
       displayName: 'repo',
@@ -48,8 +48,12 @@ function fakeServices(files: Map<string, Uint8Array | string>, sourceId: string)
       calls.puts++;
       view = next;
     },
+    source: () => source,
+    invalidateGraph: () => {
+      calls.invalidations++;
+    },
   };
-  return { services, calls };
+  return { services, calls, source };
 }
 
 function repoFiles(): Map<string, Uint8Array | string> {
@@ -112,7 +116,7 @@ describe('API routes', () => {
     expect(res.status).toBe(200);
     expect(await res.json()).toEqual({
       displayName: 'repo',
-      capabilities: { write: false, watch: false },
+      capabilities: { write: true, watch: false },
       schemaVersion: 1,
     });
     expect(res.headers.get('cache-control')).toBe('no-store');
@@ -234,6 +238,16 @@ describe('API routes', () => {
       get(app, '/api/file?path=.cursor/mcp.json'),
       get(app, '/api/file?path=.env'),
       get(app, '/api/view-state'),
+      send(app, 'POST', '/api/edits/preview', {
+        path: '.cursor/mcp.json',
+        expectedHash: 'a'.repeat(64),
+        newText: leakyMcpJson(),
+      }),
+      send(app, 'POST', '/api/edits/apply', {
+        path: '.env',
+        expectedHash: 'a'.repeat(64),
+        newText: `TOKEN=${LEAK_MARKER}`,
+      }),
     ]);
     const graph = (await (await get(app, '/api/graph')).json()) as AgentGraph;
     const paths = new Set(graph.nodes.flatMap((n) => (n.source ? [n.source.path] : [])));

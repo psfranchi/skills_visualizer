@@ -5,7 +5,9 @@ import { validator } from 'hono/validator';
 import { z } from 'zod';
 import {
   type AgentGraph,
+  type FileSource,
   type FileSourceCapabilities,
+  type GraphDiagnostic,
   type GraphViewState,
   GraphViewStateSchema,
   normalizeRepoPath,
@@ -14,6 +16,7 @@ import {
   type SCHEMA_VERSION,
 } from '../core';
 import { redactMcpConfigText } from '../scanner';
+import { applyEdit, type EditInput, previewEdit } from './edits';
 
 // Must stay runtime-agnostic: the web app imports `AppType`, and a hosted mode would supply other `Services`.
 
@@ -35,6 +38,18 @@ export interface FileResponse extends RawFile {
   redacted: boolean;
 }
 
+export interface EditPreviewResponse {
+  diff: string;
+  diagnostics: GraphDiagnostic[];
+  impact: { edgesAdded: string[]; edgesRemoved: string[] };
+  blocking: boolean;
+}
+
+export interface EditApplyResponse {
+  hash: string;
+  graph: AgentGraph;
+}
+
 export interface Services {
   meta(): Promise<Meta>;
   graph(opts?: { rescan?: boolean }): Promise<AgentGraph>;
@@ -42,6 +57,10 @@ export interface Services {
   file(path: RepoPath): Promise<RawFile | null>;
   getView(): Promise<GraphViewState>;
   putView(view: GraphViewState): Promise<void>;
+  /** Underlying file source for edit preview/apply (write capability gates the UI). */
+  source(): FileSource;
+  /** Drop the cached graph after a successful write. */
+  invalidateGraph(): void;
 }
 
 const ALLOWED_HOSTNAMES = new Set(['127.0.0.1', 'localhost']);
@@ -107,6 +126,49 @@ const guard: MiddlewareHandler = async (c, next) => {
 
 const ScanRequestSchema = z.object({}).strict();
 const FileQuerySchema = z.object({ path: z.string().min(1).max(4096) });
+const EditRequestSchema = z
+  .object({
+    path: z.string().min(1).max(4096),
+    expectedHash: z.string().regex(/^[0-9a-f]{64}$/),
+    newText: z.string().max(MAX_BODY_BYTES),
+  })
+  .strict();
+
+function editFailure(
+  c: Context,
+  failure: {
+    status: 400 | 403 | 404 | 409;
+    message?: string;
+    currentHash?: string;
+    diagnostics?: GraphDiagnostic[];
+  },
+) {
+  if (failure.status === 409) {
+    return c.json({ error: 'conflict', currentHash: failure.currentHash }, 409);
+  }
+  return c.json(
+    {
+      error: failure.message ?? 'Request failed',
+      ...(failure.diagnostics ? { diagnostics: failure.diagnostics } : {}),
+    },
+    failure.status,
+  );
+}
+
+async function parseEditInput(
+  c: Context,
+  body: z.infer<typeof EditRequestSchema>,
+): Promise<EditInput | Response> {
+  let path: RepoPath;
+  try {
+    path = normalizeRepoPath(body.path);
+  } catch {
+    return error(c, 400, 'Invalid path');
+  }
+  if (isSecretBearingPath(path)) return error(c, 403, 'File may contain secrets');
+  if (MCP_CONFIG_FILE.test(basename(path))) return error(c, 403, 'MCP config is not editable');
+  return { path, expectedHash: body.expectedHash, newText: body.newText };
+}
 
 function parseWith<T extends z.ZodType>(schema: T) {
   return (value: unknown, c: Context) => {
@@ -179,6 +241,35 @@ export function createApp(services: Services) {
         const view = c.req.valid('json');
         await services.putView(view);
         return c.json(view);
+      },
+    )
+    .post(
+      '/edits/preview',
+      bodyLimit({ maxSize: MAX_BODY_BYTES, onError: (c) => error(c, 413, 'Payload too large') }),
+      validator('json', parseWith(EditRequestSchema)),
+      async (c) => {
+        const parsed = await parseEditInput(c, c.req.valid('json'));
+        if (parsed instanceof Response) return parsed;
+        const outcome = await previewEdit(services.source(), parsed);
+        if (!outcome.ok) return editFailure(c, outcome);
+        return c.json(outcome.preview satisfies EditPreviewResponse);
+      },
+    )
+    .post(
+      '/edits/apply',
+      bodyLimit({ maxSize: MAX_BODY_BYTES, onError: (c) => error(c, 413, 'Payload too large') }),
+      validator('json', parseWith(EditRequestSchema)),
+      async (c) => {
+        const parsed = await parseEditInput(c, c.req.valid('json'));
+        if (parsed instanceof Response) return parsed;
+        const outcome = await applyEdit(services.source(), parsed);
+        if (!outcome.ok) return editFailure(c, outcome);
+        services.invalidateGraph();
+        const body: EditApplyResponse = {
+          hash: outcome.hash,
+          graph: publicGraph(outcome.graph),
+        };
+        return c.json(body);
       },
     )
     .onError((err, c) =>

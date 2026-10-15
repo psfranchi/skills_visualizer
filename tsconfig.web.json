@@ -14,7 +14,8 @@
     "src/source-editing/**/*.ts",
     "src/web/**/*.ts",
     "src/web/**/*.tsx",
-    "src/server/app.ts"
+    "src/server/app.ts",
+    "src/server/edits.ts"
   ],
   "exclude": [
     "src/core/**/*.test.ts",

@@ -15,11 +15,11 @@ import { stateBaseDir, ViewStateStore, viewStateFile } from './view-state-store'
 export interface LocalServicesOptions {
   /** Defaults to `stateBaseDir()` (SV_STATE_DIR / XDG / macOS Application Support). */
   stateDir?: string;
-  /** Defaults to `LocalFileSource.open`; tests substitute failing sources. */
+  /** Defaults to `LocalFileSource.open`; tests substitute failing or memory sources. */
   openSource?: (realRoot: string) => Promise<FileSource>;
 }
 
-/** Read-only services over a local directory; only the view state is written, outside the repo. */
+/** Local services over a directory; view state is written outside the repo; skills may be edited. */
 export async function createLocalServices(
   root: string,
   options: LocalServicesOptions = {},
@@ -55,5 +55,9 @@ export async function createLocalServices(
     },
     getView: () => store.read(),
     putView: (view) => store.write(view),
+    source: () => source,
+    invalidateGraph: () => {
+      graph = undefined;
+    },
   };
 }
