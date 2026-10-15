@@ -10,7 +10,9 @@ import type {
 import type { FileResponse } from '../server/app';
 import { activationLabel } from './activation';
 import { fetchFile } from './api';
+import { canRichMarkdownPreview, type DocViewMode, initialDocViewMode } from './doc-view';
 import { edgeLabel } from './edge-labels';
+import { MarkdownPreview } from './MarkdownPreview';
 import {
   diagnosticsForNode,
   ENGINE_LABELS,
@@ -159,6 +161,7 @@ type FileState =
 
 function SourceView({ focus }: { focus: SourceLocation }) {
   const [state, setState] = useState<FileState>({ status: 'loading' });
+  const [mode, setMode] = useState<DocViewMode>('source');
   const preRef = useRef<HTMLPreElement>(null);
   const markRef = useRef<HTMLElement>(null);
   const start = focus.start?.offset;
@@ -169,14 +172,18 @@ function SourceView({ focus }: { focus: SourceLocation }) {
     const pre = preRef.current;
     const mark = markRef.current;
     if (pre) pre.scrollTop = mark ? Math.max(0, mark.offsetTop - pre.clientHeight / 3) : 0;
-  }, [state, start]);
+  }, [state, start, mode]);
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: refetch after a rescan changes the hash.
   useEffect(() => {
     let cancelled = false;
     setState({ status: 'loading' });
     fetchFile(focus.path).then(
-      (file) => !cancelled && setState({ status: 'ok', file }),
+      (file) => {
+        if (cancelled) return;
+        setState({ status: 'ok', file });
+        setMode(initialDocViewMode(canRichMarkdownPreview(focus.path, file)));
+      },
       (error: unknown) =>
         !cancelled &&
         setState({ status: 'error', message: error instanceof Error ? error.message : 'Failed' }),
@@ -191,6 +198,9 @@ function SourceView({ focus }: { focus: SourceLocation }) {
   const { file } = state;
   const display = sourceDisplay(file, focus);
   const parts = display.kind === 'highlight' ? display.parts : null;
+  const canPreview = canRichMarkdownPreview(focus.path, file);
+  const showPreview = canPreview && mode === 'preview';
+
   return (
     <div className="source">
       <div className="source-header">
@@ -199,20 +209,45 @@ function SourceView({ focus }: { focus: SourceLocation }) {
           <span className="error"> — file changed since scan — rescan</span>
         )}
         {display.kind === 'redacted' && (
-          <span className="muted"> — secrets redacted; positions do not match the file</span>
+          <span className="muted"> — secrets redacted; rich preview disabled</span>
         )}
       </div>
-      <pre ref={preRef}>
-        {parts ? (
-          <>
-            {parts.before}
-            <mark ref={markRef}>{parts.match}</mark>
-            {parts.after}
-          </>
-        ) : (
-          file.text
-        )}
-      </pre>
+      {canPreview && (
+        <fieldset className="doc-view-toggle">
+          <legend className="visually-hidden">Document view</legend>
+          <button
+            type="button"
+            className={mode === 'preview' ? 'active' : undefined}
+            aria-pressed={mode === 'preview'}
+            onClick={() => setMode('preview')}
+          >
+            Preview
+          </button>
+          <button
+            type="button"
+            className={mode === 'source' ? 'active' : undefined}
+            aria-pressed={mode === 'source'}
+            onClick={() => setMode('source')}
+          >
+            Source
+          </button>
+        </fieldset>
+      )}
+      {showPreview ? (
+        <MarkdownPreview markdown={file.text} />
+      ) : (
+        <pre ref={preRef}>
+          {parts ? (
+            <>
+              {parts.before}
+              <mark ref={markRef}>{parts.match}</mark>
+              {parts.after}
+            </>
+          ) : (
+            file.text
+          )}
+        </pre>
+      )}
     </div>
   );
 }
