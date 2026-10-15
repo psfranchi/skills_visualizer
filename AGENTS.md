@@ -99,7 +99,9 @@ Boundary: `src/core`, `src/scanner`, `src/layout`, `src/source-editing` are pure
 **Autonomous mode** (owner's choice, 2026-10-15). For this repo it overrides "STOP after build", "R/S/V only on request", "no autonomous review→fix loops", and "commit only when the user asks" in `.cursor/rules/00-core.mdc`, `10-sdlc.mdc`, and `15-orchestrator.mdc`. Everything else in those rules still applies.
 
 - Work through the milestones in [`docs/mvp-plan.md`](docs/mvp-plan.md) without waiting for approval between them.
-- Per milestone: **builder** → orchestrator re-runs `pnpm check` + `pnpm build` → **reviewer** + **security** once → Critical/High findings to **builder** once → next milestone. No open-ended loops.
+- Main (default) agent is only the orchestrator: it routes, records decisions, and reports. Use the crew for everything else — **explorer** for any search / "where is X" / codebase questions, **planner** for milestone plans or replans, **builder** for code, tests, and commits, **reviewer** + **security** for review, **verifier** to prove acceptance criteria.
+- Per milestone: **planner** (only if the plan needs detail) → **builder** → **reviewer** + **security** once (parallel) → Critical/High findings to **builder** once → **verifier** against the milestone's acceptance criteria → next milestone. No open-ended loops.
+- Commands run without asking the owner (experiment); safety comes from the git hook and these rules.
 - Commit small and often to the **local** repo: one logical change per commit, only with `pnpm check` green. Commits are made by **builder** in conventional-commit style (`feat(scanner): …`, `fix(server): …`, `chore: …`), using the configured git identity and no AI trailers. Orchestrator still does not run git writes itself.
 - **Never push** or touch remotes (the git hook also blocks push).
 - Ask the owner only for decisions that block progress; otherwise take the plan's recommended option and record it in `docs/mvp-plan.md`.
