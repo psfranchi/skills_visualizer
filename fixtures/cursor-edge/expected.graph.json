@@ -1,0 +1,466 @@
+{
+  "schemaVersion": 1,
+  "source": {
+    "id": "memory:fixture/cursor-edge",
+    "capabilities": {
+      "write": false,
+      "watch": false
+    }
+  },
+  "generatedBy": {
+    "adapter": "cursor",
+    "version": "0.1.0"
+  },
+  "nodes": [
+    {
+      "id": "directory:.",
+      "kind": "directory",
+      "name": ".",
+      "attributes": {
+        "path": "."
+      },
+      "diagnostics": []
+    },
+    {
+      "id": "directory:apps/x",
+      "kind": "directory",
+      "name": "x",
+      "attributes": {
+        "path": "apps/x"
+      },
+      "diagnostics": []
+    },
+    {
+      "id": "instruction:AGENTS.md",
+      "kind": "instruction",
+      "name": "AGENTS.md",
+      "source": {
+        "path": "AGENTS.md",
+        "contentHash": "acccf96ba3ea1876de3162a33754ad55f132640927ee6389fe049e7002331101",
+        "adapter": "cursor"
+      },
+      "attributes": {
+        "path": "AGENTS.md",
+        "scope": "."
+      },
+      "diagnostics": [
+        "unresolved-reference"
+      ]
+    },
+    {
+      "id": "rule:.cursor/rules/bom-rule.mdc",
+      "kind": "rule",
+      "name": "bom-rule",
+      "source": {
+        "path": ".cursor/rules/bom-rule.mdc",
+        "contentHash": "b98cad8467ef0889ba6e797f6f409967a3ec356818d4a443cc47d7ce39ff7fd8",
+        "adapter": "cursor"
+      },
+      "attributes": {
+        "path": ".cursor/rules/bom-rule.mdc",
+        "root": ".cursor",
+        "scope": ".",
+        "activation": "apply-intelligently",
+        "alwaysApply": false,
+        "globs": [],
+        "description": "Rule with a UTF-8 BOM and CRLF line endings",
+        "frontmatter": {
+          "description": "Rule with a UTF-8 BOM and CRLF line endings",
+          "alwaysApply": false
+        }
+      },
+      "diagnostics": []
+    },
+    {
+      "id": "rule:.cursor/rules/valid.mdc",
+      "kind": "rule",
+      "name": "valid",
+      "source": {
+        "path": ".cursor/rules/valid.mdc",
+        "contentHash": "babe300d81532f2a2b07b8154224d27b200be3fda62b2ee68d03b62844b225b9",
+        "adapter": "cursor"
+      },
+      "attributes": {
+        "path": ".cursor/rules/valid.mdc",
+        "root": ".cursor",
+        "scope": ".",
+        "activation": "always-apply",
+        "alwaysApply": true,
+        "globs": [],
+        "description": "A valid rule that mentions a missing file",
+        "frontmatter": {
+          "description": "A valid rule that mentions a missing file",
+          "alwaysApply": true
+        }
+      },
+      "diagnostics": [
+        "unresolved-reference"
+      ]
+    },
+    {
+      "id": "skill:.cursor/skills/bom-skill",
+      "kind": "skill",
+      "name": "bom-skill",
+      "source": {
+        "path": ".cursor/skills/bom-skill/SKILL.md",
+        "contentHash": "e60f3e87f52370b3863160c9576255564e4dea515a54e009e3b28320797f3b7e",
+        "adapter": "cursor"
+      },
+      "attributes": {
+        "path": ".cursor/skills/bom-skill/SKILL.md",
+        "dir": ".cursor/skills/bom-skill",
+        "root": ".cursor",
+        "scope": ".",
+        "description": "Skill file that starts with a UTF-8 byte order mark.",
+        "frontmatter": {
+          "name": "bom-skill",
+          "description": "Skill file that starts with a UTF-8 byte order mark."
+        }
+      },
+      "diagnostics": []
+    },
+    {
+      "id": "skill:.cursor/skills/crlf-skill",
+      "kind": "skill",
+      "name": "crlf-skill",
+      "source": {
+        "path": ".cursor/skills/crlf-skill/SKILL.md",
+        "contentHash": "ccae287f69882847dae03b0778258fa89c2087a41616a53fdda1de487cd83a06",
+        "adapter": "cursor"
+      },
+      "attributes": {
+        "path": ".cursor/skills/crlf-skill/SKILL.md",
+        "dir": ".cursor/skills/crlf-skill",
+        "root": ".cursor",
+        "scope": ".",
+        "description": "Skill file saved with CRLF line endings.",
+        "frontmatter": {
+          "name": "crlf-skill",
+          "description": "Skill file saved with CRLF line endings."
+        }
+      },
+      "diagnostics": []
+    },
+    {
+      "id": "skill:.cursor/skills/cycle-a",
+      "kind": "skill",
+      "name": "cycle-a",
+      "source": {
+        "path": ".cursor/skills/cycle-a/SKILL.md",
+        "contentHash": "455346a59d62662376cb54dec9cadb42c9c026b620aba6e4ff689b1abecd3d5f",
+        "adapter": "cursor"
+      },
+      "attributes": {
+        "path": ".cursor/skills/cycle-a/SKILL.md",
+        "dir": ".cursor/skills/cycle-a",
+        "root": ".cursor",
+        "scope": ".",
+        "description": "First half of a reference cycle. Links to cycle-b.",
+        "frontmatter": {
+          "name": "cycle-a",
+          "description": "First half of a reference cycle. Links to cycle-b."
+        }
+      },
+      "diagnostics": [
+        "reference-cycle"
+      ]
+    },
+    {
+      "id": "skill:.cursor/skills/cycle-b",
+      "kind": "skill",
+      "name": "cycle-b",
+      "source": {
+        "path": ".cursor/skills/cycle-b/SKILL.md",
+        "contentHash": "e73853234ab6fd59ca598e9ebdac404cd6b1eaeb53417ec06f0f1af6d4c6f88b",
+        "adapter": "cursor"
+      },
+      "attributes": {
+        "path": ".cursor/skills/cycle-b/SKILL.md",
+        "dir": ".cursor/skills/cycle-b",
+        "root": ".cursor",
+        "scope": ".",
+        "description": "Second half of a reference cycle. Links back to cycle-a.",
+        "frontmatter": {
+          "name": "cycle-b",
+          "description": "Second half of a reference cycle. Links back to cycle-a."
+        }
+      },
+      "diagnostics": []
+    },
+    {
+      "id": "skill:.cursor/skills/malformed-yaml",
+      "kind": "skill",
+      "name": "malformed-yaml",
+      "source": {
+        "path": ".cursor/skills/malformed-yaml/SKILL.md",
+        "contentHash": "1f07062a6fd01c205089c84c75a2c882eb5252fd72a54dcf4d2b5e6ff52cf3d5",
+        "adapter": "cursor"
+      },
+      "attributes": {
+        "path": ".cursor/skills/malformed-yaml/SKILL.md",
+        "dir": ".cursor/skills/malformed-yaml",
+        "root": ".cursor",
+        "scope": ".",
+        "frontmatter": {}
+      },
+      "diagnostics": [
+        "malformed-frontmatter"
+      ]
+    },
+    {
+      "id": "skill:.cursor/skills/name-mismatch",
+      "kind": "skill",
+      "name": "Different_Name",
+      "source": {
+        "path": ".cursor/skills/name-mismatch/SKILL.md",
+        "contentHash": "a1669f209a3de4cf7736ec46434bab1d96f1a4afda07328bf51711178aecd3d6",
+        "adapter": "cursor"
+      },
+      "attributes": {
+        "path": ".cursor/skills/name-mismatch/SKILL.md",
+        "dir": ".cursor/skills/name-mismatch",
+        "root": ".cursor",
+        "scope": ".",
+        "description": "The name does not match the folder and breaks the naming rules.",
+        "frontmatter": {
+          "name": "Different_Name",
+          "description": "The name does not match the folder and breaks the naming rules."
+        }
+      },
+      "diagnostics": [
+        "skill-name-invalid",
+        "skill-name-mismatch"
+      ]
+    },
+    {
+      "id": "skill:.cursor/skills/unknown-fields",
+      "kind": "skill",
+      "name": "unknown-fields",
+      "source": {
+        "path": ".cursor/skills/unknown-fields/SKILL.md",
+        "contentHash": "73ead37a2c865851f1a29c4d4ff3c9b84f13303c31d9a77c7cbe845c77a28084",
+        "adapter": "cursor"
+      },
+      "attributes": {
+        "path": ".cursor/skills/unknown-fields/SKILL.md",
+        "dir": ".cursor/skills/unknown-fields",
+        "root": ".cursor",
+        "scope": ".",
+        "description": "Skill with extra frontmatter fields that no spec defines.",
+        "frontmatter": {
+          "name": "unknown-fields",
+          "description": "Skill with extra frontmatter fields that no spec defines.",
+          "owner": "platform-team",
+          "tags": [
+            "experimental",
+            "fixture"
+          ],
+          "custom": {
+            "nested": {
+              "value": 42
+            }
+          },
+          "license": "MIT",
+          "metadata": {
+            "version": "1.0"
+          }
+        }
+      },
+      "diagnostics": [
+        "unknown-frontmatter-field"
+      ]
+    },
+    {
+      "id": "skill:apps/x/.cursor/skills/scoped-skill",
+      "kind": "skill",
+      "name": "scoped-skill",
+      "source": {
+        "path": "apps/x/.cursor/skills/scoped-skill/SKILL.md",
+        "contentHash": "05aa4debab7ec22d631c4a3ca6333c843490159fc94b2870e5d93313a3a696e8",
+        "adapter": "cursor"
+      },
+      "attributes": {
+        "path": "apps/x/.cursor/skills/scoped-skill/SKILL.md",
+        "dir": "apps/x/.cursor/skills/scoped-skill",
+        "root": ".cursor",
+        "scope": "apps/x",
+        "description": "Nested skill root; scoped to apps/x.",
+        "frontmatter": {
+          "name": "scoped-skill",
+          "description": "Nested skill root; scoped to apps/x."
+        }
+      },
+      "diagnostics": []
+    }
+  ],
+  "edges": [
+    {
+      "id": "applies-to:instruction:AGENTS.md->directory:.#0",
+      "source": "instruction:AGENTS.md",
+      "target": "directory:.",
+      "relation": "applies-to",
+      "evidence": "derived",
+      "explanation": "AGENTS.md applies to its directory and below; nested files combine with parents",
+      "supportedOperations": []
+    },
+    {
+      "id": "applies-to:skill:apps/x/.cursor/skills/scoped-skill->directory:apps/x#0",
+      "source": "skill:apps/x/.cursor/skills/scoped-skill",
+      "target": "directory:apps/x",
+      "relation": "applies-to",
+      "evidence": "derived",
+      "explanation": "Skill root nested under apps/x is scoped to that directory",
+      "supportedOperations": []
+    },
+    {
+      "id": "references:instruction:AGENTS.md->skill:.cursor/skills/cycle-a#0",
+      "source": "instruction:AGENTS.md",
+      "target": "skill:.cursor/skills/cycle-a",
+      "relation": "references",
+      "evidence": "explicit",
+      "provenance": {
+        "path": "AGENTS.md",
+        "start": {
+          "offset": 141,
+          "line": 4,
+          "column": 19
+        },
+        "end": {
+          "offset": 183,
+          "line": 4,
+          "column": 61
+        },
+        "contentHash": "acccf96ba3ea1876de3162a33754ad55f132640927ee6389fe049e7002331101",
+        "adapter": "cursor"
+      },
+      "explanation": "Markdown link to \".cursor/skills/cycle-a/SKILL.md\"",
+      "supportedOperations": []
+    },
+    {
+      "id": "references:skill:.cursor/skills/cycle-a->skill:.cursor/skills/cycle-b#0",
+      "source": "skill:.cursor/skills/cycle-a",
+      "target": "skill:.cursor/skills/cycle-b",
+      "relation": "references",
+      "evidence": "explicit",
+      "provenance": {
+        "path": ".cursor/skills/cycle-a/SKILL.md",
+        "start": {
+          "offset": 112,
+          "line": 8,
+          "column": 15
+        },
+        "end": {
+          "offset": 142,
+          "line": 8,
+          "column": 45
+        },
+        "contentHash": "455346a59d62662376cb54dec9cadb42c9c026b620aba6e4ff689b1abecd3d5f",
+        "adapter": "cursor"
+      },
+      "explanation": "Markdown link to \"../cycle-b/SKILL.md\"",
+      "supportedOperations": []
+    },
+    {
+      "id": "references:skill:.cursor/skills/cycle-b->skill:.cursor/skills/cycle-a#0",
+      "source": "skill:.cursor/skills/cycle-b",
+      "target": "skill:.cursor/skills/cycle-a",
+      "relation": "references",
+      "evidence": "explicit",
+      "provenance": {
+        "path": ".cursor/skills/cycle-b/SKILL.md",
+        "start": {
+          "offset": 115,
+          "line": 8,
+          "column": 12
+        },
+        "end": {
+          "offset": 145,
+          "line": 8,
+          "column": 42
+        },
+        "contentHash": "e73853234ab6fd59ca598e9ebdac404cd6b1eaeb53417ec06f0f1af6d4c6f88b",
+        "adapter": "cursor"
+      },
+      "explanation": "Markdown link to \"../cycle-a/SKILL.md\"",
+      "supportedOperations": []
+    }
+  ],
+  "diagnostics": [
+    {
+      "code": "rule-not-mdc",
+      "message": "Cursor loads only .mdc files from .cursor/rules; this .md file is ignored.",
+      "severity": "info",
+      "path": ".cursor/rules/notes.md"
+    },
+    {
+      "code": "unresolved-reference",
+      "message": "Reference target not found: docs/missing-guide.md",
+      "severity": "warning",
+      "nodeId": "rule:.cursor/rules/valid.mdc",
+      "path": ".cursor/rules/valid.mdc",
+      "span": {
+        "offset": 100,
+        "line": 8,
+        "column": 5
+      }
+    },
+    {
+      "code": "reference-cycle",
+      "message": "Reference cycle (informational): skill:.cursor/skills/cycle-a, skill:.cursor/skills/cycle-b",
+      "severity": "info",
+      "nodeId": "skill:.cursor/skills/cycle-a",
+      "path": ".cursor/skills/cycle-a/SKILL.md"
+    },
+    {
+      "code": "malformed-frontmatter",
+      "message": "Frontmatter is not valid YAML: Implicit keys of flow sequence pairs need to be on a single line",
+      "severity": "error",
+      "path": ".cursor/skills/malformed-yaml/SKILL.md",
+      "span": {
+        "offset": 39,
+        "line": 3,
+        "column": 15
+      },
+      "nodeId": "skill:.cursor/skills/malformed-yaml"
+    },
+    {
+      "code": "skill-name-invalid",
+      "message": "Skill name \"Different_Name\" must be lowercase letters, digits, and single hyphens (max 64).",
+      "severity": "warning",
+      "path": ".cursor/skills/name-mismatch/SKILL.md",
+      "nodeId": "skill:.cursor/skills/name-mismatch"
+    },
+    {
+      "code": "skill-name-mismatch",
+      "message": "Skill name \"Different_Name\" does not match its folder \"name-mismatch\".",
+      "severity": "warning",
+      "path": ".cursor/skills/name-mismatch/SKILL.md",
+      "nodeId": "skill:.cursor/skills/name-mismatch"
+    },
+    {
+      "code": "unknown-frontmatter-field",
+      "message": "Fields not defined by Cursor or the Agent Skills spec (kept as attributes): custom, owner, tags",
+      "severity": "info",
+      "path": ".cursor/skills/unknown-fields/SKILL.md",
+      "nodeId": "skill:.cursor/skills/unknown-fields"
+    },
+    {
+      "code": "unresolved-reference",
+      "message": "Reference target not found: docs/setup.md",
+      "severity": "warning",
+      "nodeId": "instruction:AGENTS.md",
+      "path": "AGENTS.md",
+      "span": {
+        "offset": 65,
+        "line": 3,
+        "column": 26
+      }
+    },
+    {
+      "code": "skill-outside-root",
+      "message": "SKILL.md is outside every skill root; not treated as a skill.",
+      "severity": "info",
+      "path": "docs/SKILL.md"
+    }
+  ]
+}

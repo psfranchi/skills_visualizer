@@ -1,0 +1,6 @@
+﻿---
+description: Rule with a UTF-8 BOM and CRLF line endings
+alwaysApply: false
+---
+
+# BOM + CRLF rule

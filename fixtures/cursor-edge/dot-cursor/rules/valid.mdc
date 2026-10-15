@@ -1,0 +1,8 @@
+---
+description: A valid rule that mentions a missing file
+alwaysApply: true
+---
+
+# Valid rule
+
+See @docs/missing-guide.md for details.

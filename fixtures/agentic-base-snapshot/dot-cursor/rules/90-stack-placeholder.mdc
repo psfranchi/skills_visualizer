@@ -1,0 +1,16 @@
+---
+description: Placeholder for stack-specific conventions — replace by running fill-stack-overlay on the app
+alwaysApply: false
+---
+
+# Stack placeholder
+
+No stack overlay is wired yet. This template does not ship framework packs.
+
+When the app is ready:
+
+1. Run skill `fill-stack-overlay` (detects Laravel/Next/etc. from the repo).
+2. That creates `overlays/<stack>/` and should install `.cursor/rules/90-stack.mdc`.
+3. Update the **Stack** section in root `AGENTS.md`.
+
+Until then: discover commands and layout from the repository. Do not assume a framework.

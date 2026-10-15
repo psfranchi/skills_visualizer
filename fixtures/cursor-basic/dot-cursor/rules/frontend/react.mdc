@@ -1,0 +1,9 @@
+---
+description:
+globs: src/**/*.tsx, src/**/*.ts
+alwaysApply: false
+---
+
+# React components
+
+Prefer function components and hooks.

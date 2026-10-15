@@ -1,0 +1,15 @@
+---
+description: SDLC quality gates — smallest change, tests, docs; orchestration lives in 15-orchestrator
+alwaysApply: true
+---
+
+# SDLC
+
+Quality gates only. Routing and lean loop: `.cursor/rules/15-orchestrator.mdc` and `docs/workflow.md` / `AGENTS.md`.
+
+- Prefer the smallest change that satisfies the approved plan (or trivial fix).
+- Every behavior change needs a matching test, or an explicit note: `no test because: …`.
+- Update docs only when user-facing behavior or public API/contracts change.
+- Do **not** force post-build `reviewer` / `security` / `verifier` — those run when the user asks or on ship / merge-ready (see `15-orchestrator`).
+- When the user asks to ship / merge-ready: `reviewer` + `security` → `verifier` + skill `ship-checklist`.
+- Capture recurring agent mistakes as new focused rules later — do not grow this file into a novel.

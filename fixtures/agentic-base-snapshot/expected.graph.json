@@ -1,0 +1,1122 @@
+{
+  "schemaVersion": 1,
+  "source": {
+    "id": "memory:fixture/agentic-base-snapshot",
+    "capabilities": {
+      "write": false,
+      "watch": false
+    }
+  },
+  "generatedBy": {
+    "adapter": "cursor",
+    "version": "0.1.0"
+  },
+  "nodes": [
+    {
+      "id": "agent:.cursor/agents/builder.md",
+      "kind": "agent",
+      "name": "builder",
+      "source": {
+        "path": ".cursor/agents/builder.md",
+        "contentHash": "d465ede1c82ea7dcee56a0837ef1f5eee3815284e448f4466b8d4a793fbe6b87",
+        "adapter": "cursor"
+      },
+      "attributes": {
+        "path": ".cursor/agents/builder.md",
+        "root": ".cursor",
+        "scope": ".",
+        "model": "inherit",
+        "readonly": false,
+        "isBackground": false,
+        "description": "Implements an approved plan with the smallest correct diff. Use when the user says build, implement, or execute a plan. Writes code and runs project checks from the stack overlay. Not for planning-only or read-only review.",
+        "frontmatter": {
+          "name": "builder",
+          "description": "Implements an approved plan with the smallest correct diff. Use when the user says build, implement, or execute a plan. Writes code and runs project checks from the stack overlay. Not for planning-only or read-only review.",
+          "model": "inherit",
+          "readonly": false
+        }
+      },
+      "diagnostics": []
+    },
+    {
+      "id": "agent:.cursor/agents/explorer.md",
+      "kind": "agent",
+      "name": "explorer",
+      "source": {
+        "path": ".cursor/agents/explorer.md",
+        "contentHash": "ba0041cf4ed7aeaafed31a837707b5f398ad6778222aa47f5a930089345a7957",
+        "adapter": "cursor"
+      },
+      "attributes": {
+        "path": ".cursor/agents/explorer.md",
+        "root": ".cursor",
+        "scope": ".",
+        "model": "inherit",
+        "readonly": true,
+        "isBackground": false,
+        "description": "Readonly codebase explorer for search, grep, and research. Prefer spawning via Task explore (skill explore-codebase) to keep builder context small. Use when locating files/symbols or mapping how a subsystem works. Never edits.",
+        "frontmatter": {
+          "name": "explorer",
+          "description": "Readonly codebase explorer for search, grep, and research. Prefer spawning via Task explore (skill explore-codebase) to keep builder context small. Use when locating files/symbols or mapping how a subsystem works. Never edits.",
+          "model": "inherit",
+          "readonly": true
+        }
+      },
+      "diagnostics": []
+    },
+    {
+      "id": "agent:.cursor/agents/planner.md",
+      "kind": "agent",
+      "name": "planner",
+      "source": {
+        "path": ".cursor/agents/planner.md",
+        "contentHash": "dedbad51dd81e9235377b37549de0e0e982d1367e39e5f1986c7d9e5ba508cc2",
+        "adapter": "cursor"
+      },
+      "attributes": {
+        "path": ".cursor/agents/planner.md",
+        "root": ".cursor",
+        "scope": ".",
+        "model": "inherit",
+        "readonly": true,
+        "isBackground": false,
+        "description": "Plans complex changes before implementation. Produces goals, constraints, file touch list, multi-phase steps, risks, and test plan. Owns architecture fit at design-time (patterns, boundaries, modularity). Use when the user asks to plan, design an approach, or for non-trivial multi-file work while staying in Agent. Readonly — never edits. Preferring Plan mode is the orchestrator’s job for new big work — do not dual-plan the same ask.",
+        "frontmatter": {
+          "name": "planner",
+          "description": "Plans complex changes before implementation. Produces goals, constraints, file touch list, multi-phase steps, risks, and test plan. Owns architecture fit at design-time (patterns, boundaries, modularity). Use when the user asks to plan, design an approach, or for non-trivial multi-file work while staying in Agent. Readonly — never edits. Preferring Plan mode is the orchestrator’s job for new big work — do not dual-plan the same ask.",
+          "model": "inherit",
+          "readonly": true
+        }
+      },
+      "diagnostics": []
+    },
+    {
+      "id": "agent:.cursor/agents/reviewer.md",
+      "kind": "agent",
+      "name": "reviewer",
+      "source": {
+        "path": ".cursor/agents/reviewer.md",
+        "contentHash": "022807bd4ffe7590aa03a1dfbb9418b24d176e42c0fffb2a4c3273f31406af80",
+        "adapter": "cursor"
+      },
+      "attributes": {
+        "path": ".cursor/agents/reviewer.md",
+        "root": ".cursor",
+        "scope": ".",
+        "model": "inherit",
+        "readonly": true,
+        "isBackground": false,
+        "description": "Adversarial code review focused on correctness, missing tests, unreadable or over-coupled structure, API contracts, and regressions — not style nits. Use when the user asks for review, for a PR review, or on ship / merge-ready — not automatically after every build. Readonly — never edits.",
+        "frontmatter": {
+          "name": "reviewer",
+          "description": "Adversarial code review focused on correctness, missing tests, unreadable or over-coupled structure, API contracts, and regressions — not style nits. Use when the user asks for review, for a PR review, or on ship / merge-ready — not automatically after every build. Readonly — never edits.",
+          "model": "inherit",
+          "readonly": true
+        }
+      },
+      "diagnostics": []
+    },
+    {
+      "id": "agent:.cursor/agents/security.md",
+      "kind": "agent",
+      "name": "security",
+      "source": {
+        "path": ".cursor/agents/security.md",
+        "contentHash": "e457a9ec976873fb2d80b151d0b27d8037171f3e0ab571b47ff0d8f67a9310c1",
+        "adapter": "cursor"
+      },
+      "attributes": {
+        "path": ".cursor/agents/security.md",
+        "root": ".cursor",
+        "scope": ".",
+        "model": "inherit",
+        "readonly": true,
+        "isBackground": false,
+        "description": "Security review for injection, XSS, authn/authz gaps, secrets exposure, and unsafe defaults. Map findings to OWASP Top 10. Use when auth, payments, user input, or sensitive data change, or before claiming merge-ready. Readonly — never edits. Normal prose only.",
+        "frontmatter": {
+          "name": "security",
+          "description": "Security review for injection, XSS, authn/authz gaps, secrets exposure, and unsafe defaults. Map findings to OWASP Top 10. Use when auth, payments, user input, or sensitive data change, or before claiming merge-ready. Readonly — never edits. Normal prose only.",
+          "model": "inherit",
+          "readonly": true
+        }
+      },
+      "diagnostics": []
+    },
+    {
+      "id": "agent:.cursor/agents/verifier.md",
+      "kind": "agent",
+      "name": "verifier",
+      "source": {
+        "path": ".cursor/agents/verifier.md",
+        "contentHash": "c5ffcd4acdcf56f41d3ce00d02f7f9ad3506392718b38aa46b33120c15be1279",
+        "adapter": "cursor"
+      },
+      "attributes": {
+        "path": ".cursor/agents/verifier.md",
+        "root": ".cursor",
+        "scope": ".",
+        "model": "inherit",
+        "readonly": false,
+        "isBackground": false,
+        "description": "Proves work is done: runs checks, maps results to acceptance criteria, secrets scan on the diff, lists gaps. Use when the user asks to verify, or on ship / merge-ready — not automatically after every build. Never edits product code — runs test/lint/build commands. Blocks “looks done”.",
+        "frontmatter": {
+          "name": "verifier",
+          "description": "Proves work is done: runs checks, maps results to acceptance criteria, secrets scan on the diff, lists gaps. Use when the user asks to verify, or on ship / merge-ready — not automatically after every build. Never edits product code — runs test/lint/build commands. Blocks “looks done”.",
+          "model": "inherit",
+          "readonly": false
+        }
+      },
+      "diagnostics": []
+    },
+    {
+      "id": "directory:.",
+      "kind": "directory",
+      "name": ".",
+      "attributes": {
+        "path": "."
+      },
+      "diagnostics": []
+    },
+    {
+      "id": "file:.cursor/BUGBOT.md",
+      "kind": "file",
+      "name": "BUGBOT.md",
+      "source": {
+        "path": ".cursor/BUGBOT.md",
+        "contentHash": "c006c9073049ab269dca53c5e95649e581834e0c9880035a7e9592059940ecb9",
+        "adapter": "cursor"
+      },
+      "attributes": {
+        "path": ".cursor/BUGBOT.md"
+      },
+      "diagnostics": []
+    },
+    {
+      "id": "file:.cursor/hooks.json",
+      "kind": "file",
+      "name": "hooks.json",
+      "source": {
+        "path": ".cursor/hooks.json",
+        "contentHash": "10a5198da5dfadf30951be43cfeac27f6ade515d9917d5e57fbcc95cfc8017f6",
+        "adapter": "cursor"
+      },
+      "attributes": {
+        "path": ".cursor/hooks.json"
+      },
+      "diagnostics": []
+    },
+    {
+      "id": "instruction:AGENTS.md",
+      "kind": "instruction",
+      "name": "AGENTS.md",
+      "source": {
+        "path": "AGENTS.md",
+        "contentHash": "066bce9db22960dd0613a7a45c054059535f0bad4a476487d073507a1da14f26",
+        "adapter": "cursor"
+      },
+      "attributes": {
+        "path": "AGENTS.md",
+        "scope": "."
+      },
+      "diagnostics": [
+        "unresolved-reference"
+      ]
+    },
+    {
+      "id": "rule:.cursor/rules/00-core.mdc",
+      "kind": "rule",
+      "name": "00-core",
+      "source": {
+        "path": ".cursor/rules/00-core.mdc",
+        "contentHash": "0ddf0aa955f7f8fa047e81fa8ebde74218a4d71a8f2ad47b6b95bc3f5cb2fada",
+        "adapter": "cursor"
+      },
+      "attributes": {
+        "path": ".cursor/rules/00-core.mdc",
+        "root": ".cursor",
+        "scope": ".",
+        "activation": "always-apply",
+        "alwaysApply": true,
+        "globs": [],
+        "description": "Core agent constraints — scope, patterns, ask when blocked, no surprise git",
+        "frontmatter": {
+          "description": "Core agent constraints — scope, patterns, ask when blocked, no surprise git",
+          "alwaysApply": true
+        }
+      },
+      "diagnostics": []
+    },
+    {
+      "id": "rule:.cursor/rules/10-sdlc.mdc",
+      "kind": "rule",
+      "name": "10-sdlc",
+      "source": {
+        "path": ".cursor/rules/10-sdlc.mdc",
+        "contentHash": "3e07359978a8d5a0e07f9201dd14cdd982d86dc54d2820f645932a2b712d985f",
+        "adapter": "cursor"
+      },
+      "attributes": {
+        "path": ".cursor/rules/10-sdlc.mdc",
+        "root": ".cursor",
+        "scope": ".",
+        "activation": "always-apply",
+        "alwaysApply": true,
+        "globs": [],
+        "description": "SDLC quality gates — smallest change, tests, docs; orchestration lives in 15-orchestrator",
+        "frontmatter": {
+          "description": "SDLC quality gates — smallest change, tests, docs; orchestration lives in 15-orchestrator",
+          "alwaysApply": true
+        }
+      },
+      "diagnostics": []
+    },
+    {
+      "id": "rule:.cursor/rules/15-orchestrator.mdc",
+      "kind": "rule",
+      "name": "15-orchestrator",
+      "source": {
+        "path": ".cursor/rules/15-orchestrator.mdc",
+        "contentHash": "a8f4441418a615ae9f638cabd9a60e62933a875385f3e6084e3d234b81352f13",
+        "adapter": "cursor"
+      },
+      "attributes": {
+        "path": ".cursor/rules/15-orchestrator.mdc",
+        "root": ".cursor",
+        "scope": ".",
+        "activation": "always-apply",
+        "alwaysApply": true,
+        "globs": [],
+        "description": "Lean Cursor SDLC orchestrator — route by task shape; stop after build; R/S/V on request or ship",
+        "frontmatter": {
+          "description": "Lean Cursor SDLC orchestrator — route by task shape; stop after build; R/S/V on request or ship",
+          "alwaysApply": true
+        }
+      },
+      "diagnostics": []
+    },
+    {
+      "id": "rule:.cursor/rules/20-communication.mdc",
+      "kind": "rule",
+      "name": "20-communication",
+      "source": {
+        "path": ".cursor/rules/20-communication.mdc",
+        "contentHash": "3559945a999a8b0e41d58fc5d3a760dcbdf33baf5daceffaac8d01753d5df27a",
+        "adapter": "cursor"
+      },
+      "attributes": {
+        "path": ".cursor/rules/20-communication.mdc",
+        "root": ".cursor",
+        "scope": ".",
+        "activation": "apply-intelligently",
+        "alwaysApply": false,
+        "globs": [],
+        "description": "Per-role status compression (caveman) — self-contained; no external skill pack",
+        "frontmatter": {
+          "description": "Per-role status compression (caveman) — self-contained; no external skill pack",
+          "alwaysApply": false
+        }
+      },
+      "diagnostics": []
+    },
+    {
+      "id": "rule:.cursor/rules/90-stack-placeholder.mdc",
+      "kind": "rule",
+      "name": "90-stack-placeholder",
+      "source": {
+        "path": ".cursor/rules/90-stack-placeholder.mdc",
+        "contentHash": "c42475f584c4b08e3ec00366a5032cafdb0efb55199d285b92340c5c06b048af",
+        "adapter": "cursor"
+      },
+      "attributes": {
+        "path": ".cursor/rules/90-stack-placeholder.mdc",
+        "root": ".cursor",
+        "scope": ".",
+        "activation": "apply-intelligently",
+        "alwaysApply": false,
+        "globs": [],
+        "description": "Placeholder for stack-specific conventions — replace by running fill-stack-overlay on the app",
+        "frontmatter": {
+          "description": "Placeholder for stack-specific conventions — replace by running fill-stack-overlay on the app",
+          "alwaysApply": false
+        }
+      },
+      "diagnostics": []
+    },
+    {
+      "id": "skill:.cursor/skills/add-test",
+      "kind": "skill",
+      "name": "add-test",
+      "source": {
+        "path": ".cursor/skills/add-test/SKILL.md",
+        "contentHash": "0a0f2d8acfee7b7cd9ec039d440ceeb1a23e9f582db21d6854b6d8d9b1e84294",
+        "adapter": "cursor"
+      },
+      "attributes": {
+        "path": ".cursor/skills/add-test/SKILL.md",
+        "dir": ".cursor/skills/add-test",
+        "root": ".cursor",
+        "scope": ".",
+        "description": "Add the smallest useful test for a behavior or bug. Use when the user asks to add a test, cover a bug, write a characterization / regression test, or notes a missing test for existing or just-fixed behavior.",
+        "frontmatter": {
+          "name": "add-test",
+          "description": "Add the smallest useful test for a behavior or bug. Use when the user asks to add a test, cover a bug, write a characterization / regression test, or notes a missing test for existing or just-fixed behavior."
+        }
+      },
+      "diagnostics": []
+    },
+    {
+      "id": "skill:.cursor/skills/adopt-base",
+      "kind": "skill",
+      "name": "adopt-base",
+      "source": {
+        "path": ".cursor/skills/adopt-base/SKILL.md",
+        "contentHash": "0640b3a36f43919cbfb73a5d974de0dfd1ca23b19d192da1ef2f8bde50bb2b7a",
+        "adapter": "cursor"
+      },
+      "attributes": {
+        "path": ".cursor/skills/adopt-base/SKILL.md",
+        "dir": ".cursor/skills/adopt-base",
+        "root": ".cursor",
+        "scope": ".",
+        "description": "Install this agentic template into an application repo by copying agents, rules, skills, and docs, then running fill-stack-overlay. Use when the user says adopt-base, install agentic base, use this as the agentic template, apply agentic template to …, wire Cursor agents into my app, or points at agentic_base as the template for another project.",
+        "frontmatter": {
+          "name": "adopt-base",
+          "description": "Install this agentic template into an application repo by copying agents, rules, skills, and docs, then running fill-stack-overlay. Use when the user says adopt-base, install agentic base, use this as the agentic template, apply agentic template to …, wire Cursor agents into my app, or points at agentic_base as the template for another project."
+        }
+      },
+      "diagnostics": []
+    },
+    {
+      "id": "skill:.cursor/skills/debug-incident",
+      "kind": "skill",
+      "name": "debug-incident",
+      "source": {
+        "path": ".cursor/skills/debug-incident/SKILL.md",
+        "contentHash": "00177f68bb6803764528d52165ca980372629e76b47bedf22eb3fe2a4bbbd994",
+        "adapter": "cursor"
+      },
+      "attributes": {
+        "path": ".cursor/skills/debug-incident/SKILL.md",
+        "dir": ".cursor/skills/debug-incident",
+        "root": ".cursor",
+        "scope": ".",
+        "description": "Reproduce, diagnose, and minimally fix bugs or regressions. Use when the user reports an incident, production bug, flaky failure, “doesn’t work”, asks to reproduce, bisect, find a regression, or chase a failing test / runtime error.",
+        "frontmatter": {
+          "name": "debug-incident",
+          "description": "Reproduce, diagnose, and minimally fix bugs or regressions. Use when the user reports an incident, production bug, flaky failure, “doesn’t work”, asks to reproduce, bisect, find a regression, or chase a failing test / runtime error."
+        }
+      },
+      "diagnostics": []
+    },
+    {
+      "id": "skill:.cursor/skills/explore-codebase",
+      "kind": "skill",
+      "name": "explore-codebase",
+      "source": {
+        "path": ".cursor/skills/explore-codebase/SKILL.md",
+        "contentHash": "c2659425a52c4da89ca00d01ca862d9936d207e127a00614c2148c8d9cf61d4d",
+        "adapter": "cursor"
+      },
+      "attributes": {
+        "path": ".cursor/skills/explore-codebase/SKILL.md",
+        "dir": ".cursor/skills/explore-codebase",
+        "root": ".cursor",
+        "scope": ".",
+        "description": "Spawn a readonly explorer (Task explore) for search, grep, layout discovery, and research so the main/builder context stays clean. Use when locating symbols/files, mapping a subsystem, answering “where/how does X work?”, or gathering evidence before planning or building.",
+        "frontmatter": {
+          "name": "explore-codebase",
+          "description": "Spawn a readonly explorer (Task explore) for search, grep, layout discovery, and research so the main/builder context stays clean. Use when locating symbols/files, mapping a subsystem, answering “where/how does X work?”, or gathering evidence before planning or building."
+        }
+      },
+      "diagnostics": []
+    },
+    {
+      "id": "skill:.cursor/skills/fill-stack-overlay",
+      "kind": "skill",
+      "name": "fill-stack-overlay",
+      "source": {
+        "path": ".cursor/skills/fill-stack-overlay/SKILL.md",
+        "contentHash": "df2faf4652392b59e30604828a459734f2bd2050bde3aca8236fdaad3f327e32",
+        "adapter": "cursor"
+      },
+      "attributes": {
+        "path": ".cursor/skills/fill-stack-overlay/SKILL.md",
+        "dir": ".cursor/skills/fill-stack-overlay",
+        "root": ".cursor",
+        "scope": ".",
+        "description": "Detect the app tech stack from the repo and generate overlays/<stack>/ from overlays/_template (commands, dirs, conventions). Use after adopt-base, when the project is Laravel/Next/Node/etc., or when the user says create overlay / fill stack / wire stack.",
+        "frontmatter": {
+          "name": "fill-stack-overlay",
+          "description": "Detect the app tech stack from the repo and generate overlays/<stack>/ from overlays/_template (commands, dirs, conventions). Use after adopt-base, when the project is Laravel/Next/Node/etc., or when the user says create overlay / fill stack / wire stack."
+        }
+      },
+      "diagnostics": []
+    },
+    {
+      "id": "skill:.cursor/skills/migrate-schema",
+      "kind": "skill",
+      "name": "migrate-schema",
+      "source": {
+        "path": ".cursor/skills/migrate-schema/SKILL.md",
+        "contentHash": "6e3c93bcbbd9ee69ac6ab67f9fa93b142b9cca83c2a52dde4b97896dab450794",
+        "adapter": "cursor"
+      },
+      "attributes": {
+        "path": ".cursor/skills/migrate-schema/SKILL.md",
+        "dir": ".cursor/skills/migrate-schema",
+        "root": ".cursor",
+        "scope": ".",
+        "description": "Plan and execute schema or data-shape changes safely. Use when the user asks for a migration, schema change, expand/contract rollout, backfill, or zero-downtime DB/API column/table evolution.",
+        "frontmatter": {
+          "name": "migrate-schema",
+          "description": "Plan and execute schema or data-shape changes safely. Use when the user asks for a migration, schema change, expand/contract rollout, backfill, or zero-downtime DB/API column/table evolution."
+        }
+      },
+      "diagnostics": []
+    },
+    {
+      "id": "skill:.cursor/skills/pr-review",
+      "kind": "skill",
+      "name": "pr-review",
+      "source": {
+        "path": ".cursor/skills/pr-review/SKILL.md",
+        "contentHash": "7ae431cc1110b99d1ed2a37d2002c15e2fd6fe84eea22b3918f7eb43cb2f502d",
+        "adapter": "cursor"
+      },
+      "attributes": {
+        "path": ".cursor/skills/pr-review/SKILL.md",
+        "dir": ".cursor/skills/pr-review",
+        "root": ".cursor",
+        "scope": ".",
+        "description": "Structured PR or diff review output (critical / suggestion / nit). Use when reviewing pull requests, or when the user asks for a PR review format. Complements the reviewer agent.",
+        "frontmatter": {
+          "name": "pr-review",
+          "description": "Structured PR or diff review output (critical / suggestion / nit). Use when reviewing pull requests, or when the user asks for a PR review format. Complements the reviewer agent."
+        }
+      },
+      "diagnostics": []
+    },
+    {
+      "id": "skill:.cursor/skills/ship-checklist",
+      "kind": "skill",
+      "name": "ship-checklist",
+      "source": {
+        "path": ".cursor/skills/ship-checklist/SKILL.md",
+        "contentHash": "8cb994fba4f0d6a4206316ca48b64ff597deaf2814aa15fe82e24995cc16a7f1",
+        "adapter": "cursor"
+      },
+      "attributes": {
+        "path": ".cursor/skills/ship-checklist/SKILL.md",
+        "dir": ".cursor/skills/ship-checklist",
+        "root": ".cursor",
+        "scope": ".",
+        "description": "Pre-merge checklist when the user asks to ship / merge-ready: diff scope, tests, secrets, docs, reviewer/security/verifier. Use before opening or merging a PR, when claiming ship-ready, or when the user says ship-checklist.",
+        "frontmatter": {
+          "name": "ship-checklist",
+          "description": "Pre-merge checklist when the user asks to ship / merge-ready: diff scope, tests, secrets, docs, reviewer/security/verifier. Use before opening or merging a PR, when claiming ship-ready, or when the user says ship-checklist."
+        }
+      },
+      "diagnostics": []
+    }
+  ],
+  "edges": [
+    {
+      "id": "applies-to:instruction:AGENTS.md->directory:.#0",
+      "source": "instruction:AGENTS.md",
+      "target": "directory:.",
+      "relation": "applies-to",
+      "evidence": "derived",
+      "explanation": "AGENTS.md applies to its directory and below; nested files combine with parents",
+      "supportedOperations": []
+    },
+    {
+      "id": "references:agent:.cursor/agents/security.md->instruction:AGENTS.md#0",
+      "source": "agent:.cursor/agents/security.md",
+      "target": "instruction:AGENTS.md",
+      "relation": "references",
+      "evidence": "inferred",
+      "provenance": {
+        "path": ".cursor/agents/security.md",
+        "start": {
+          "offset": 655,
+          "line": 20,
+          "column": 45
+        },
+        "end": {
+          "offset": 666,
+          "line": 20,
+          "column": 56
+        },
+        "contentHash": "e457a9ec976873fb2d80b151d0b27d8037171f3e0ab571b47ff0d8f67a9310c1",
+        "adapter": "cursor"
+      },
+      "explanation": "Inline code \"AGENTS.md\" matches an existing file; heuristic, not a declared reference",
+      "confidence": 0.5,
+      "supportedOperations": []
+    },
+    {
+      "id": "references:instruction:AGENTS.md->agent:.cursor/agents/security.md#0",
+      "source": "instruction:AGENTS.md",
+      "target": "agent:.cursor/agents/security.md",
+      "relation": "references",
+      "evidence": "inferred",
+      "provenance": {
+        "path": "AGENTS.md",
+        "start": {
+          "offset": 1675,
+          "line": 31,
+          "column": 157
+        },
+        "end": {
+          "offset": 1703,
+          "line": 31,
+          "column": 185
+        },
+        "contentHash": "066bce9db22960dd0613a7a45c054059535f0bad4a476487d073507a1da14f26",
+        "adapter": "cursor"
+      },
+      "explanation": "Inline code \".cursor/agents/security.md\" matches an existing file; heuristic, not a declared reference",
+      "confidence": 0.5,
+      "supportedOperations": []
+    },
+    {
+      "id": "references:instruction:AGENTS.md->file:.cursor/BUGBOT.md#0",
+      "source": "instruction:AGENTS.md",
+      "target": "file:.cursor/BUGBOT.md",
+      "relation": "references",
+      "evidence": "inferred",
+      "provenance": {
+        "path": "AGENTS.md",
+        "start": {
+          "offset": 4137,
+          "line": 61,
+          "column": 98
+        },
+        "end": {
+          "offset": 4156,
+          "line": 61,
+          "column": 117
+        },
+        "contentHash": "066bce9db22960dd0613a7a45c054059535f0bad4a476487d073507a1da14f26",
+        "adapter": "cursor"
+      },
+      "explanation": "Inline code \".cursor/BUGBOT.md\" matches an existing file; heuristic, not a declared reference",
+      "confidence": 0.5,
+      "supportedOperations": []
+    },
+    {
+      "id": "references:instruction:AGENTS.md->rule:.cursor/rules/00-core.mdc#0",
+      "source": "instruction:AGENTS.md",
+      "target": "rule:.cursor/rules/00-core.mdc",
+      "relation": "references",
+      "evidence": "inferred",
+      "provenance": {
+        "path": "AGENTS.md",
+        "start": {
+          "offset": 4448,
+          "line": 67,
+          "column": 190
+        },
+        "end": {
+          "offset": 4475,
+          "line": 67,
+          "column": 217
+        },
+        "contentHash": "066bce9db22960dd0613a7a45c054059535f0bad4a476487d073507a1da14f26",
+        "adapter": "cursor"
+      },
+      "explanation": "Inline code \".cursor/rules/00-core.mdc\" matches an existing file; heuristic, not a declared reference",
+      "confidence": 0.5,
+      "supportedOperations": []
+    },
+    {
+      "id": "references:instruction:AGENTS.md->rule:.cursor/rules/15-orchestrator.mdc#0",
+      "source": "instruction:AGENTS.md",
+      "target": "rule:.cursor/rules/15-orchestrator.mdc",
+      "relation": "references",
+      "evidence": "inferred",
+      "provenance": {
+        "path": "AGENTS.md",
+        "start": {
+          "offset": 1000,
+          "line": 16,
+          "column": 269
+        },
+        "end": {
+          "offset": 1035,
+          "line": 16,
+          "column": 304
+        },
+        "contentHash": "066bce9db22960dd0613a7a45c054059535f0bad4a476487d073507a1da14f26",
+        "adapter": "cursor"
+      },
+      "explanation": "Inline code \".cursor/rules/15-orchestrator.mdc\" matches an existing file; heuristic, not a declared reference",
+      "confidence": 0.5,
+      "supportedOperations": []
+    },
+    {
+      "id": "references:instruction:AGENTS.md->rule:.cursor/rules/20-communication.mdc#0",
+      "source": "instruction:AGENTS.md",
+      "target": "rule:.cursor/rules/20-communication.mdc",
+      "relation": "references",
+      "evidence": "inferred",
+      "provenance": {
+        "path": "AGENTS.md",
+        "start": {
+          "offset": 4576,
+          "line": 71,
+          "column": 34
+        },
+        "end": {
+          "offset": 4612,
+          "line": 71,
+          "column": 70
+        },
+        "contentHash": "066bce9db22960dd0613a7a45c054059535f0bad4a476487d073507a1da14f26",
+        "adapter": "cursor"
+      },
+      "explanation": "Inline code \".cursor/rules/20-communication.mdc\" matches an existing file; heuristic, not a declared reference",
+      "confidence": 0.5,
+      "supportedOperations": []
+    },
+    {
+      "id": "references:rule:.cursor/rules/00-core.mdc->instruction:AGENTS.md#0",
+      "source": "rule:.cursor/rules/00-core.mdc",
+      "target": "instruction:AGENTS.md",
+      "relation": "references",
+      "evidence": "inferred",
+      "provenance": {
+        "path": ".cursor/rules/00-core.mdc",
+        "start": {
+          "offset": 296,
+          "line": 9,
+          "column": 89
+        },
+        "end": {
+          "offset": 307,
+          "line": 9,
+          "column": 100
+        },
+        "contentHash": "0ddf0aa955f7f8fa047e81fa8ebde74218a4d71a8f2ad47b6b95bc3f5cb2fada",
+        "adapter": "cursor"
+      },
+      "explanation": "Inline code \"AGENTS.md\" matches an existing file; heuristic, not a declared reference",
+      "confidence": 0.5,
+      "supportedOperations": []
+    },
+    {
+      "id": "references:rule:.cursor/rules/10-sdlc.mdc->instruction:AGENTS.md#0",
+      "source": "rule:.cursor/rules/10-sdlc.mdc",
+      "target": "instruction:AGENTS.md",
+      "relation": "references",
+      "evidence": "inferred",
+      "provenance": {
+        "path": ".cursor/rules/10-sdlc.mdc",
+        "start": {
+          "offset": 242,
+          "line": 8,
+          "column": 105
+        },
+        "end": {
+          "offset": 253,
+          "line": 8,
+          "column": 116
+        },
+        "contentHash": "3e07359978a8d5a0e07f9201dd14cdd982d86dc54d2820f645932a2b712d985f",
+        "adapter": "cursor"
+      },
+      "explanation": "Inline code \"AGENTS.md\" matches an existing file; heuristic, not a declared reference",
+      "confidence": 0.5,
+      "supportedOperations": []
+    },
+    {
+      "id": "references:rule:.cursor/rules/10-sdlc.mdc->rule:.cursor/rules/15-orchestrator.mdc#0",
+      "source": "rule:.cursor/rules/10-sdlc.mdc",
+      "target": "rule:.cursor/rules/15-orchestrator.mdc",
+      "relation": "references",
+      "evidence": "inferred",
+      "provenance": {
+        "path": ".cursor/rules/10-sdlc.mdc",
+        "start": {
+          "offset": 181,
+          "line": 8,
+          "column": 44
+        },
+        "end": {
+          "offset": 216,
+          "line": 8,
+          "column": 79
+        },
+        "contentHash": "3e07359978a8d5a0e07f9201dd14cdd982d86dc54d2820f645932a2b712d985f",
+        "adapter": "cursor"
+      },
+      "explanation": "Inline code \".cursor/rules/15-orchestrator.mdc\" matches an existing file; heuristic, not a declared reference",
+      "confidence": 0.5,
+      "supportedOperations": []
+    },
+    {
+      "id": "references:rule:.cursor/rules/15-orchestrator.mdc->file:.cursor/BUGBOT.md#0",
+      "source": "rule:.cursor/rules/15-orchestrator.mdc",
+      "target": "file:.cursor/BUGBOT.md",
+      "relation": "references",
+      "evidence": "inferred",
+      "provenance": {
+        "path": ".cursor/rules/15-orchestrator.mdc",
+        "start": {
+          "offset": 4936,
+          "line": 75,
+          "column": 182
+        },
+        "end": {
+          "offset": 4955,
+          "line": 75,
+          "column": 201
+        },
+        "contentHash": "a8f4441418a615ae9f638cabd9a60e62933a875385f3e6084e3d234b81352f13",
+        "adapter": "cursor"
+      },
+      "explanation": "Inline code \".cursor/BUGBOT.md\" matches an existing file; heuristic, not a declared reference",
+      "confidence": 0.5,
+      "supportedOperations": []
+    },
+    {
+      "id": "references:rule:.cursor/rules/15-orchestrator.mdc->instruction:AGENTS.md#0",
+      "source": "rule:.cursor/rules/15-orchestrator.mdc",
+      "target": "instruction:AGENTS.md",
+      "relation": "references",
+      "evidence": "inferred",
+      "provenance": {
+        "path": ".cursor/rules/15-orchestrator.mdc",
+        "start": {
+          "offset": 2185,
+          "line": 43,
+          "column": 39
+        },
+        "end": {
+          "offset": 2196,
+          "line": 43,
+          "column": 50
+        },
+        "contentHash": "a8f4441418a615ae9f638cabd9a60e62933a875385f3e6084e3d234b81352f13",
+        "adapter": "cursor"
+      },
+      "explanation": "Inline code \"AGENTS.md\" matches an existing file; heuristic, not a declared reference",
+      "confidence": 0.5,
+      "supportedOperations": []
+    },
+    {
+      "id": "references:rule:.cursor/rules/15-orchestrator.mdc->instruction:AGENTS.md#1",
+      "source": "rule:.cursor/rules/15-orchestrator.mdc",
+      "target": "instruction:AGENTS.md",
+      "relation": "references",
+      "evidence": "inferred",
+      "provenance": {
+        "path": ".cursor/rules/15-orchestrator.mdc",
+        "start": {
+          "offset": 2369,
+          "line": 47,
+          "column": 115
+        },
+        "end": {
+          "offset": 2380,
+          "line": 47,
+          "column": 126
+        },
+        "contentHash": "a8f4441418a615ae9f638cabd9a60e62933a875385f3e6084e3d234b81352f13",
+        "adapter": "cursor"
+      },
+      "explanation": "Inline code \"AGENTS.md\" matches an existing file; heuristic, not a declared reference",
+      "confidence": 0.5,
+      "supportedOperations": []
+    },
+    {
+      "id": "references:rule:.cursor/rules/90-stack-placeholder.mdc->instruction:AGENTS.md#0",
+      "source": "rule:.cursor/rules/90-stack-placeholder.mdc",
+      "target": "instruction:AGENTS.md",
+      "relation": "references",
+      "evidence": "inferred",
+      "provenance": {
+        "path": ".cursor/rules/90-stack-placeholder.mdc",
+        "start": {
+          "offset": 459,
+          "line": 14,
+          "column": 41
+        },
+        "end": {
+          "offset": 470,
+          "line": 14,
+          "column": 52
+        },
+        "contentHash": "c42475f584c4b08e3ec00366a5032cafdb0efb55199d285b92340c5c06b048af",
+        "adapter": "cursor"
+      },
+      "explanation": "Inline code \"AGENTS.md\" matches an existing file; heuristic, not a declared reference",
+      "confidence": 0.5,
+      "supportedOperations": []
+    },
+    {
+      "id": "references:skill:.cursor/skills/adopt-base->agent:.cursor/agents/security.md#0",
+      "source": "skill:.cursor/skills/adopt-base",
+      "target": "agent:.cursor/agents/security.md",
+      "relation": "references",
+      "evidence": "inferred",
+      "provenance": {
+        "path": ".cursor/skills/adopt-base/SKILL.md",
+        "start": {
+          "offset": 2398,
+          "line": 53,
+          "column": 232
+        },
+        "end": {
+          "offset": 2426,
+          "line": 53,
+          "column": 260
+        },
+        "contentHash": "0640b3a36f43919cbfb73a5d974de0dfd1ca23b19d192da1ef2f8bde50bb2b7a",
+        "adapter": "cursor"
+      },
+      "explanation": "Inline code \".cursor/agents/security.md\" matches an existing file; heuristic, not a declared reference",
+      "confidence": 0.5,
+      "supportedOperations": []
+    },
+    {
+      "id": "references:skill:.cursor/skills/adopt-base->file:.cursor/BUGBOT.md#0",
+      "source": "skill:.cursor/skills/adopt-base",
+      "target": "file:.cursor/BUGBOT.md",
+      "relation": "references",
+      "evidence": "inferred",
+      "provenance": {
+        "path": ".cursor/skills/adopt-base/SKILL.md",
+        "start": {
+          "offset": 3455,
+          "line": 70,
+          "column": 3
+        },
+        "end": {
+          "offset": 3474,
+          "line": 70,
+          "column": 22
+        },
+        "contentHash": "0640b3a36f43919cbfb73a5d974de0dfd1ca23b19d192da1ef2f8bde50bb2b7a",
+        "adapter": "cursor"
+      },
+      "explanation": "Inline code \".cursor/BUGBOT.md\" matches an existing file; heuristic, not a declared reference",
+      "confidence": 0.5,
+      "supportedOperations": []
+    },
+    {
+      "id": "references:skill:.cursor/skills/adopt-base->file:.cursor/hooks.json#0",
+      "source": "skill:.cursor/skills/adopt-base",
+      "target": "file:.cursor/hooks.json",
+      "relation": "references",
+      "evidence": "inferred",
+      "provenance": {
+        "path": ".cursor/skills/adopt-base/SKILL.md",
+        "start": {
+          "offset": 3311,
+          "line": 68,
+          "column": 3
+        },
+        "end": {
+          "offset": 3331,
+          "line": 68,
+          "column": 23
+        },
+        "contentHash": "0640b3a36f43919cbfb73a5d974de0dfd1ca23b19d192da1ef2f8bde50bb2b7a",
+        "adapter": "cursor"
+      },
+      "explanation": "Inline code \".cursor/hooks.json\" matches an existing file; heuristic, not a declared reference",
+      "confidence": 0.5,
+      "supportedOperations": []
+    },
+    {
+      "id": "references:skill:.cursor/skills/adopt-base->instruction:AGENTS.md#0",
+      "source": "skill:.cursor/skills/adopt-base",
+      "target": "instruction:AGENTS.md",
+      "relation": "references",
+      "evidence": "inferred",
+      "provenance": {
+        "path": ".cursor/skills/adopt-base/SKILL.md",
+        "start": {
+          "offset": 2153,
+          "line": 51,
+          "column": 278
+        },
+        "end": {
+          "offset": 2164,
+          "line": 51,
+          "column": 289
+        },
+        "contentHash": "0640b3a36f43919cbfb73a5d974de0dfd1ca23b19d192da1ef2f8bde50bb2b7a",
+        "adapter": "cursor"
+      },
+      "explanation": "Inline code \"AGENTS.md\" matches an existing file; heuristic, not a declared reference",
+      "confidence": 0.5,
+      "supportedOperations": []
+    },
+    {
+      "id": "references:skill:.cursor/skills/adopt-base->instruction:AGENTS.md#1",
+      "source": "skill:.cursor/skills/adopt-base",
+      "target": "instruction:AGENTS.md",
+      "relation": "references",
+      "evidence": "inferred",
+      "provenance": {
+        "path": ".cursor/skills/adopt-base/SKILL.md",
+        "start": {
+          "offset": 2571,
+          "line": 61,
+          "column": 3
+        },
+        "end": {
+          "offset": 2582,
+          "line": 61,
+          "column": 14
+        },
+        "contentHash": "0640b3a36f43919cbfb73a5d974de0dfd1ca23b19d192da1ef2f8bde50bb2b7a",
+        "adapter": "cursor"
+      },
+      "explanation": "Inline code \"AGENTS.md\" matches an existing file; heuristic, not a declared reference",
+      "confidence": 0.5,
+      "supportedOperations": []
+    },
+    {
+      "id": "references:skill:.cursor/skills/adopt-base->instruction:AGENTS.md#2",
+      "source": "skill:.cursor/skills/adopt-base",
+      "target": "instruction:AGENTS.md",
+      "relation": "references",
+      "evidence": "inferred",
+      "provenance": {
+        "path": ".cursor/skills/adopt-base/SKILL.md",
+        "start": {
+          "offset": 3798,
+          "line": 78,
+          "column": 13
+        },
+        "end": {
+          "offset": 3809,
+          "line": 78,
+          "column": 24
+        },
+        "contentHash": "0640b3a36f43919cbfb73a5d974de0dfd1ca23b19d192da1ef2f8bde50bb2b7a",
+        "adapter": "cursor"
+      },
+      "explanation": "Inline code \"AGENTS.md\" matches an existing file; heuristic, not a declared reference",
+      "confidence": 0.5,
+      "supportedOperations": []
+    },
+    {
+      "id": "references:skill:.cursor/skills/adopt-base->rule:.cursor/rules/00-core.mdc#0",
+      "source": "skill:.cursor/skills/adopt-base",
+      "target": "rule:.cursor/rules/00-core.mdc",
+      "relation": "references",
+      "evidence": "inferred",
+      "provenance": {
+        "path": ".cursor/skills/adopt-base/SKILL.md",
+        "start": {
+          "offset": 3112,
+          "line": 66,
+          "column": 3
+        },
+        "end": {
+          "offset": 3139,
+          "line": 66,
+          "column": 30
+        },
+        "contentHash": "0640b3a36f43919cbfb73a5d974de0dfd1ca23b19d192da1ef2f8bde50bb2b7a",
+        "adapter": "cursor"
+      },
+      "explanation": "Inline code \".cursor/rules/00-core.mdc\" matches an existing file; heuristic, not a declared reference",
+      "confidence": 0.5,
+      "supportedOperations": []
+    },
+    {
+      "id": "references:skill:.cursor/skills/explore-codebase->agent:.cursor/agents/explorer.md#0",
+      "source": "skill:.cursor/skills/explore-codebase",
+      "target": "agent:.cursor/agents/explorer.md",
+      "relation": "references",
+      "evidence": "inferred",
+      "provenance": {
+        "path": ".cursor/skills/explore-codebase/SKILL.md",
+        "start": {
+          "offset": 654,
+          "line": 20,
+          "column": 35
+        },
+        "end": {
+          "offset": 682,
+          "line": 20,
+          "column": 63
+        },
+        "contentHash": "c2659425a52c4da89ca00d01ca862d9936d207e127a00614c2148c8d9cf61d4d",
+        "adapter": "cursor"
+      },
+      "explanation": "Inline code \".cursor/agents/explorer.md\" matches an existing file; heuristic, not a declared reference",
+      "confidence": 0.5,
+      "supportedOperations": []
+    },
+    {
+      "id": "references:skill:.cursor/skills/fill-stack-overlay->instruction:AGENTS.md#0",
+      "source": "skill:.cursor/skills/fill-stack-overlay",
+      "target": "instruction:AGENTS.md",
+      "relation": "references",
+      "evidence": "inferred",
+      "provenance": {
+        "path": ".cursor/skills/fill-stack-overlay/SKILL.md",
+        "start": {
+          "offset": 2829,
+          "line": 83,
+          "column": 16
+        },
+        "end": {
+          "offset": 2840,
+          "line": 83,
+          "column": 27
+        },
+        "contentHash": "df2faf4652392b59e30604828a459734f2bd2050bde3aca8236fdaad3f327e32",
+        "adapter": "cursor"
+      },
+      "explanation": "Inline code \"AGENTS.md\" matches an existing file; heuristic, not a declared reference",
+      "confidence": 0.5,
+      "supportedOperations": []
+    },
+    {
+      "id": "references:skill:.cursor/skills/fill-stack-overlay->rule:.cursor/rules/90-stack-placeholder.mdc#0",
+      "source": "skill:.cursor/skills/fill-stack-overlay",
+      "target": "rule:.cursor/rules/90-stack-placeholder.mdc",
+      "relation": "references",
+      "evidence": "inferred",
+      "provenance": {
+        "path": ".cursor/skills/fill-stack-overlay/SKILL.md",
+        "start": {
+          "offset": 2762,
+          "line": 82,
+          "column": 11
+        },
+        "end": {
+          "offset": 2802,
+          "line": 82,
+          "column": 51
+        },
+        "contentHash": "df2faf4652392b59e30604828a459734f2bd2050bde3aca8236fdaad3f327e32",
+        "adapter": "cursor"
+      },
+      "explanation": "Inline code \".cursor/rules/90-stack-placeholder.mdc\" matches an existing file; heuristic, not a declared reference",
+      "confidence": 0.5,
+      "supportedOperations": []
+    }
+  ],
+  "diagnostics": [
+    {
+      "code": "unresolved-reference",
+      "message": "Reference target not found: docs/mcp.md",
+      "severity": "warning",
+      "nodeId": "instruction:AGENTS.md",
+      "path": "AGENTS.md",
+      "span": {
+        "offset": 6045,
+        "line": 101,
+        "column": 36
+      }
+    }
+  ]
+}

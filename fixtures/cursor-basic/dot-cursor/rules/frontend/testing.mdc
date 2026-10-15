@@ -1,0 +1,8 @@
+---
+description: How to write and run frontend tests
+alwaysApply: false
+---
+
+# Frontend testing
+
+Read @docs/testing.md before adding tests.

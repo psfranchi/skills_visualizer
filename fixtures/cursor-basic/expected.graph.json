@@ -1,0 +1,1150 @@
+{
+  "schemaVersion": 1,
+  "source": {
+    "id": "memory:fixture/cursor-basic",
+    "capabilities": {
+      "write": false,
+      "watch": false
+    }
+  },
+  "generatedBy": {
+    "adapter": "cursor",
+    "version": "0.1.0"
+  },
+  "nodes": [
+    {
+      "id": "agent:.cursor/agents/fixture-reviewer.md",
+      "kind": "agent",
+      "name": "fixture-reviewer",
+      "source": {
+        "path": ".cursor/agents/fixture-reviewer.md",
+        "contentHash": "ed2c10d403ac1ec5d481f5569e5041454e19ee93761bdf6ccdd14de7520166f9",
+        "adapter": "cursor"
+      },
+      "attributes": {
+        "path": ".cursor/agents/fixture-reviewer.md",
+        "root": ".cursor",
+        "scope": ".",
+        "model": "inherit",
+        "readonly": true,
+        "isBackground": false,
+        "description": "Reviews diffs for correctness and missing tests. Read-only.",
+        "frontmatter": {
+          "name": "fixture-reviewer",
+          "description": "Reviews diffs for correctness and missing tests. Read-only.",
+          "model": "inherit",
+          "readonly": true
+        }
+      },
+      "diagnostics": []
+    },
+    {
+      "id": "agent:.cursor/agents/fixture-test-writer.md",
+      "kind": "agent",
+      "name": "fixture-test-writer",
+      "source": {
+        "path": ".cursor/agents/fixture-test-writer.md",
+        "contentHash": "bb9eb8f6cf5b4780fe4bbd058c2a7ae3b1860e3c5b4d2380542744a7f4867b71",
+        "adapter": "cursor"
+      },
+      "attributes": {
+        "path": ".cursor/agents/fixture-test-writer.md",
+        "root": ".cursor",
+        "scope": ".",
+        "model": "inherit",
+        "readonly": false,
+        "isBackground": true,
+        "description": "Writes missing unit tests in the background.",
+        "frontmatter": {
+          "description": "Writes missing unit tests in the background.",
+          "is_background": true
+        }
+      },
+      "diagnostics": []
+    },
+    {
+      "id": "directory:.",
+      "kind": "directory",
+      "name": ".",
+      "attributes": {
+        "path": "."
+      },
+      "diagnostics": []
+    },
+    {
+      "id": "directory:packages/api",
+      "kind": "directory",
+      "name": "api",
+      "attributes": {
+        "path": "packages/api"
+      },
+      "diagnostics": []
+    },
+    {
+      "id": "file:.cursor/skills/code-review/references/checklist.md",
+      "kind": "file",
+      "name": "checklist.md",
+      "source": {
+        "path": ".cursor/skills/code-review/references/checklist.md",
+        "contentHash": "15728f04651b7a1e8ea1ff1fe3e289e36e4ad5f580386bd8e13adfae619c4877",
+        "adapter": "cursor"
+      },
+      "attributes": {
+        "path": ".cursor/skills/code-review/references/checklist.md"
+      },
+      "diagnostics": []
+    },
+    {
+      "id": "file:.cursor/skills/release-notes/references/template.md",
+      "kind": "file",
+      "name": "template.md",
+      "source": {
+        "path": ".cursor/skills/release-notes/references/template.md",
+        "contentHash": "f92bee48b696caf1abbd720da36771e22e9ad6ea9ec35df38a066705f2c24f79",
+        "adapter": "cursor"
+      },
+      "attributes": {
+        "path": ".cursor/skills/release-notes/references/template.md"
+      },
+      "diagnostics": []
+    },
+    {
+      "id": "file:.cursor/skills/write-tests/references/patterns.md",
+      "kind": "file",
+      "name": "patterns.md",
+      "source": {
+        "path": ".cursor/skills/write-tests/references/patterns.md",
+        "contentHash": "0809a9dddb6f42ff45ffa4d702aed8bc58e0b0925d6f13dfbd47a28f9a29961e",
+        "adapter": "cursor"
+      },
+      "attributes": {
+        "path": ".cursor/skills/write-tests/references/patterns.md"
+      },
+      "diagnostics": []
+    },
+    {
+      "id": "file:docs/conventions.md",
+      "kind": "file",
+      "name": "conventions.md",
+      "source": {
+        "path": "docs/conventions.md",
+        "contentHash": "6c4a7718c068f70bff3ac9c4f2e66e26f148d29383d21091a460ff1c298778db",
+        "adapter": "cursor"
+      },
+      "attributes": {
+        "path": "docs/conventions.md"
+      },
+      "diagnostics": []
+    },
+    {
+      "id": "file:docs/testing.md",
+      "kind": "file",
+      "name": "testing.md",
+      "source": {
+        "path": "docs/testing.md",
+        "contentHash": "b8b2ae57ad6fc19e331065d2ab7ba5c963725b4495fc8d719798c3644979a26f",
+        "adapter": "cursor"
+      },
+      "attributes": {
+        "path": "docs/testing.md"
+      },
+      "diagnostics": []
+    },
+    {
+      "id": "file:packages/api/src/handler.ts",
+      "kind": "file",
+      "name": "handler.ts",
+      "source": {
+        "path": "packages/api/src/handler.ts",
+        "contentHash": "554395216301a347dec874361da68805558c934ee1262488b24cdd22a964efc0",
+        "adapter": "cursor"
+      },
+      "attributes": {
+        "path": "packages/api/src/handler.ts"
+      },
+      "diagnostics": []
+    },
+    {
+      "id": "instruction:AGENTS.md",
+      "kind": "instruction",
+      "name": "AGENTS.md",
+      "source": {
+        "path": "AGENTS.md",
+        "contentHash": "4d0eeb5ce8421b084cbffe0fc853bbf0c37ab2a2fd90ed1072788b671d84849b",
+        "adapter": "cursor"
+      },
+      "attributes": {
+        "path": "AGENTS.md",
+        "scope": "."
+      },
+      "diagnostics": []
+    },
+    {
+      "id": "instruction:packages/api/AGENTS.md",
+      "kind": "instruction",
+      "name": "packages/api/AGENTS.md",
+      "source": {
+        "path": "packages/api/AGENTS.md",
+        "contentHash": "94ac6aa160fe3bac437eeb364a49678f78a6be051cd0319eacba6ed7fb4b8cc0",
+        "adapter": "cursor"
+      },
+      "attributes": {
+        "path": "packages/api/AGENTS.md",
+        "scope": "packages/api"
+      },
+      "diagnostics": []
+    },
+    {
+      "id": "mcp-config:.cursor/mcp.json",
+      "kind": "mcp-config",
+      "name": ".cursor/mcp.json",
+      "source": {
+        "path": ".cursor/mcp.json",
+        "contentHash": "37d2794f5fd68876f32bbdc1e2d01e96513c08110fc6f1054e1052554869095d",
+        "adapter": "cursor"
+      },
+      "attributes": {
+        "path": ".cursor/mcp.json",
+        "scope": ".",
+        "serverCount": 3
+      },
+      "diagnostics": []
+    },
+    {
+      "id": "mcp-server:.cursor/mcp.json#local-http",
+      "kind": "mcp-server",
+      "name": "local-http",
+      "source": {
+        "path": ".cursor/mcp.json",
+        "contentHash": "37d2794f5fd68876f32bbdc1e2d01e96513c08110fc6f1054e1052554869095d",
+        "adapter": "cursor",
+        "start": {
+          "offset": 707,
+          "line": 25,
+          "column": 5
+        },
+        "end": {
+          "offset": 719,
+          "line": 25,
+          "column": 17
+        }
+      },
+      "attributes": {
+        "name": "local-http",
+        "transport": "remote",
+        "url": "http://localhost:8931/mcp"
+      },
+      "diagnostics": []
+    },
+    {
+      "id": "mcp-server:.cursor/mcp.json#local-tools",
+      "kind": "mcp-server",
+      "name": "local-tools",
+      "source": {
+        "path": ".cursor/mcp.json",
+        "contentHash": "37d2794f5fd68876f32bbdc1e2d01e96513c08110fc6f1054e1052554869095d",
+        "adapter": "cursor",
+        "start": {
+          "offset": 24,
+          "line": 3,
+          "column": 5
+        },
+        "end": {
+          "offset": 37,
+          "line": 3,
+          "column": 18
+        }
+      },
+      "attributes": {
+        "name": "local-tools",
+        "transport": "stdio",
+        "command": "npx",
+        "args": [
+          "-y",
+          "example-mcp-server",
+          "--token",
+          "[redacted]"
+        ],
+        "env": {
+          "EXAMPLE_HOME": "${env:HOME}",
+          "EXAMPLE_TOKEN": "[redacted]"
+        },
+        "envFile": ".env.mcp"
+      },
+      "diagnostics": []
+    },
+    {
+      "id": "mcp-server:.cursor/mcp.json#remote-docs",
+      "kind": "mcp-server",
+      "name": "remote-docs",
+      "source": {
+        "path": ".cursor/mcp.json",
+        "contentHash": "37d2794f5fd68876f32bbdc1e2d01e96513c08110fc6f1054e1052554869095d",
+        "adapter": "cursor",
+        "start": {
+          "offset": 325,
+          "line": 13,
+          "column": 5
+        },
+        "end": {
+          "offset": 338,
+          "line": 13,
+          "column": 18
+        }
+      },
+      "attributes": {
+        "name": "remote-docs",
+        "transport": "remote",
+        "url": "https://mcp.example.com/sse",
+        "headers": {
+          "Authorization": "[redacted]",
+          "X-Org": "${env:EXAMPLE_ORG}"
+        },
+        "auth": {
+          "CLIENT_ID": "[redacted]",
+          "CLIENT_SECRET": "[redacted]",
+          "scopes": "[redacted]"
+        }
+      },
+      "diagnostics": []
+    },
+    {
+      "id": "rule:.cursor/rules/core.mdc",
+      "kind": "rule",
+      "name": "core",
+      "source": {
+        "path": ".cursor/rules/core.mdc",
+        "contentHash": "24115ebeed012c903ad8e12ced8a97669b9a59eb3f1692da8f2342b371590206",
+        "adapter": "cursor"
+      },
+      "attributes": {
+        "path": ".cursor/rules/core.mdc",
+        "root": ".cursor",
+        "scope": ".",
+        "activation": "always-apply",
+        "alwaysApply": true,
+        "globs": [],
+        "description": "Core project conventions",
+        "frontmatter": {
+          "description": "Core project conventions",
+          "alwaysApply": true
+        }
+      },
+      "diagnostics": []
+    },
+    {
+      "id": "rule:.cursor/rules/frontend/react.mdc",
+      "kind": "rule",
+      "name": "frontend/react",
+      "source": {
+        "path": ".cursor/rules/frontend/react.mdc",
+        "contentHash": "0a8501736c2b49dd69f12424749c818e83e6a8ea20786775b526db7a2f6518a2",
+        "adapter": "cursor"
+      },
+      "attributes": {
+        "path": ".cursor/rules/frontend/react.mdc",
+        "root": ".cursor",
+        "scope": ".",
+        "activation": "apply-to-specific-files",
+        "alwaysApply": false,
+        "globs": [
+          "src/**/*.tsx",
+          "src/**/*.ts"
+        ],
+        "frontmatter": {
+          "description": null,
+          "globs": "src/**/*.tsx, src/**/*.ts",
+          "alwaysApply": false
+        }
+      },
+      "diagnostics": []
+    },
+    {
+      "id": "rule:.cursor/rules/frontend/testing.mdc",
+      "kind": "rule",
+      "name": "frontend/testing",
+      "source": {
+        "path": ".cursor/rules/frontend/testing.mdc",
+        "contentHash": "a8fd7818a5c2fc95dc52825c1b333e2e27608603f1cb8cb851b8d06f3b18d111",
+        "adapter": "cursor"
+      },
+      "attributes": {
+        "path": ".cursor/rules/frontend/testing.mdc",
+        "root": ".cursor",
+        "scope": ".",
+        "activation": "apply-intelligently",
+        "alwaysApply": false,
+        "globs": [],
+        "description": "How to write and run frontend tests",
+        "frontmatter": {
+          "description": "How to write and run frontend tests",
+          "alwaysApply": false
+        }
+      },
+      "diagnostics": []
+    },
+    {
+      "id": "rule:.cursor/rules/manual.mdc",
+      "kind": "rule",
+      "name": "manual",
+      "source": {
+        "path": ".cursor/rules/manual.mdc",
+        "contentHash": "d41196f9a07a99da13d5ee5d74a2a0c0e05325d116bfdedd2733519bd08988e5",
+        "adapter": "cursor"
+      },
+      "attributes": {
+        "path": ".cursor/rules/manual.mdc",
+        "root": ".cursor",
+        "scope": ".",
+        "activation": "apply-manually",
+        "alwaysApply": false,
+        "globs": [],
+        "frontmatter": {
+          "alwaysApply": false
+        }
+      },
+      "diagnostics": []
+    },
+    {
+      "id": "script:.cursor/skills/code-review/scripts/run-lint.sh",
+      "kind": "script",
+      "name": "run-lint.sh",
+      "source": {
+        "path": ".cursor/skills/code-review/scripts/run-lint.sh",
+        "contentHash": "afee74c76d29ceace159af1a77933dd9e446a8b84afa9169759bf403fd328f3e",
+        "adapter": "cursor"
+      },
+      "attributes": {
+        "path": ".cursor/skills/code-review/scripts/run-lint.sh"
+      },
+      "diagnostics": []
+    },
+    {
+      "id": "script:.cursor/skills/release-notes/scripts/collect.sh",
+      "kind": "script",
+      "name": "collect.sh",
+      "source": {
+        "path": ".cursor/skills/release-notes/scripts/collect.sh",
+        "contentHash": "9a9ef798c03347519b4e4a976c90dcd9bb31c3fa138e515ece15e4a5f4bc9e5a",
+        "adapter": "cursor"
+      },
+      "attributes": {
+        "path": ".cursor/skills/release-notes/scripts/collect.sh"
+      },
+      "diagnostics": []
+    },
+    {
+      "id": "script:.cursor/skills/write-tests/scripts/coverage.sh",
+      "kind": "script",
+      "name": "coverage.sh",
+      "source": {
+        "path": ".cursor/skills/write-tests/scripts/coverage.sh",
+        "contentHash": "78e70718a73179163b31bf4b82f936bcb96bf33c55f7779e4aaa6c0dcc94606a",
+        "adapter": "cursor"
+      },
+      "attributes": {
+        "path": ".cursor/skills/write-tests/scripts/coverage.sh"
+      },
+      "diagnostics": []
+    },
+    {
+      "id": "skill:.cursor/skills/code-review",
+      "kind": "skill",
+      "name": "code-review",
+      "source": {
+        "path": ".cursor/skills/code-review/SKILL.md",
+        "contentHash": "a3eea76fb2a113b7f3796553aa86f47d28a7f899406330b755e0387b6c5ed2c6",
+        "adapter": "cursor"
+      },
+      "attributes": {
+        "path": ".cursor/skills/code-review/SKILL.md",
+        "dir": ".cursor/skills/code-review",
+        "root": ".cursor",
+        "scope": ".",
+        "description": "Review a diff for correctness, readability, and test coverage. Use before opening a pull request.",
+        "frontmatter": {
+          "name": "code-review",
+          "description": "Review a diff for correctness, readability, and test coverage. Use before opening a pull request."
+        }
+      },
+      "diagnostics": []
+    },
+    {
+      "id": "skill:.cursor/skills/release-notes",
+      "kind": "skill",
+      "name": "release-notes",
+      "source": {
+        "path": ".cursor/skills/release-notes/SKILL.md",
+        "contentHash": "d6de8f02f2e7a8500b19f08e56f9502834fc0cf9b5acc479400316129fe99e53",
+        "adapter": "cursor"
+      },
+      "attributes": {
+        "path": ".cursor/skills/release-notes/SKILL.md",
+        "dir": ".cursor/skills/release-notes",
+        "root": ".cursor",
+        "scope": ".",
+        "description": "Draft release notes from merged changes. Use when preparing a release.",
+        "frontmatter": {
+          "name": "release-notes",
+          "description": "Draft release notes from merged changes. Use when preparing a release.",
+          "disable-model-invocation": true
+        }
+      },
+      "diagnostics": []
+    },
+    {
+      "id": "skill:.cursor/skills/write-tests",
+      "kind": "skill",
+      "name": "write-tests",
+      "source": {
+        "path": ".cursor/skills/write-tests/SKILL.md",
+        "contentHash": "d8719f905e1cbaf9360e1c8a7766cdf1304a1617c5c4c5ec93b60bd4218ebfcb",
+        "adapter": "cursor"
+      },
+      "attributes": {
+        "path": ".cursor/skills/write-tests/SKILL.md",
+        "dir": ".cursor/skills/write-tests",
+        "root": ".cursor",
+        "scope": ".",
+        "description": "Add focused unit tests for new or changed behavior. Use when a change lacks test coverage.",
+        "frontmatter": {
+          "name": "write-tests",
+          "description": "Add focused unit tests for new or changed behavior. Use when a change lacks test coverage.",
+          "paths": "packages/**/*.ts"
+        }
+      },
+      "diagnostics": []
+    }
+  ],
+  "edges": [
+    {
+      "id": "applies-to:instruction:AGENTS.md->directory:.#0",
+      "source": "instruction:AGENTS.md",
+      "target": "directory:.",
+      "relation": "applies-to",
+      "evidence": "derived",
+      "explanation": "AGENTS.md applies to its directory and below; nested files combine with parents",
+      "supportedOperations": []
+    },
+    {
+      "id": "applies-to:instruction:packages/api/AGENTS.md->directory:packages/api#0",
+      "source": "instruction:packages/api/AGENTS.md",
+      "target": "directory:packages/api",
+      "relation": "applies-to",
+      "evidence": "derived",
+      "explanation": "AGENTS.md applies to its directory and below; nested files combine with parents",
+      "supportedOperations": []
+    },
+    {
+      "id": "contains:mcp-config:.cursor/mcp.json->mcp-server:.cursor/mcp.json#local-http#0",
+      "source": "mcp-config:.cursor/mcp.json",
+      "target": "mcp-server:.cursor/mcp.json#local-http",
+      "relation": "contains",
+      "evidence": "explicit",
+      "provenance": {
+        "path": ".cursor/mcp.json",
+        "contentHash": "37d2794f5fd68876f32bbdc1e2d01e96513c08110fc6f1054e1052554869095d",
+        "adapter": "cursor",
+        "start": {
+          "offset": 707,
+          "line": 25,
+          "column": 5
+        },
+        "end": {
+          "offset": 719,
+          "line": 25,
+          "column": 17
+        }
+      },
+      "explanation": "Server declared in mcp.json",
+      "supportedOperations": []
+    },
+    {
+      "id": "contains:mcp-config:.cursor/mcp.json->mcp-server:.cursor/mcp.json#local-tools#0",
+      "source": "mcp-config:.cursor/mcp.json",
+      "target": "mcp-server:.cursor/mcp.json#local-tools",
+      "relation": "contains",
+      "evidence": "explicit",
+      "provenance": {
+        "path": ".cursor/mcp.json",
+        "contentHash": "37d2794f5fd68876f32bbdc1e2d01e96513c08110fc6f1054e1052554869095d",
+        "adapter": "cursor",
+        "start": {
+          "offset": 24,
+          "line": 3,
+          "column": 5
+        },
+        "end": {
+          "offset": 37,
+          "line": 3,
+          "column": 18
+        }
+      },
+      "explanation": "Server declared in mcp.json",
+      "supportedOperations": []
+    },
+    {
+      "id": "contains:mcp-config:.cursor/mcp.json->mcp-server:.cursor/mcp.json#remote-docs#0",
+      "source": "mcp-config:.cursor/mcp.json",
+      "target": "mcp-server:.cursor/mcp.json#remote-docs",
+      "relation": "contains",
+      "evidence": "explicit",
+      "provenance": {
+        "path": ".cursor/mcp.json",
+        "contentHash": "37d2794f5fd68876f32bbdc1e2d01e96513c08110fc6f1054e1052554869095d",
+        "adapter": "cursor",
+        "start": {
+          "offset": 325,
+          "line": 13,
+          "column": 5
+        },
+        "end": {
+          "offset": 338,
+          "line": 13,
+          "column": 18
+        }
+      },
+      "explanation": "Server declared in mcp.json",
+      "supportedOperations": []
+    },
+    {
+      "id": "contains:skill:.cursor/skills/code-review->file:.cursor/skills/code-review/references/checklist.md#0",
+      "source": "skill:.cursor/skills/code-review",
+      "target": "file:.cursor/skills/code-review/references/checklist.md",
+      "relation": "contains",
+      "evidence": "derived",
+      "explanation": "File inside the skill folder",
+      "supportedOperations": []
+    },
+    {
+      "id": "contains:skill:.cursor/skills/code-review->script:.cursor/skills/code-review/scripts/run-lint.sh#0",
+      "source": "skill:.cursor/skills/code-review",
+      "target": "script:.cursor/skills/code-review/scripts/run-lint.sh",
+      "relation": "contains",
+      "evidence": "derived",
+      "explanation": "File inside the skill folder",
+      "supportedOperations": []
+    },
+    {
+      "id": "contains:skill:.cursor/skills/release-notes->file:.cursor/skills/release-notes/references/template.md#0",
+      "source": "skill:.cursor/skills/release-notes",
+      "target": "file:.cursor/skills/release-notes/references/template.md",
+      "relation": "contains",
+      "evidence": "derived",
+      "explanation": "File inside the skill folder",
+      "supportedOperations": []
+    },
+    {
+      "id": "contains:skill:.cursor/skills/release-notes->script:.cursor/skills/release-notes/scripts/collect.sh#0",
+      "source": "skill:.cursor/skills/release-notes",
+      "target": "script:.cursor/skills/release-notes/scripts/collect.sh",
+      "relation": "contains",
+      "evidence": "derived",
+      "explanation": "File inside the skill folder",
+      "supportedOperations": []
+    },
+    {
+      "id": "contains:skill:.cursor/skills/write-tests->file:.cursor/skills/write-tests/references/patterns.md#0",
+      "source": "skill:.cursor/skills/write-tests",
+      "target": "file:.cursor/skills/write-tests/references/patterns.md",
+      "relation": "contains",
+      "evidence": "derived",
+      "explanation": "File inside the skill folder",
+      "supportedOperations": []
+    },
+    {
+      "id": "contains:skill:.cursor/skills/write-tests->script:.cursor/skills/write-tests/scripts/coverage.sh#0",
+      "source": "skill:.cursor/skills/write-tests",
+      "target": "script:.cursor/skills/write-tests/scripts/coverage.sh",
+      "relation": "contains",
+      "evidence": "derived",
+      "explanation": "File inside the skill folder",
+      "supportedOperations": []
+    },
+    {
+      "id": "references:agent:.cursor/agents/fixture-reviewer.md->skill:.cursor/skills/code-review#0",
+      "source": "agent:.cursor/agents/fixture-reviewer.md",
+      "target": "skill:.cursor/skills/code-review",
+      "relation": "references",
+      "evidence": "explicit",
+      "provenance": {
+        "path": ".cursor/agents/fixture-reviewer.md",
+        "start": {
+          "offset": 163,
+          "line": 8,
+          "column": 29
+        },
+        "end": {
+          "offset": 214,
+          "line": 8,
+          "column": 80
+        },
+        "contentHash": "ed2c10d403ac1ec5d481f5569e5041454e19ee93761bdf6ccdd14de7520166f9",
+        "adapter": "cursor"
+      },
+      "explanation": "Markdown link to \"../skills/code-review/SKILL.md\"",
+      "supportedOperations": []
+    },
+    {
+      "id": "references:agent:.cursor/agents/fixture-test-writer.md->skill:.cursor/skills/write-tests#0",
+      "source": "agent:.cursor/agents/fixture-test-writer.md",
+      "target": "skill:.cursor/skills/write-tests",
+      "relation": "references",
+      "evidence": "explicit",
+      "provenance": {
+        "path": ".cursor/agents/fixture-test-writer.md",
+        "start": {
+          "offset": 110,
+          "line": 6,
+          "column": 24
+        },
+        "end": {
+          "offset": 161,
+          "line": 6,
+          "column": 75
+        },
+        "contentHash": "bb9eb8f6cf5b4780fe4bbd058c2a7ae3b1860e3c5b4d2380542744a7f4867b71",
+        "adapter": "cursor"
+      },
+      "explanation": "Markdown link to \"../skills/write-tests/SKILL.md\"",
+      "supportedOperations": []
+    },
+    {
+      "id": "references:instruction:AGENTS.md->file:docs/conventions.md#0",
+      "source": "instruction:AGENTS.md",
+      "target": "file:docs/conventions.md",
+      "relation": "references",
+      "evidence": "explicit",
+      "provenance": {
+        "path": "AGENTS.md",
+        "start": {
+          "offset": 116,
+          "line": 5,
+          "column": 14
+        },
+        "end": {
+          "offset": 150,
+          "line": 5,
+          "column": 48
+        },
+        "contentHash": "4d0eeb5ce8421b084cbffe0fc853bbf0c37ab2a2fd90ed1072788b671d84849b",
+        "adapter": "cursor"
+      },
+      "explanation": "Markdown link to \"docs/conventions.md\"",
+      "supportedOperations": []
+    },
+    {
+      "id": "references:instruction:AGENTS.md->file:packages/api/src/handler.ts#0",
+      "source": "instruction:AGENTS.md",
+      "target": "file:packages/api/src/handler.ts",
+      "relation": "references",
+      "evidence": "inferred",
+      "provenance": {
+        "path": "AGENTS.md",
+        "start": {
+          "offset": 358,
+          "line": 8,
+          "column": 26
+        },
+        "end": {
+          "offset": 387,
+          "line": 8,
+          "column": 55
+        },
+        "contentHash": "4d0eeb5ce8421b084cbffe0fc853bbf0c37ab2a2fd90ed1072788b671d84849b",
+        "adapter": "cursor"
+      },
+      "explanation": "Inline code \"packages/api/src/handler.ts\" matches an existing file; heuristic, not a declared reference",
+      "confidence": 0.5,
+      "supportedOperations": []
+    },
+    {
+      "id": "references:instruction:AGENTS.md->instruction:packages/api/AGENTS.md#0",
+      "source": "instruction:AGENTS.md",
+      "target": "instruction:packages/api/AGENTS.md",
+      "relation": "references",
+      "evidence": "explicit",
+      "provenance": {
+        "path": "AGENTS.md",
+        "start": {
+          "offset": 283,
+          "line": 7,
+          "column": 31
+        },
+        "end": {
+          "offset": 331,
+          "line": 7,
+          "column": 79
+        },
+        "contentHash": "4d0eeb5ce8421b084cbffe0fc853bbf0c37ab2a2fd90ed1072788b671d84849b",
+        "adapter": "cursor"
+      },
+      "explanation": "Markdown link to \"packages/api/AGENTS.md\"",
+      "supportedOperations": []
+    },
+    {
+      "id": "references:instruction:AGENTS.md->skill:.cursor/skills/code-review#0",
+      "source": "instruction:AGENTS.md",
+      "target": "skill:.cursor/skills/code-review",
+      "relation": "references",
+      "evidence": "explicit",
+      "provenance": {
+        "path": "AGENTS.md",
+        "start": {
+          "offset": 175,
+          "line": 6,
+          "column": 11
+        },
+        "end": {
+          "offset": 231,
+          "line": 6,
+          "column": 67
+        },
+        "contentHash": "4d0eeb5ce8421b084cbffe0fc853bbf0c37ab2a2fd90ed1072788b671d84849b",
+        "adapter": "cursor"
+      },
+      "explanation": "Markdown link to \".cursor/skills/code-review/SKILL.md\"",
+      "supportedOperations": []
+    },
+    {
+      "id": "references:instruction:packages/api/AGENTS.md->file:packages/api/src/handler.ts#0",
+      "source": "instruction:packages/api/AGENTS.md",
+      "target": "file:packages/api/src/handler.ts",
+      "relation": "references",
+      "evidence": "inferred",
+      "provenance": {
+        "path": "packages/api/AGENTS.md",
+        "start": {
+          "offset": 227,
+          "line": 6,
+          "column": 16
+        },
+        "end": {
+          "offset": 243,
+          "line": 6,
+          "column": 32
+        },
+        "contentHash": "94ac6aa160fe3bac437eeb364a49678f78a6be051cd0319eacba6ed7fb4b8cc0",
+        "adapter": "cursor"
+      },
+      "explanation": "Inline code \"src/handler.ts\" matches an existing file; heuristic, not a declared reference",
+      "confidence": 0.5,
+      "supportedOperations": []
+    },
+    {
+      "id": "references:instruction:packages/api/AGENTS.md->instruction:AGENTS.md#0",
+      "source": "instruction:packages/api/AGENTS.md",
+      "target": "instruction:AGENTS.md",
+      "relation": "references",
+      "evidence": "inferred",
+      "provenance": {
+        "path": "packages/api/AGENTS.md",
+        "start": {
+          "offset": 64,
+          "line": 3,
+          "column": 29
+        },
+        "end": {
+          "offset": 75,
+          "line": 3,
+          "column": 40
+        },
+        "contentHash": "94ac6aa160fe3bac437eeb364a49678f78a6be051cd0319eacba6ed7fb4b8cc0",
+        "adapter": "cursor"
+      },
+      "explanation": "Inline code \"AGENTS.md\" matches an existing file; heuristic, not a declared reference",
+      "confidence": 0.5,
+      "supportedOperations": []
+    },
+    {
+      "id": "references:instruction:packages/api/AGENTS.md->skill:.cursor/skills/write-tests#0",
+      "source": "instruction:packages/api/AGENTS.md",
+      "target": "skill:.cursor/skills/write-tests",
+      "relation": "references",
+      "evidence": "explicit",
+      "provenance": {
+        "path": "packages/api/AGENTS.md",
+        "start": {
+          "offset": 148,
+          "line": 5,
+          "column": 39
+        },
+        "end": {
+          "offset": 210,
+          "line": 5,
+          "column": 101
+        },
+        "contentHash": "94ac6aa160fe3bac437eeb364a49678f78a6be051cd0319eacba6ed7fb4b8cc0",
+        "adapter": "cursor"
+      },
+      "explanation": "Markdown link to \"../../.cursor/skills/write-tests/SKILL.md\"",
+      "supportedOperations": []
+    },
+    {
+      "id": "references:rule:.cursor/rules/core.mdc->file:docs/conventions.md#0",
+      "source": "rule:.cursor/rules/core.mdc",
+      "target": "file:docs/conventions.md",
+      "relation": "references",
+      "evidence": "explicit",
+      "provenance": {
+        "path": ".cursor/rules/core.mdc",
+        "start": {
+          "offset": 87,
+          "line": 8,
+          "column": 15
+        },
+        "end": {
+          "offset": 107,
+          "line": 8,
+          "column": 35
+        },
+        "contentHash": "24115ebeed012c903ad8e12ced8a97669b9a59eb3f1692da8f2342b371590206",
+        "adapter": "cursor"
+      },
+      "explanation": "Rule @-mention \"docs/conventions.md\" (the agent reads the file; it is not inlined)",
+      "supportedOperations": []
+    },
+    {
+      "id": "references:rule:.cursor/rules/frontend/testing.mdc->file:docs/testing.md#0",
+      "source": "rule:.cursor/rules/frontend/testing.mdc",
+      "target": "file:docs/testing.md",
+      "relation": "references",
+      "evidence": "explicit",
+      "provenance": {
+        "path": ".cursor/rules/frontend/testing.mdc",
+        "start": {
+          "offset": 102,
+          "line": 8,
+          "column": 6
+        },
+        "end": {
+          "offset": 118,
+          "line": 8,
+          "column": 22
+        },
+        "contentHash": "a8fd7818a5c2fc95dc52825c1b333e2e27608603f1cb8cb851b8d06f3b18d111",
+        "adapter": "cursor"
+      },
+      "explanation": "Rule @-mention \"docs/testing.md\" (the agent reads the file; it is not inlined)",
+      "supportedOperations": []
+    },
+    {
+      "id": "references:skill:.cursor/skills/code-review->file:.cursor/skills/code-review/references/checklist.md#0",
+      "source": "skill:.cursor/skills/code-review",
+      "target": "file:.cursor/skills/code-review/references/checklist.md",
+      "relation": "references",
+      "evidence": "explicit",
+      "provenance": {
+        "path": ".cursor/skills/code-review/SKILL.md",
+        "start": {
+          "offset": 165,
+          "line": 8,
+          "column": 13
+        },
+        "end": {
+          "offset": 208,
+          "line": 8,
+          "column": 56
+        },
+        "contentHash": "a3eea76fb2a113b7f3796553aa86f47d28a7f899406330b755e0387b6c5ed2c6",
+        "adapter": "cursor"
+      },
+      "explanation": "Markdown link to \"references/checklist.md\"",
+      "supportedOperations": []
+    },
+    {
+      "id": "references:skill:.cursor/skills/code-review->file:docs/conventions.md#0",
+      "source": "skill:.cursor/skills/code-review",
+      "target": "file:docs/conventions.md",
+      "relation": "references",
+      "evidence": "explicit",
+      "provenance": {
+        "path": ".cursor/skills/code-review/SKILL.md",
+        "start": {
+          "offset": 230,
+          "line": 9,
+          "column": 21
+        },
+        "end": {
+          "offset": 273,
+          "line": 9,
+          "column": 64
+        },
+        "contentHash": "a3eea76fb2a113b7f3796553aa86f47d28a7f899406330b755e0387b6c5ed2c6",
+        "adapter": "cursor"
+      },
+      "explanation": "Markdown link to \"../../../docs/conventions.md\"",
+      "supportedOperations": []
+    },
+    {
+      "id": "references:skill:.cursor/skills/code-review->script:.cursor/skills/code-review/scripts/run-lint.sh#0",
+      "source": "skill:.cursor/skills/code-review",
+      "target": "script:.cursor/skills/code-review/scripts/run-lint.sh",
+      "relation": "references",
+      "evidence": "explicit",
+      "provenance": {
+        "path": ".cursor/skills/code-review/SKILL.md",
+        "start": {
+          "offset": 282,
+          "line": 10,
+          "column": 8
+        },
+        "end": {
+          "offset": 320,
+          "line": 10,
+          "column": 46
+        },
+        "contentHash": "a3eea76fb2a113b7f3796553aa86f47d28a7f899406330b755e0387b6c5ed2c6",
+        "adapter": "cursor"
+      },
+      "explanation": "Markdown link to \"scripts/run-lint.sh\"",
+      "supportedOperations": []
+    },
+    {
+      "id": "references:skill:.cursor/skills/release-notes->file:.cursor/skills/release-notes/references/template.md#0",
+      "source": "skill:.cursor/skills/release-notes",
+      "target": "file:.cursor/skills/release-notes/references/template.md",
+      "relation": "references",
+      "evidence": "explicit",
+      "provenance": {
+        "path": ".cursor/skills/release-notes/SKILL.md",
+        "start": {
+          "offset": 241,
+          "line": 10,
+          "column": 16
+        },
+        "end": {
+          "offset": 275,
+          "line": 10,
+          "column": 50
+        },
+        "contentHash": "d6de8f02f2e7a8500b19f08e56f9502834fc0cf9b5acc479400316129fe99e53",
+        "adapter": "cursor"
+      },
+      "explanation": "Markdown link to \"references/template.md\"",
+      "supportedOperations": []
+    },
+    {
+      "id": "references:skill:.cursor/skills/release-notes->file:docs/conventions.md#0",
+      "source": "skill:.cursor/skills/release-notes",
+      "target": "file:docs/conventions.md",
+      "relation": "references",
+      "evidence": "explicit",
+      "provenance": {
+        "path": ".cursor/skills/release-notes/SKILL.md",
+        "start": {
+          "offset": 302,
+          "line": 11,
+          "column": 26
+        },
+        "end": {
+          "offset": 345,
+          "line": 11,
+          "column": 69
+        },
+        "contentHash": "d6de8f02f2e7a8500b19f08e56f9502834fc0cf9b5acc479400316129fe99e53",
+        "adapter": "cursor"
+      },
+      "explanation": "Markdown link to \"../../../docs/conventions.md\"",
+      "supportedOperations": []
+    },
+    {
+      "id": "references:skill:.cursor/skills/release-notes->script:.cursor/skills/release-notes/scripts/collect.sh#0",
+      "source": "skill:.cursor/skills/release-notes",
+      "target": "script:.cursor/skills/release-notes/scripts/collect.sh",
+      "relation": "references",
+      "evidence": "explicit",
+      "provenance": {
+        "path": ".cursor/skills/release-notes/SKILL.md",
+        "start": {
+          "offset": 184,
+          "line": 9,
+          "column": 24
+        },
+        "end": {
+          "offset": 224,
+          "line": 9,
+          "column": 64
+        },
+        "contentHash": "d6de8f02f2e7a8500b19f08e56f9502834fc0cf9b5acc479400316129fe99e53",
+        "adapter": "cursor"
+      },
+      "explanation": "Markdown link to \"scripts/collect.sh\"",
+      "supportedOperations": []
+    },
+    {
+      "id": "references:skill:.cursor/skills/write-tests->file:.cursor/skills/write-tests/references/patterns.md#0",
+      "source": "skill:.cursor/skills/write-tests",
+      "target": "file:.cursor/skills/write-tests/references/patterns.md",
+      "relation": "references",
+      "evidence": "explicit",
+      "provenance": {
+        "path": ".cursor/skills/write-tests/SKILL.md",
+        "start": {
+          "offset": 183,
+          "line": 9,
+          "column": 14
+        },
+        "end": {
+          "offset": 222,
+          "line": 9,
+          "column": 53
+        },
+        "contentHash": "d8719f905e1cbaf9360e1c8a7766cdf1304a1617c5c4c5ec93b60bd4218ebfcb",
+        "adapter": "cursor"
+      },
+      "explanation": "Markdown link to \"references/patterns.md\"",
+      "supportedOperations": []
+    },
+    {
+      "id": "references:skill:.cursor/skills/write-tests->file:docs/conventions.md#0",
+      "source": "skill:.cursor/skills/write-tests",
+      "target": "file:docs/conventions.md",
+      "relation": "references",
+      "evidence": "explicit",
+      "provenance": {
+        "path": ".cursor/skills/write-tests/SKILL.md",
+        "start": {
+          "offset": 245,
+          "line": 10,
+          "column": 22
+        },
+        "end": {
+          "offset": 288,
+          "line": 10,
+          "column": 65
+        },
+        "contentHash": "d8719f905e1cbaf9360e1c8a7766cdf1304a1617c5c4c5ec93b60bd4218ebfcb",
+        "adapter": "cursor"
+      },
+      "explanation": "Markdown link to \"../../../docs/conventions.md\"",
+      "supportedOperations": []
+    },
+    {
+      "id": "references:skill:.cursor/skills/write-tests->script:.cursor/skills/write-tests/scripts/coverage.sh#0",
+      "source": "skill:.cursor/skills/write-tests",
+      "target": "script:.cursor/skills/write-tests/scripts/coverage.sh",
+      "relation": "references",
+      "evidence": "inferred",
+      "provenance": {
+        "path": ".cursor/skills/write-tests/SKILL.md",
+        "start": {
+          "offset": 305,
+          "line": 11,
+          "column": 16
+        },
+        "end": {
+          "offset": 326,
+          "line": 11,
+          "column": 37
+        },
+        "contentHash": "d8719f905e1cbaf9360e1c8a7766cdf1304a1617c5c4c5ec93b60bd4218ebfcb",
+        "adapter": "cursor"
+      },
+      "explanation": "Inline code \"scripts/coverage.sh\" matches an existing file; heuristic, not a declared reference",
+      "confidence": 0.5,
+      "supportedOperations": []
+    }
+  ],
+  "diagnostics": []
+}

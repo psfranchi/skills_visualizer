@@ -1,0 +1,29 @@
+{
+  "mcpServers": {
+    "local-tools": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "example-mcp-server", "--token", "SENTINEL-NOT-A-SECRET-A1"],
+      "env": {
+        "EXAMPLE_TOKEN": "SENTINEL-NOT-A-SECRET-A2",
+        "EXAMPLE_HOME": "${env:HOME}"
+      },
+      "envFile": ".env.mcp"
+    },
+    "remote-docs": {
+      "url": "https://mcp.example.com/sse?token=SENTINEL-NOT-A-SECRET-A3",
+      "headers": {
+        "Authorization": "Bearer SENTINEL-NOT-A-SECRET-A4",
+        "X-Org": "${env:EXAMPLE_ORG}"
+      },
+      "auth": {
+        "CLIENT_ID": "SENTINEL-NOT-A-SECRET-A5",
+        "CLIENT_SECRET": "SENTINEL-NOT-A-SECRET-A6",
+        "scopes": ["read"]
+      }
+    },
+    "local-http": {
+      "url": "http://sentinel-user:SENTINEL-NOT-A-SECRET-A7@localhost:8931/mcp"
+    }
+  }
+}

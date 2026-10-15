@@ -1,0 +1,15 @@
+---
+description: Core agent constraints — scope, patterns, ask when blocked, no surprise git
+alwaysApply: true
+---
+
+# Core
+
+- Prefer existing patterns in the repo. No drive-by refactors or unrelated cleanup.
+- Do not invent stack facts (commands, layout, framework APIs). Read the stack overlay, `AGENTS.md` Stack section, or the codebase.
+- Stop and ask when requirements, ownership, or success criteria are unclear.
+- Never commit, push, amend, or force-push unless the user explicitly asks.
+- **Commit authorship:** when the user asks for a commit, use only the existing local git identity (`user.name` / `user.email` already configured by the human). Never set or override author/committer to an agent, Cursor, or other bot. Never add `Co-authored-by:` (or similar) trailers for Cursor, Copilot, or any AI — commits must attribute solely to the repo owner / person who configured git.
+- Never update git config (`user.name`, `user.email`, etc.).
+- Keep secrets out of code, logs, and commits. Prefer env / secret managers already used by the project.
+- Match the active role’s communication policy (see `20-communication` and the agent file).

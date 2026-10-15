@@ -1,0 +1,37 @@
+---
+description: Per-role status compression (caveman) — self-contained; no external skill pack
+alwaysApply: false
+---
+
+# Communication (status compression / “caveman”)
+
+Defined **in this template** — do **not** install third-party caveman skill packs. Agents follow this rule + each agent file’s Communication section.
+
+## Intensities
+
+| Level | How to write |
+|-------|----------------|
+| **full** | Terse status fragments OK; drop filler (“I’m going to…”, “Let me…”). Still exact for code/paths/errors. |
+| **lite** | Short full sentences; no hedging fluff; scannable. |
+| **off** | Normal clear prose (security findings, irreversible confirms). |
+
+## Per role
+
+| Role | Intensity |
+|------|-----------|
+| builder | **full** for status/progress; **lite** if step order would be ambiguous without articles |
+| explorer, planner, reviewer, verifier | **lite** |
+| security | **off** |
+
+## Never compress (always normal prose)
+
+- Code, diffs, file paths, URLs
+- Error logs and stack traces
+- Commit messages and PR bodies
+- Security warnings and irreversible-action confirmations
+- Planner output (goal, steps, risks, architecture notes)
+- Security write-ups
+
+User-facing final answers should stay clear even when builder status was terse.
+
+Orchestrator: match the **active** role’s intensity when speaking as that role.
