@@ -203,6 +203,49 @@ button.link.small {
   white-space: nowrap;
 }
 
+.activation-badge {
+  font-size: 10px;
+  padding: 1px 5px;
+  border-radius: 8px;
+  background: var(--activation-badge, #e0e7ff);
+  color: var(--activation-fg, #312e81);
+  white-space: nowrap;
+}
+
+.activation-badge.activation-always-apply {
+  --activation-badge: #bbf7d0;
+  --activation-fg: #14532d;
+}
+
+.activation-badge.activation-apply-to-specific-files {
+  --activation-badge: #bfdbfe;
+  --activation-fg: #1e3a8a;
+}
+
+.activation-badge.activation-apply-intelligently {
+  --activation-badge: #fde68a;
+  --activation-fg: #78350f;
+}
+
+.activation-badge.activation-apply-manually {
+  --activation-badge: #e2e8f0;
+  --activation-fg: #334155;
+}
+
+.edge-kind-badge {
+  font-size: 10px;
+  padding: 0 5px;
+  border-radius: 8px;
+  background: #f1f5f9;
+  color: #334155;
+  white-space: nowrap;
+}
+
+.instruction-path {
+  font-size: 12px;
+  line-height: 1.4;
+}
+
 /* Per-kind colors, used by graph nodes (fill) and badges (background). */
 .kind-instruction {
   --kind-fill: #ecfdf5;
@@ -291,6 +334,28 @@ button.link.small {
 .graph-canvas .node .label {
   font-size: 12px;
   pointer-events: none;
+}
+
+.graph-canvas .node .activation-mark {
+  fill: var(--activation-mark, #6366f1);
+  stroke: none;
+  pointer-events: none;
+}
+
+.graph-canvas .node.activation-always-apply {
+  --activation-mark: #16a34a;
+}
+
+.graph-canvas .node.activation-apply-to-specific-files {
+  --activation-mark: #2563eb;
+}
+
+.graph-canvas .node.activation-apply-intelligently {
+  --activation-mark: #d97706;
+}
+
+.graph-canvas .node.activation-apply-manually {
+  --activation-mark: #64748b;
 }
 
 .graph-canvas .severity-none {

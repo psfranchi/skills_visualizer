@@ -17,6 +17,7 @@ import { Legend } from './Legend';
 import {
   defaultFilters,
   type Filters,
+  focusNeighborhood,
   listedNodes,
   nodeSeverities,
   searchMatches,
@@ -165,6 +166,7 @@ export function App() {
   const selected = graph.nodes.find((n) => n.id === selectedId) ?? null;
   const shownNodes = graph.nodes.filter((n) => visible.nodeIds.has(n.id));
   const shownEdges = graph.edges.filter((e) => visible.edgeIds.has(e.id));
+  const focusIds = focusNeighborhood(graph, selectedId, visible.edgeIds, filters.focusSelection);
   const canEdit = nodeIsEditable(selected, meta?.capabilities.write === true, editablePaths);
 
   const onGraphApplied = (next: AgentGraph) => {
@@ -202,6 +204,7 @@ export function App() {
           edges={shownEdges}
           layout={layout}
           matches={matches}
+          focusIds={focusIds}
           selectedId={selectedId}
           severities={severities}
           fitToken={fitToken}

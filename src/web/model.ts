@@ -13,6 +13,8 @@ export interface Filters {
   search: string;
   kinds: ReadonlySet<NodeKind>;
   showInferred: boolean;
+  /** When on and a node is selected, dim nodes/edges outside the selection neighborhood. */
+  focusSelection: boolean;
   /** Diagnostic severities to show; `info` is hidden by default. */
   severities: ReadonlySet<Severity>;
 }
@@ -22,6 +24,7 @@ export function defaultFilters(): Filters {
     search: '',
     kinds: new Set(NODE_KINDS),
     showInferred: false,
+    focusSelection: true,
     severities: new Set<Severity>(['warning', 'error']),
   };
 }
@@ -82,6 +85,73 @@ export function searchMatches(nodes: readonly AgentNode[], query: string): Set<s
       )
       .map((n) => n.id),
   );
+}
+
+/**
+ * Selected node plus its neighbors over visible edges.
+ * `null` when focus is off or nothing is selected (full graph stays bright).
+ */
+export function focusNeighborhood(
+  graph: AgentGraph,
+  selectedId: string | null,
+  visibleEdgeIds: ReadonlySet<string>,
+  enabled: boolean,
+): Set<string> | null {
+  if (!enabled || selectedId === null) return null;
+  const ids = new Set<string>([selectedId]);
+  for (const e of graph.edges) {
+    if (!visibleEdgeIds.has(e.id)) continue;
+    if (e.source === selectedId) ids.add(e.target);
+    if (e.target === selectedId) ids.add(e.source);
+  }
+  return ids;
+}
+
+/**
+ * Cheap BFS toward the nearest `instruction` node over visible edges.
+ * Returns the path from selected → … → instruction, or null when none.
+ */
+export function pathToNearestInstruction(
+  graph: AgentGraph,
+  selectedId: string | null,
+  visibleEdgeIds: ReadonlySet<string>,
+): string[] | null {
+  if (selectedId === null) return null;
+  const byId = new Map(graph.nodes.map((n) => [n.id, n]));
+  if (byId.get(selectedId)?.kind === 'instruction') return [selectedId];
+
+  const adjacency = new Map<string, string[]>();
+  for (const e of graph.edges) {
+    if (!visibleEdgeIds.has(e.id)) continue;
+    const a = adjacency.get(e.source) ?? [];
+    a.push(e.target);
+    adjacency.set(e.source, a);
+    const b = adjacency.get(e.target) ?? [];
+    b.push(e.source);
+    adjacency.set(e.target, b);
+  }
+
+  const parent = new Map<string, string | null>([[selectedId, null]]);
+  const queue = [selectedId];
+  for (let i = 0; i < queue.length; i++) {
+    const current = queue[i];
+    if (current === undefined) break;
+    for (const next of adjacency.get(current) ?? []) {
+      if (parent.has(next)) continue;
+      parent.set(next, current);
+      if (byId.get(next)?.kind === 'instruction') {
+        const path: string[] = [next];
+        let step: string | null | undefined = current;
+        while (step) {
+          path.push(step);
+          step = parent.get(step) ?? null;
+        }
+        return path.reverse();
+      }
+      queue.push(next);
+    }
+  }
+  return null;
 }
 
 /** Nodes for the list: visible, matching the search, sorted by kind order then name. */

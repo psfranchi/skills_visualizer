@@ -77,6 +77,14 @@ export function Toolbar({
         />
         Show inferred edges
       </label>
+      <label className="chip">
+        <input
+          type="checkbox"
+          checked={filters.focusSelection}
+          onChange={(event) => onFilters({ ...filters, focusSelection: event.target.checked })}
+        />
+        Focus selection
+      </label>
       <div className="toolbar-actions">
         <button type="button" onClick={onFit}>
           Fit

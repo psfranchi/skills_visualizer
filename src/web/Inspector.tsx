@@ -8,11 +8,14 @@ import type {
   SourceLocation,
 } from '../core';
 import type { FileResponse } from '../server/app';
+import { activationLabel } from './activation';
 import { fetchFile } from './api';
+import { edgeLabel } from './edge-labels';
 import {
   diagnosticsForNode,
   filterDiagnostics,
   incidentEdges,
+  pathToNearestInstruction,
   safeHref,
   sourceDisplay,
 } from './model';
@@ -123,6 +126,7 @@ function EdgeList({ title, edges, direction, names, focused, onSelect, onFocus }
             const other = direction === 'incoming' ? edge.source : edge.target;
             return (
               <li key={edge.id} className={edge === focused ? 'focused' : undefined}>
+                <span className={`edge-kind-badge`}>{edgeLabel(edge)}</span>{' '}
                 <span className={`evidence-badge evidence-${edge.evidence}`}>{edge.evidence}</span>{' '}
                 <span className="relation">{edge.relation}</span>{' '}
                 <button type="button" className="link" onClick={() => onSelect(other)}>
@@ -247,13 +251,37 @@ export function Inspector({
   const all = incidentEdges(graph, node.id, null);
   const hiddenCount = all.incoming.length + all.outgoing.length - incoming.length - outgoing.length;
   const focus = focusedEdge?.provenance ?? node.source;
+  const activation = activationLabel(node.attributes.activation);
+  const instructionPath = pathToNearestInstruction(graph, node.id, visibleEdgeIds);
 
   return (
     <aside className="inspector" aria-label="Inspector">
       <h2>{node.name}</h2>
       <p>
-        <span className={`kind-badge kind-${node.kind}`}>{node.kind}</span> <code>{node.id}</code>
+        <span className={`kind-badge kind-${node.kind}`}>{node.kind}</span>{' '}
+        {activation && (
+          <span
+            className={`activation-badge activation-${String(node.attributes.activation)}`}
+            title="Rule activation mode"
+          >
+            {activation}
+          </span>
+        )}{' '}
+        <code>{node.id}</code>
       </p>
+      {instructionPath && instructionPath.length > 1 && (
+        <p className="instruction-path">
+          Path to instruction:{' '}
+          {instructionPath.map((id, index) => (
+            <span key={id}>
+              {index > 0 && ' → '}
+              <button type="button" className="link" onClick={() => onSelect(id)}>
+                {names.get(id) ?? id}
+              </button>
+            </span>
+          ))}
+        </p>
+      )}
       {node.source && (
         <p>
           Source:{' '}

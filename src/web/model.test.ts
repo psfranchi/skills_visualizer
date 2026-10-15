@@ -3,10 +3,12 @@ import type { AgentEdge, AgentGraph, AgentNode, GraphDiagnostic, NodeKind } from
 import {
   defaultFilters,
   diagnosticsForNode,
+  focusNeighborhood,
   incidentEdges,
   inferredOnlyNodeIds,
   listedNodes,
   nodeSeverities,
+  pathToNearestInstruction,
   safeHref,
   searchMatches,
   sourceDisplay,
@@ -170,6 +172,42 @@ describe('incidentEdges', () => {
     expect(all.outgoing.map((e) => e.id)).toEqual(['e3']);
     const visible = incidentEdges(graph, 'file:docs/x.md', new Set(['e1', 'e3']));
     expect(visible.incoming.map((e) => e.id)).toEqual(['e1']);
+  });
+});
+
+describe('focusNeighborhood', () => {
+  it('returns null when focus is off or nothing is selected', () => {
+    const edges = new Set(graph.edges.map((e) => e.id));
+    expect(focusNeighborhood(graph, null, edges, true)).toBeNull();
+    expect(focusNeighborhood(graph, 'skill:a', edges, false)).toBeNull();
+  });
+
+  it('includes the selection and its visible neighbors', () => {
+    const ids = focusNeighborhood(graph, 'skill:a', new Set(['e1', 'e3']), true);
+    expect([...(ids ?? [])].sort()).toEqual(['file:docs/x.md', 'skill:a']);
+  });
+});
+
+describe('pathToNearestInstruction', () => {
+  it('finds a short path over visible edges', () => {
+    const withInstruction: AgentGraph = {
+      ...graph,
+      nodes: [...graph.nodes, node('instruction:root', 'instruction', 'AGENTS.md', 'AGENTS.md')],
+      edges: [
+        ...graph.edges,
+        {
+          id: 'e4',
+          source: 'instruction:root',
+          target: 'directory:docs',
+          relation: 'applies-to',
+          evidence: 'derived',
+          explanation: 'scope',
+          supportedOperations: [],
+        },
+      ],
+    };
+    const path = pathToNearestInstruction(withInstruction, 'file:docs/x.md', new Set(['e3', 'e4']));
+    expect(path).toEqual(['file:docs/x.md', 'directory:docs', 'instruction:root']);
   });
 });
 

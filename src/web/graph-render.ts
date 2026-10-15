@@ -1,12 +1,16 @@
 import { curveBasis, drag, line, type Selection, select } from 'd3';
 import type { AgentEdge, AgentNode, Position, Severity } from '../core';
 import { type Box, type LayoutResult, straightRoute } from '../layout';
+import { activationLabel } from './activation';
+import { edgeLabel } from './edge-labels';
 
 export interface RenderInput {
   nodes: readonly AgentNode[];
   edges: readonly AgentEdge[];
   layout: LayoutResult;
   matches: ReadonlySet<string> | null;
+  /** When set, nodes outside this set (and edges touching them) are dimmed. */
+  focusIds: ReadonlySet<string> | null;
   selectedId: string | null;
   severities: ReadonlyMap<string, Severity>;
 }
@@ -65,7 +69,9 @@ export function renderGraph(
     const route = input.layout.edges[edge.id];
     return route ? [{ edge, points: route.points }] : [];
   });
-  const dimmed = (id: string) => input.matches !== null && !input.matches.has(id);
+  const dimmed = (id: string) =>
+    (input.matches !== null && !input.matches.has(id)) ||
+    (input.focusIds !== null && !input.focusIds.has(id));
 
   const edgeSel = edgeLayer
     .selectAll<SVGPathElement, EdgeDatum>('path.edge')
@@ -79,13 +85,16 @@ export function renderGraph(
     .attr('class', (d) => `edge evidence-${d.edge.evidence} relation-${d.edge.relation}`)
     .attr('d', (d) => pathOf(d.points))
     .attr('marker-end', (d) => `url(#arrow-${d.edge.evidence})`)
-    .classed('dimmed', (d) => dimmed(d.edge.source) && dimmed(d.edge.target))
+    .classed('dimmed', (d) => dimmed(d.edge.source) || dimmed(d.edge.target))
     .classed(
       'incident',
       (d) => input.selectedId !== null && [d.edge.source, d.edge.target].includes(input.selectedId),
     )
     .select('title')
-    .text((d) => `${d.edge.relation} (${d.edge.evidence}): ${d.edge.explanation}`);
+    .text(
+      (d) =>
+        `${edgeLabel(d.edge)} · ${d.edge.relation} (${d.edge.evidence}): ${d.edge.explanation}`,
+    );
 
   const nodeSel = nodeLayer
     .selectAll<SVGGElement, NodeDatum>('g.node')
@@ -95,6 +104,11 @@ export function renderGraph(
       g.append('rect').attr('rx', 6);
       g.append('text').attr('class', 'label').attr('text-anchor', 'middle').attr('dy', '0.35em');
       g.append('circle').attr('class', 'severity').attr('r', 4);
+      g.append('rect')
+        .attr('class', 'activation-mark')
+        .attr('width', 6)
+        .attr('height', 6)
+        .attr('rx', 1);
       g.append('title');
       g.on('click', (event: MouseEvent, d) => {
         event.stopPropagation();
@@ -104,23 +118,38 @@ export function renderGraph(
       return g;
     });
   nodeSel
-    .attr('class', (d) => `node kind-${d.node.kind}`)
+    .attr('class', (d) => {
+      const activation = d.node.attributes.activation;
+      return typeof activation === 'string'
+        ? `node kind-${d.node.kind} activation-${activation}`
+        : `node kind-${d.node.kind}`;
+    })
     .classed('selected', (d) => d.node.id === input.selectedId)
     .classed('dimmed', (d) => dimmed(d.node.id))
     .attr('transform', (d) => `translate(${d.box.x},${d.box.y})`);
   nodeSel
-    .select('rect')
+    .select('rect:not(.activation-mark)')
     .attr('x', (d) => -d.box.w / 2)
     .attr('y', (d) => -d.box.h / 2)
     .attr('width', (d) => d.box.w)
     .attr('height', (d) => d.box.h);
-  nodeSel.select('text').text((d) => truncate(d.node.name, d.box));
+  nodeSel.select('text.label').text((d) => truncate(d.node.name, d.box));
   nodeSel
-    .select('circle')
+    .select('rect.activation-mark')
+    .attr('x', (d) => -d.box.w / 2 + 4)
+    .attr('y', (d) => -d.box.h / 2 + 4)
+    .attr('display', (d) => (activationLabel(d.node.attributes.activation) ? null : 'none'));
+  nodeSel
+    .select('circle.severity')
     .attr('cx', (d) => d.box.w / 2 - 8)
     .attr('cy', (d) => -d.box.h / 2 + 8)
     .attr('class', (d) => `severity severity-${input.severities.get(d.node.id) ?? 'none'}`);
-  nodeSel.select('title').text((d) => `${d.node.kind}: ${d.node.id}`);
+  nodeSel.select('title').text((d) => {
+    const activation = activationLabel(d.node.attributes.activation);
+    return activation
+      ? `${d.node.kind}: ${d.node.id} · ${activation}`
+      : `${d.node.kind}: ${d.node.id}`;
+  });
 }
 
 /** Movement below this many pixels is a click, not a drag. */

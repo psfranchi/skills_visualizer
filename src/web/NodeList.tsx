@@ -1,5 +1,6 @@
 import { type KeyboardEvent, useEffect, useRef } from 'react';
 import type { AgentNode, Severity } from '../core';
+import { activationLabel } from './activation';
 import { stepSelection } from './model';
 
 interface NodeListProps {
@@ -52,25 +53,35 @@ export function NodeList({ nodes, selectedId, severities, onSelect }: NodeListPr
         aria-activedescendant={active ? optionId(active) : undefined}
         onKeyDown={onKeyDown}
       >
-        {nodes.map((node) => (
-          // biome-ignore lint/a11y/useKeyWithClickEvents: keyboard handled by the listbox (aria-activedescendant).
-          <div
-            key={node.id}
-            id={optionId(node.id)}
-            role="option"
-            tabIndex={-1}
-            aria-selected={node.id === selectedId}
-            className={node.id === selectedId ? 'selected' : undefined}
-            onClick={() => onSelect(node.id)}
-            title={node.id}
-          >
-            <span className={`kind-badge kind-${node.kind}`}>{node.kind}</span>
-            <span className="name">{node.name}</span>
-            {severities.has(node.id) && (
-              <span className={`severity-dot severity-${severities.get(node.id)}`} />
-            )}
-          </div>
-        ))}
+        {nodes.map((node) => {
+          const activation = activationLabel(node.attributes.activation);
+          return (
+            // biome-ignore lint/a11y/useKeyWithClickEvents: keyboard handled by the listbox (aria-activedescendant).
+            <div
+              key={node.id}
+              id={optionId(node.id)}
+              role="option"
+              tabIndex={-1}
+              aria-selected={node.id === selectedId}
+              className={node.id === selectedId ? 'selected' : undefined}
+              onClick={() => onSelect(node.id)}
+              title={activation ? `${node.id} · ${activation}` : node.id}
+            >
+              <span className={`kind-badge kind-${node.kind}`}>{node.kind}</span>
+              {activation && (
+                <span
+                  className={`activation-badge activation-${String(node.attributes.activation)}`}
+                >
+                  {activation}
+                </span>
+              )}
+              <span className="name">{node.name}</span>
+              {severities.has(node.id) && (
+                <span className={`severity-dot severity-${severities.get(node.id)}`} />
+              )}
+            </div>
+          );
+        })}
       </div>
     </nav>
   );
