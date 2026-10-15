@@ -154,6 +154,48 @@ describe('maskArgs', () => {
     ]);
   });
 
+  it('masks Azure connection strings, inline and in env-style pairs', () => {
+    const azure = `DefaultEndpointsProtocol=https;AccountName=a;AccountKey=${S}Z1==;EndpointSuffix=core.windows.net`;
+    const masked = `DefaultEndpointsProtocol=https;AccountName=a;AccountKey=${REDACTED};EndpointSuffix=core.windows.net`;
+    expect(
+      maskArgs([
+        azure,
+        `--connection-string=${azure}`,
+        `AZURE_STORAGE_CONNECTION_STRING=${azure}`,
+        `SharedAccessSignature=sv=2022&sig=${S}Z2`,
+      ]),
+    ).toEqual([
+      masked,
+      `--connection-string=${masked}`,
+      `AZURE_STORAGE_CONNECTION_STRING=${masked}`,
+      `SharedAccessSignature=${REDACTED}`,
+    ]);
+    expect(JSON.stringify(maskArgs([`endpoint=https://h;sas=sv=1&sig=${S}Z3`]))).not.toContain(S);
+  });
+
+  it('masks scheme-less DSN userinfo and spaced key = value pairs', () => {
+    expect(maskArgs([`app:${S}D1@tcp(localhost:3306)/app`])).toEqual([
+      `${REDACTED}@tcp(localhost:3306)/app`,
+    ]);
+    expect(JSON.stringify(maskArgs([`host=localhost password = ${S}D2 dbname=app`]))).not.toContain(
+      S,
+    );
+  });
+
+  it('masks values after --pass / --passphrase and single-case hex or UUID tokens', () => {
+    expect(
+      maskArgs([
+        '--passphrase',
+        `${S}W1`,
+        '--pass',
+        `${S}W2`,
+        'a'.repeat(40),
+        '123e4567-e89b-12d3-a456-426614174000',
+        'serve',
+      ]),
+    ).toEqual(['--passphrase', REDACTED, '--pass', REDACTED, REDACTED, REDACTED, 'serve']);
+  });
+
   it('masks combined -p<value> short flags (and, fail-closed, the next arg)', () => {
     expect(maskArgs(['-u', 'app', `-p${S}M1`, 'appdb', '-p8080:80'])).toEqual([
       '-u',

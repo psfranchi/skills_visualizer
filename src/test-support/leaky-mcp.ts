@@ -60,7 +60,14 @@ export function leakyMcpConfig(): { mcpServers: Record<string, unknown>; secrets
       },
       'connection-strings': {
         command: 'psql',
-        args: [`host=localhost user=app password=${S}18`, `Server=db;Password=${S}19;Database=x`],
+        args: [
+          `host=localhost user=app password=${S}18`,
+          `Server=db;Password=${S}19;Database=x`,
+          `DefaultEndpointsProtocol=https;AccountName=a;AccountKey=${S}24;EndpointSuffix=x`,
+          `app:${S}25@tcp(localhost:3306)/app`,
+          '--passphrase',
+          `${S}26`,
+        ],
       },
     },
   };

@@ -1,8 +1,9 @@
 export const REDACTED = '[redacted]';
 
 const ENV_REFERENCE = /^\$\{env:[A-Za-z_][A-Za-z0-9_]*\}$/;
+/** Fail-closed: `pass` also matches `--bypass…`, `key` also matches `--keyboard`. */
 const SECRET_NAME =
-  /(token|secret|passw(or)?d|pwd|api[-_]?key|key|auth|credential|bearer|cookie|session)/i;
+  /(token|secret|pass|pwd|api[-_]?key|key|auth|credential|bearer|cookie|session|signature|(?:^|[^a-z])sig(?:[^a-z]|$))/i;
 const HEADER_FLAG = /^(?:--headers?|-H)$/;
 /** Short flags whose attached value is a secret (`mysql -pSECRET`). */
 const SECRET_SHORT_FLAG = /^-p./s;
@@ -11,8 +12,11 @@ const AUTH_MARKER = /authorization\s*:|bearer\s|basic\s/i;
 const AUTH_SCHEME = /^(?:bearer|basic)$/i;
 const MAX_COMMAND_DEPTH = 2;
 const TOKEN_PREFIX = /^(?:ghp_|gho_|ghu_|ghs_|ghr_|github_pat_|glpat-|xox[abpr]-|sk-|AKIA|eyJ)/;
-const INLINE_SECRET =
-  /((?:^|[\s;&,])(?:password|pwd|passwd|token|secret|api[-_]?key)\s*=\s*)[^\s;&,]+/gi;
+const INLINE_SEPARATOR = /[\s;&,]/;
+/** `user:pass@host…` without a scheme (Go / MySQL DSNs such as `app:pw@tcp(db:3306)/app`). */
+const SCHEMELESS_USERINFO = /^[^\s:@/]+:[^\s@/]*@/;
+const HEX_TOKEN = /^[0-9a-f]{32,}$/i;
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const OPAQUE_CHARS = /^[A-Za-z0-9_\-+/=]{24,}$/;
 const CREDENTIAL_SEGMENT = /^[A-Za-z0-9_-]{20,}$/;
 
@@ -90,8 +94,51 @@ function sanitizeEmbeddedUrls(text: string): string {
   return out + text.slice(from);
 }
 
+/**
+ * `key=value` pairs separated by whitespace, `;`, `&`, or `,` (libpq, ADO.NET, Azure connection
+ * strings): the value is masked when the key looks secret. Linear scan; the key ends at the first `=`.
+ */
+function maskInlineSecrets(text: string): string {
+  let out = '';
+  let segment = '';
+  const flush = () => {
+    const eq = segment.indexOf('=');
+    const key = eq === -1 ? '' : segment.slice(0, eq);
+    const value = eq === -1 ? '' : segment.slice(eq + 1).trim();
+    const secret = key !== '' && value !== '' && SECRET_NAME.test(key) && !isEnvReference(value);
+    out += secret ? `${key}=${REDACTED}` : segment;
+    segment = '';
+  };
+  for (let i = 0; i < text.length; i++) {
+    const ch = text.charAt(i);
+    if (!INLINE_SEPARATOR.test(ch)) {
+      segment += ch;
+      continue;
+    }
+    if (/\s/.test(ch)) {
+      let end = i;
+      while (end < text.length && /\s/.test(text.charAt(end))) end++;
+      const run = text.slice(i, end);
+      i = end - 1;
+      // `password = X`: whitespace around `=` stays inside the pair.
+      if (segment !== '' && (segment.endsWith('=') || text.charAt(end) === '=')) {
+        segment += run;
+        continue;
+      }
+      flush();
+      out += run;
+      continue;
+    }
+    flush();
+    out += ch;
+  }
+  flush();
+  return out;
+}
+
 /** Long opaque tokens mixing lower, upper, and digits; paths (`/…`, `./…`) are left alone. */
 function looksLikeOpaqueToken(value: string): boolean {
+  if (HEX_TOKEN.test(value) || UUID.test(value)) return true;
   return (
     OPAQUE_CHARS.test(value) &&
     !value.startsWith('/') &&
@@ -117,10 +164,14 @@ function maskValue(value: string, depth: number): string {
     return REDACTED;
   }
   if (/\s/.test(value)) {
-    return depth < MAX_COMMAND_DEPTH ? maskCommandText(value, depth + 1) : REDACTED;
+    // Inline pairs first: `password = X` would otherwise split into separate tokens.
+    return depth < MAX_COMMAND_DEPTH
+      ? maskCommandText(maskInlineSecrets(value), depth + 1)
+      : REDACTED;
   }
   if (looksLikeUrl(value)) return sanitizeUrl(value);
-  return sanitizeEmbeddedUrls(value.replace(INLINE_SECRET, `$1${REDACTED}`));
+  const withoutUserinfo = value.replace(SCHEMELESS_USERINFO, `${REDACTED}@`);
+  return sanitizeEmbeddedUrls(maskInlineSecrets(withoutUserinfo));
 }
 
 /** `Name: value` → `Name: [redacted]` unless the value is a pure `${env:NAME}` reference. */

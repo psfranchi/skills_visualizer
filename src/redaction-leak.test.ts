@@ -21,7 +21,7 @@ describe('end to end: MCP redaction bypass shapes never leak', () => {
   });
 
   it('the fixture really contains the secrets', () => {
-    expect(leakyMcpJson().split(LEAK_MARKER).length - 1).toBeGreaterThanOrEqual(23);
+    expect(leakyMcpJson().split(LEAK_MARKER).length - 1).toBeGreaterThanOrEqual(26);
   });
 
   it('keeps them out of the serialized graph', async () => {
