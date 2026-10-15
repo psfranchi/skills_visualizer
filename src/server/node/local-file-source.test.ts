@@ -112,6 +112,42 @@ describe('LocalFileSource', () => {
 
     await rm(dir, { recursive: true, force: true });
   });
+
+  it('refuses a parent-dir symlink swap before rename and writes nothing outside the root', async () => {
+    const dir = await mkdtemp(path.join(tmpdir(), 'sv-toctou-'));
+    const outside = await mkdtemp(path.join(tmpdir(), 'sv-toctou-out-'));
+    const skill = path.join(dir, '.cursor', 'skills', 'demo');
+    await mkdir(skill, { recursive: true });
+    const target = path.join(skill, 'SKILL.md');
+    const original = '---\nname: demo\ndescription: safe\n---\n';
+    await writeFile(target, original, { mode: 0o644 });
+    const source = await LocalFileSource.open(dir);
+    const repoPath = '.cursor/skills/demo/SKILL.md' as RepoPath;
+    const { sha256Hex } = await import('../../core');
+    const hash = await sha256Hex(new TextEncoder().encode(original));
+    const next = new TextEncoder().encode('---\nname: demo\ndescription: pwned\n---\n');
+
+    source._testBeforeRename = async () => {
+      // Swap the parent directory for a symlink that points outside the repo root.
+      await rm(skill, { recursive: true, force: true });
+      await mkdir(path.join(outside, 'demo'), { recursive: true });
+      await writeFile(path.join(outside, 'demo', 'SKILL.md'), original);
+      await symlink(path.join(outside, 'demo'), skill);
+    };
+
+    const result = await source.replaceIfUnchanged(repoPath, hash, next);
+    expect(result.ok).toBe(false);
+
+    // Nothing under the outside tree may contain the attack payload.
+    const outsideText = await readFile(path.join(outside, 'demo', 'SKILL.md'), 'utf8').catch(
+      () => '',
+    );
+    expect(outsideText).not.toContain('pwned');
+    expect(outsideText === '' || outsideText === original).toBe(true);
+
+    await rm(dir, { recursive: true, force: true });
+    await rm(outside, { recursive: true, force: true });
+  });
 });
 
 let basicDir: string | undefined;
