@@ -30,6 +30,9 @@ export function viewStateFile(baseDir: string, realRoot: string): string {
 }
 
 export class ViewStateStore {
+  /** Serializes writes so an older save cannot land after a newer one (e.g. Reset layout). */
+  #writeChain: Promise<unknown> = Promise.resolve();
+
   constructor(readonly file: string) {}
 
   /** Missing or invalid state reads as empty. */
@@ -42,8 +45,14 @@ export class ViewStateStore {
     }
   }
 
-  /** Atomic replace: temp file in the same directory, then rename. */
-  async write(view: GraphViewState): Promise<void> {
+  /** Atomic replace: temp file in the same directory, then rename. Queued with prior writes. */
+  write(view: GraphViewState): Promise<void> {
+    const run = this.#writeChain.then(() => this.#writeOnce(view));
+    this.#writeChain = run.catch(() => {});
+    return run;
+  }
+
+  async #writeOnce(view: GraphViewState): Promise<void> {
     const dir = path.dirname(this.file);
     await mkdir(dir, { recursive: true, mode: 0o700 });
     const temp = path.join(dir, `.view.${randomUUID()}.tmp`);

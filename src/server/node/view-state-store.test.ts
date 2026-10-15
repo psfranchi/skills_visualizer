@@ -58,6 +58,14 @@ describe('ViewStateStore', () => {
     expect(await store.read()).toEqual(view);
     expect(await readdir(path.join(dir, 'k'))).toEqual(['view.json']);
   });
+
+  it('serializes concurrent writes so the latest value wins', async () => {
+    const store = new ViewStateStore(path.join(dir, 'queue', 'view.json'));
+    const first = { schemaVersion: 1 as const, pinned: { a: { x: 1, y: 1 } } };
+    const second = { schemaVersion: 1 as const, pinned: { b: { x: 2, y: 2 } } };
+    await Promise.all([store.write(first), store.write(second)]);
+    expect(await store.read()).toEqual(second);
+  });
 });
 
 describe('local services over a real directory', () => {

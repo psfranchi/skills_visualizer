@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import type { AgentGraph, NodeKind, Position, RepoPath } from '../core';
+import type { AgentGraph, NodeKind, RepoPath } from '../core';
 import { layoutHierarchy } from '../layout';
 import type { Meta } from '../server/app';
 import { editableSkillPaths, nodeIsEditable } from '../source-editing';
@@ -25,11 +25,10 @@ import {
 } from './model';
 import { NodeList } from './NodeList';
 import { DebouncedSaver } from './pin-saver';
+import { type Pins, prunePins } from './pins';
 import { Toolbar } from './Toolbar';
 
 const SAVE_DELAY_MS = 500;
-
-type Pins = Record<string, Position>;
 
 /** Persists pins after a quiet period; `flush` saves immediately; leaving the page flushes. */
 function usePinPersistence(onError: (message: string) => void) {
@@ -80,18 +79,43 @@ export function App() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const pins = usePinPersistence(setError);
+  /** Value to persist after the next pinned render; null means no pending save. */
+  const pendingSave = useRef<Pins | null>(null);
 
   useEffect(() => {
     Promise.all([fetchMeta(), fetchGraph(), fetchViewState()]).then(
       ([m, g, view]) => {
         setMeta(m);
         setGraph(g);
-        setPinned(view.pinned);
+        const known = new Set(g.nodes.map((n) => n.id));
+        const pruned = prunePins(view.pinned, known);
+        setPinned(pruned);
+        if (pruned !== view.pinned) pendingSave.current = pruned;
         setFitToken((t) => t + 1);
       },
       (e: unknown) => setError(e instanceof Error ? e.message : 'Loading failed'),
     );
   }, []);
+
+  // Drop pins for nodes that disappeared after rescan / edit apply.
+  useEffect(() => {
+    if (!graph) return;
+    const known = new Set(graph.nodes.map((n) => n.id));
+    setPinned((current) => {
+      const next = prunePins(current, known);
+      if (next !== current) pendingSave.current = next;
+      return next;
+    });
+  }, [graph]);
+
+  // Persist outside setState updaters so StrictMode does not double-schedule.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: re-run when `pinned` changes; body reads pendingSave ref.
+  useEffect(() => {
+    if (pendingSave.current === null) return;
+    const toSave = pendingSave.current;
+    pendingSave.current = null;
+    pins.schedule(toSave);
+  }, [pinned, pins]);
 
   const visible = useMemo(() => (graph ? visibleGraph(graph, filters) : null), [graph, filters]);
   const matches = useMemo(
@@ -126,18 +150,16 @@ export function App() {
     );
   }, [graph, meta?.capabilities.write]);
 
-  const onPin = useCallback(
-    (id: string, position: Position) => {
-      setPinned((current) => {
-        const next = { ...current, [id]: position };
-        pins.schedule(next);
-        return next;
-      });
-    },
-    [pins],
-  );
+  const onPin = useCallback((id: string, position: { x: number; y: number }) => {
+    setPinned((current) => {
+      const next = { ...current, [id]: position };
+      pendingSave.current = next;
+      return next;
+    });
+  }, []);
 
   const onResetLayout = () => {
+    pendingSave.current = null;
     setPinned({});
     pins.flush({});
     setFitToken((t) => t + 1);
