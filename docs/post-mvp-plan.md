@@ -112,9 +112,11 @@ Today’s Cursor adapter already **discovers** `.claude` / `.codex` / `.agents` 
 
 **Accept:**
 
-- [ ] Tokens + chrome applied; keyboard NodeList + selection still work.
-- [ ] Graph remains D3 SVG (no WebGL).
-- [ ] Deferred M2 polish items addressed or explicitly deferred with rationale; `pnpm check` green.
+- [x] Tokens + chrome applied; keyboard NodeList + selection still work.
+- [x] Graph remains D3 SVG (no WebGL).
+- [x] Deferred M2 polish items addressed or explicitly deferred with rationale; `pnpm check` green.
+
+**Status (2026-10-15): done.** Verifier: `pnpm check` (359 tests) + `pnpm build` green; slate/teal tokens + atmosphere in `styles.css` (system font stack after CDN drop); richer D3 SVG nodes (kind chips, engine stripes, activation marks, selection chrome in `graph-render.ts`); NodeList keyboard listbox still works; no WebGL/force-layout (focus mode sufficient); M2 polish: `prunePins`, view-state write queue, StrictMode-safe pin schedule + single-flight pin-saver; secrets clear on P3 diff; no `Co-authored-by` on P3 commits.
 
 ---
 
