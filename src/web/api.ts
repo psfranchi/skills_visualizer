@@ -16,8 +16,25 @@ import type {
 
 const client = hc<AppType>('/');
 
+export class ApiError extends Error {
+  readonly status: number;
+  readonly body: unknown;
+  constructor(what: string, status: number, body: unknown) {
+    super(
+      status === 401
+        ? 'Unauthorized — open the URL printed in the terminal (with ?token=…)'
+        : `${what} failed (${status})`,
+    );
+    this.status = status;
+    this.body = body;
+  }
+}
+
 async function ok<T>(response: Response, what: string): Promise<T> {
-  if (!response.ok) throw new Error(`${what} failed (${response.status})`);
+  if (!response.ok) {
+    const body = await response.json().catch(() => ({}));
+    throw new ApiError(what, response.status, body);
+  }
   return (await response.json()) as T;
 }
 
@@ -57,12 +74,29 @@ export function saveViewStateOnExit(view: GraphViewState): void {
   }).catch(() => {});
 }
 
+export type PreviewEditResult =
+  | { ok: true; preview: EditPreviewResponse }
+  | { ok: false; status: number; currentHash?: string; error?: string };
+
 export async function previewEdit(input: {
   path: string;
   expectedHash: string;
   newText: string;
-}): Promise<EditPreviewResponse> {
-  return ok(await client.api.edits.preview.$post({ json: input }), 'Preview edit');
+}): Promise<PreviewEditResult> {
+  const response = await client.api.edits.preview.$post({ json: input });
+  const body = (await response.json()) as EditPreviewResponse & {
+    currentHash?: string;
+    error?: string;
+  };
+  if (!response.ok) {
+    return {
+      ok: false,
+      status: response.status,
+      ...(body.currentHash ? { currentHash: body.currentHash } : {}),
+      ...(body.error ? { error: body.error } : {}),
+    };
+  }
+  return { ok: true, preview: body };
 }
 
 export async function applyEdit(input: {

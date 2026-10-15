@@ -1,9 +1,15 @@
 import { describe, expect, it } from 'vitest';
-import { canApply, interpretApplyResponse, type PreviewState } from './edit-model';
+import {
+  canApply,
+  interpretApplyResponse,
+  type PreviewState,
+  selectionAfterApply,
+} from './edit-model';
 
 const draft = { path: 'a', expectedHash: 'h', text: 'hello' };
 const preview = (over: Partial<PreviewState> = {}): PreviewState => ({
   diff: '',
+  diffTruncated: false,
   diagnostics: [],
   impact: { edgesAdded: [], edgesRemoved: [] },
   blocking: false,
@@ -31,5 +37,15 @@ describe('interpretApplyResponse', () => {
       kind: 'error',
       message: 'bad',
     });
+  });
+});
+
+describe('selectionAfterApply', () => {
+  it('keeps the selection when the node id still exists', () => {
+    expect(selectionAfterApply('skill:a', { nodes: [{ id: 'skill:a' }, { id: 'b' }] })).toBe(
+      'skill:a',
+    );
+    expect(selectionAfterApply('gone', { nodes: [{ id: 'skill:a' }] })).toBeNull();
+    expect(selectionAfterApply(null, { nodes: [{ id: 'skill:a' }] })).toBeNull();
   });
 });

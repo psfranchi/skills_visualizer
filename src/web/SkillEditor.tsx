@@ -14,6 +14,7 @@ export function SkillEditor({ node, onApplied }: SkillEditorProps) {
   const [preview, setPreview] = useState<PreviewState | null>(null);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+  const [conflict, setConflict] = useState(false);
 
   const contentHash = node.source?.contentHash;
   useEffect(() => {
@@ -22,6 +23,7 @@ export function SkillEditor({ node, onApplied }: SkillEditorProps) {
     setDraft(null);
     setPreview(null);
     setMessage(null);
+    setConflict(false);
     fetchFile(path).then(
       (file) => {
         if (cancelled) return;
@@ -46,14 +48,31 @@ export function SkillEditor({ node, onApplied }: SkillEditorProps) {
     setMessage(null);
     previewEdit({ path: draft.path, expectedHash: draft.expectedHash, newText: draft.text })
       .then((result) => {
+        if (!result.ok) {
+          setPreview(null);
+          if (result.status === 409 && result.currentHash) {
+            setDraft({
+              ...draft,
+              expectedHash: result.currentHash,
+              conflictDraft: draft.text,
+            });
+            setConflict(true);
+            setMessage('file changed on disk');
+            return;
+          }
+          setMessage(result.error ?? `Preview failed (${result.status})`);
+          return;
+        }
+        setConflict(false);
         setPreview({
-          diff: result.diff,
-          diagnostics: result.diagnostics,
-          impact: result.impact,
-          blocking: result.blocking,
+          diff: result.preview.diff,
+          diffTruncated: result.preview.diffTruncated,
+          diagnostics: result.preview.diagnostics,
+          impact: result.preview.impact,
+          blocking: result.preview.blocking,
           previewedText: draft.text,
         });
-        if (result.blocking) setMessage('Fix blocking diagnostics before applying.');
+        if (result.preview.blocking) setMessage('Fix blocking diagnostics before applying.');
       })
       .catch((error: unknown) => {
         setPreview(null);
@@ -71,15 +90,21 @@ export function SkillEditor({ node, onApplied }: SkillEditorProps) {
         const outcome = interpretApplyResponse(status, body);
         if (outcome.kind === 'ok' && body.graph) {
           onApplied(body.graph);
-          setDraft({ ...draft, expectedHash: outcome.hash });
+          setDraft({ path: draft.path, expectedHash: outcome.hash, text: draft.text });
           setPreview(null);
+          setConflict(false);
           setMessage('Applied.');
           return;
         }
         if (outcome.kind === 'conflict') {
-          setDraft({ ...draft, expectedHash: outcome.currentHash });
+          setDraft({
+            ...draft,
+            expectedHash: outcome.currentHash,
+            conflictDraft: draft.text,
+          });
           setPreview(null);
-          setMessage('file changed on disk — reload');
+          setConflict(true);
+          setMessage('file changed on disk');
           return;
         }
         setMessage(outcome.kind === 'error' ? outcome.message : 'Apply failed');
@@ -88,6 +113,29 @@ export function SkillEditor({ node, onApplied }: SkillEditorProps) {
         setMessage(error instanceof Error ? error.message : 'Apply failed');
       })
       .finally(() => setBusy(false));
+  };
+
+  const loadDiskVersion = () => {
+    setBusy(true);
+    fetchFile(path)
+      .then((file) => {
+        setDraft({ path, expectedHash: file.hash, text: file.text });
+        setPreview(null);
+        setConflict(false);
+        setMessage(null);
+      })
+      .catch((error: unknown) => {
+        setMessage(error instanceof Error ? error.message : 'Failed to reload');
+      })
+      .finally(() => setBusy(false));
+  };
+
+  const keepDraft = () => {
+    const text = draft.conflictDraft ?? draft.text;
+    setDraft({ path: draft.path, expectedHash: draft.expectedHash, text });
+    setPreview(null);
+    setConflict(false);
+    setMessage('Re-preview against the new hash before applying.');
   };
 
   return (
@@ -101,6 +149,7 @@ export function SkillEditor({ node, onApplied }: SkillEditorProps) {
         onChange={(event) => {
           setDraft({ ...draft, text: event.target.value });
           setPreview(null);
+          setConflict(false);
           setMessage(null);
         }}
       />
@@ -112,14 +161,27 @@ export function SkillEditor({ node, onApplied }: SkillEditorProps) {
           Apply
         </button>
       </div>
-      {message && (
+      {conflict && (
+        <div className="skill-editor-conflict" role="alert">
+          <p className="error">file changed on disk</p>
+          <div className="skill-editor-actions">
+            <button type="button" disabled={busy} onClick={loadDiskVersion}>
+              Load disk version
+            </button>
+            <button type="button" disabled={busy} onClick={keepDraft}>
+              Keep my draft (re-preview)
+            </button>
+          </div>
+        </div>
+      )}
+      {message && !conflict && (
         <p className={message.startsWith('file changed') ? 'error' : 'muted'} role="status">
           {message}
         </p>
       )}
       {preview && (
         <div className="skill-editor-preview">
-          <h4>Diff</h4>
+          <h4>Diff{preview.diffTruncated ? ' (truncated)' : ''}</h4>
           <pre className="diff">{preview.diff}</pre>
           <h4>Impact</h4>
           <p className="muted">

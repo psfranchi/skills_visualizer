@@ -4,10 +4,13 @@ export interface EditDraft {
   path: string;
   expectedHash: string;
   text: string;
+  /** User's text kept across a disk conflict until they load disk or re-preview. */
+  conflictDraft?: string;
 }
 
 export interface PreviewState {
   diff: string;
+  diffTruncated: boolean;
   diagnostics: GraphDiagnostic[];
   impact: { edgesAdded: string[]; edgesRemoved: string[] };
   blocking: boolean;
@@ -34,4 +37,13 @@ export function interpretApplyResponse(
     return { kind: 'conflict', currentHash: body.currentHash };
   }
   return { kind: 'error', message: body.error ?? `Apply failed (${status})` };
+}
+
+/** After apply, keep the prior selection when that node id still exists. */
+export function selectionAfterApply(
+  previousId: string | null,
+  graph: { nodes: { id: string }[] },
+): string | null {
+  if (previousId === null) return null;
+  return graph.nodes.some((n) => n.id === previousId) ? previousId : null;
 }
