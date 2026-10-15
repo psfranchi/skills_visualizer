@@ -209,7 +209,7 @@ planReplace(original: Uint8Array, newText: string): { bytes: Uint8Array; eol: 'l
 - [x] Stale overwrite blocked.
 - [x] Reparse reflects the edit.
 
-**Status (2026-10-15): done.** Verifier: `pnpm check` (324 tests) + `pnpm build` green; edit routes cover write:false→403, preview diff/diagnostics/impact, malformed YAML blocks apply while warnings do not, hash 409 with file untouched, temp+rename with mode preserved, symlink refused, path-boundary denials, single-file apply, EOL/BOM/Unicode preservation; local auth cookie/Bearer → 401 without token and token absent from API bodies; live smoke on port 5340 (materialized `cursor-basic`, `SV_STATE_DIR` temp) proved 401 → token exchange → Bearer preview+apply touches only the skill → stale hash 409; no `Co-authored-by` on recent commits. Residual: macOS parent-dir rename TOCTOU still documented in the security backlog.
+**Status (2026-10-15): done.** Verifier: `pnpm check` (324 tests) + `pnpm build` green; edit routes cover write:false→403, preview diff/diagnostics/impact, malformed YAML blocks apply while warnings do not, hash 409 with file untouched, temp+rename with mode preserved, symlink refused, path-boundary denials, single-file apply, EOL/BOM/Unicode preservation; local auth cookie/Bearer → 401 without token and token absent from API bodies; live smoke on port 5340 (materialized `cursor-basic`, `SV_STATE_DIR` temp) proved 401 → token exchange → Bearer preview+apply touches only the skill → stale hash 409; no `Co-authored-by` on recent commits. Residual: macOS parent-dir rename TOCTOU still documented in the security backlog. Browser: auth cookie, edit→preview→apply on code-review, selection kept, description persisted after reload.
 
 ## Later (not detailed)
 
@@ -257,8 +257,10 @@ M2 requirements from the same review: the UI renders only `http`/`https` links (
 
 ## Acceptance criteria (overall)
 
-- [ ] M0–M3 criteria met; `pnpm check` and `pnpm build` green at every milestone.
-- [ ] Core modules have no `node:` imports (tsconfig + Biome) and are tested only through `MemoryFileSource`.
-- [ ] No secret sentinel in CLI output, API responses, or UI.
-- [ ] Every explicit edge resolves to inspectable source evidence; scanning and viewing never modify the repo.
-- [ ] Overlay and `AGENTS.md` Stack section list the real scripts.
+- [x] M0–M3 criteria met; `pnpm check` and `pnpm build` green at every milestone.
+- [x] Core modules have no `node:` imports (tsconfig + Biome) and are tested only through `MemoryFileSource`.
+- [x] No secret sentinel in CLI output, API responses, or UI.
+- [x] Every explicit edge resolves to inspectable source evidence; scanning and viewing never modify the repo.
+- [x] Overlay and `AGENTS.md` Stack section list the real scripts.
+
+**Status (2026-10-15): M0–M3 done.** 324 tests; browser edit flow verified.
