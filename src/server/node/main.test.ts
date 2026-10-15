@@ -37,4 +37,10 @@ describe('startStaticServer', () => {
     expect(meta.status).toBe(200);
     expect(await meta.json()).toMatchObject({ displayName: path.basename(repo) });
   });
+
+  it('forbids framing the UI', async () => {
+    const page = await fetch(server.url);
+    expect(page.headers.get('x-frame-options')).toBe('DENY');
+    expect(page.headers.get('content-security-policy')).toBe("frame-ancestors 'none'");
+  });
 });

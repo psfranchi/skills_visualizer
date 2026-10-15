@@ -6,6 +6,7 @@ import { serveStatic } from '@hono/node-server/serve-static';
 import { Hono } from 'hono';
 import { createServer as createViteServer, type Plugin } from 'vite';
 import { createApp } from '../app';
+import { FRAME_HEADERS } from '../frame-headers';
 import { createLocalServices } from './services';
 
 export const HOST = '127.0.0.1';
@@ -63,7 +64,13 @@ export async function startStaticServer(options: ServerOptions): Promise<Running
   const webDir = options.webDir ?? WEB_DIST;
   if (!existsSync(webDir)) throw new Error('dist/web not found; run `pnpm build` first.');
   const services = await createLocalServices(options.root, { stateDir: options.stateDir });
-  const app = new Hono().route('/', createApp(services)).use('/*', serveStatic({ root: webDir }));
+  const app = new Hono()
+    .use('*', async (c, next) => {
+      await next();
+      for (const [name, value] of Object.entries(FRAME_HEADERS)) c.res.headers.set(name, value);
+    })
+    .route('/', createApp(services))
+    .use('/*', serveStatic({ root: webDir }));
   return new Promise((resolve, reject) => {
     const server = serve(
       { fetch: app.fetch, hostname: HOST, port: options.port ?? DEFAULT_SERVE_PORT },
