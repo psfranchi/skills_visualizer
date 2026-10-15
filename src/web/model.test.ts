@@ -4,6 +4,7 @@ import {
   defaultFilters,
   diagnosticsForNode,
   incidentEdges,
+  inferredOnlyNodeIds,
   listedNodes,
   nodeSeverities,
   safeHref,
@@ -72,6 +73,40 @@ describe('visibleGraph', () => {
     const narrowed = visibleGraph(graph, { ...filters, kinds: new Set(['rule', 'file']) });
     expect([...narrowed.nodeIds].sort()).toEqual(['file:docs/x.md', 'rule:r']);
     expect([...narrowed.edgeIds]).toEqual(['e2']);
+  });
+
+  it('hides file/script nodes reached only by inferred edges unless inferred edges are shown', () => {
+    const inferredGraph: AgentGraph = {
+      ...graph,
+      nodes: [
+        ...graph.nodes,
+        node('file:docs/y.md', 'file', 'y.md', 'docs/y.md'),
+        node('script:run.sh', 'script', 'run.sh', 'run.sh'),
+        node('skill:b', 'skill', 'beta', '.cursor/skills/b/SKILL.md'),
+        node('file:lonely.md', 'file', 'lonely.md', 'lonely.md'),
+      ],
+      edges: [
+        ...graph.edges,
+        edge('i1', 'rule:r', 'file:docs/y.md', 'inferred'),
+        edge('i2', 'skill:a', 'script:run.sh', 'inferred'),
+        edge('i3', 'skill:b', 'skill:a', 'inferred'),
+      ],
+    };
+    expect([...inferredOnlyNodeIds(inferredGraph)].sort()).toEqual([
+      'file:docs/y.md',
+      'script:run.sh',
+    ]);
+
+    const hidden = visibleGraph(inferredGraph, defaultFilters());
+    expect(hidden.nodeIds.has('file:docs/y.md')).toBe(false);
+    expect(hidden.nodeIds.has('script:run.sh')).toBe(false);
+    expect(hidden.nodeIds.has('file:docs/x.md')).toBe(true);
+    expect(hidden.nodeIds.has('skill:b')).toBe(true);
+    expect(hidden.nodeIds.has('file:lonely.md')).toBe(true);
+
+    const shown = visibleGraph(inferredGraph, { ...defaultFilters(), showInferred: true });
+    expect(shown.nodeIds.size).toBe(inferredGraph.nodes.length);
+    expect(shown.edgeIds.has('i1')).toBe(true);
   });
 });
 

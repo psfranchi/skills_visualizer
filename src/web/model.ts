@@ -30,9 +30,33 @@ export interface VisibleGraph {
   edgeIds: ReadonlySet<string>;
 }
 
+/** Only these kinds may be hidden with inferred edges; config nodes always show. */
+const INFERRED_HIDEABLE_KINDS: ReadonlySet<NodeKind> = new Set(['file', 'script']);
+
+/** `file`/`script` nodes that have edges and all of them are inferred. */
+export function inferredOnlyNodeIds(graph: AgentGraph): Set<string> {
+  const hasInferred = new Set<string>();
+  const hasOther = new Set<string>();
+  for (const e of graph.edges) {
+    const bucket = e.evidence === 'inferred' ? hasInferred : hasOther;
+    bucket.add(e.source);
+    bucket.add(e.target);
+  }
+  return new Set(
+    graph.nodes
+      .filter(
+        (n) => INFERRED_HIDEABLE_KINDS.has(n.kind) && hasInferred.has(n.id) && !hasOther.has(n.id),
+      )
+      .map((n) => n.id),
+  );
+}
+
 /** Kind filter and the inferred-edge toggle. Search does not hide nodes (see `searchMatches`). */
 export function visibleGraph(graph: AgentGraph, filters: Filters): VisibleGraph {
-  const nodeIds = new Set(graph.nodes.filter((n) => filters.kinds.has(n.kind)).map((n) => n.id));
+  const hidden = filters.showInferred ? new Set<string>() : inferredOnlyNodeIds(graph);
+  const nodeIds = new Set(
+    graph.nodes.filter((n) => filters.kinds.has(n.kind) && !hidden.has(n.id)).map((n) => n.id),
+  );
   const edgeIds = new Set(
     graph.edges
       .filter(
