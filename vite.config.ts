@@ -1,7 +1,13 @@
 import { fileURLToPath } from 'node:url';
 import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
-import { FRAME_HEADERS } from './src/server/frame-headers';
+
+// Keep in sync with `src/server/frame-headers.ts` (vite.config cannot import `.ts` without
+// allowImportingTsExtensions, and a bare import triggers Vite's native-loader warning).
+const FRAME_HEADERS = {
+  'X-Frame-Options': 'DENY',
+  'Content-Security-Policy': "frame-ancestors 'none'",
+} as const;
 
 export default defineConfig({
   root: fileURLToPath(new URL('./src/web', import.meta.url)),
