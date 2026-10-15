@@ -38,11 +38,12 @@ The scanner reports these as diagnostics or attributes and builds no semantics o
 - Case sensitivity of `AGENTS.md`.
 - Base directory for rule `@path` resolution (default: repo root, then relative to the file; ambiguity gives a diagnostic).
 - Whether `mcp.json` allows comments (parsed with strict `JSON.parse`; failure gives an error diagnostic).
-- Whether rule globs or skill `paths` auto-attach to files (kept as attributes; no file-match edges).
+- Nested directory-scoped rule activation beyond matching discovered paths (no Cursor runtime simulation).
 
-### How the scanner treats these (M1)
+### How the scanner treats these (M1 + post-MVP P1)
 
 - **Edges:** Markdown links, images, and reference definitions, plus rule `@path` mentions, are `explicit` with source offsets. Inline-code text that matches an existing file is `inferred` (confidence 0.5, with an explanation); unmatched inline code is ignored. Explicit targets that don't exist give `unresolved-reference`.
+- **Glob / paths match edges (P1):** rule `globs` and skill `paths` (legacy `globs`) produce derived `applies-to` edges to matching **discovered** file paths only (no filesystem walk beyond the scan list). Fan-out is capped (50 matches per pattern); `glob-no-match` / `glob-match-capped` diagnostics when empty or capped. This is path matching, not a claim about Cursor’s exact attach runtime.
 - **Rule `@path` base:** repo root first, then relative to the rule; both existing gives `ambiguous-reference`.
 - **Rule frontmatter** that isn't strict YAML (e.g. `globs: *.ts`) is read as plain `key: value` lines with an info diagnostic; other files report `malformed-frontmatter`.
 - **Near misses are diagnostics, not nodes:** `SKILL.md` outside a skill root, `.md` files in `.cursor/rules`, `AGENTS.md` with different casing, nested `.cursor/rules` / agent dirs / `mcp.json` (unverified).

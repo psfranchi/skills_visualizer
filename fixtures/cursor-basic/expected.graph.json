@@ -357,7 +357,9 @@
           "alwaysApply": false
         }
       },
-      "diagnostics": []
+      "diagnostics": [
+        "glob-no-match"
+      ]
     },
     {
       "id": "rule:.cursor/rules/frontend/testing.mdc",
@@ -461,6 +463,7 @@
         "dir": ".cursor/skills/code-review",
         "root": ".cursor",
         "scope": ".",
+        "paths": [],
         "description": "Review a diff for correctness, readability, and test coverage. Use before opening a pull request.",
         "frontmatter": {
           "name": "code-review",
@@ -483,6 +486,7 @@
         "dir": ".cursor/skills/release-notes",
         "root": ".cursor",
         "scope": ".",
+        "paths": [],
         "description": "Draft release notes from merged changes. Use when preparing a release.",
         "frontmatter": {
           "name": "release-notes",
@@ -506,6 +510,9 @@
         "dir": ".cursor/skills/write-tests",
         "root": ".cursor",
         "scope": ".",
+        "paths": [
+          "packages/**/*.ts"
+        ],
         "description": "Add focused unit tests for new or changed behavior. Use when a change lacks test coverage.",
         "frontmatter": {
           "name": "write-tests",
@@ -533,6 +540,15 @@
       "relation": "applies-to",
       "evidence": "derived",
       "explanation": "AGENTS.md applies to its directory and below; nested files combine with parents",
+      "supportedOperations": []
+    },
+    {
+      "id": "applies-to:skill:.cursor/skills/write-tests->file:packages/api/src/handler.ts#0",
+      "source": "skill:.cursor/skills/write-tests",
+      "target": "file:packages/api/src/handler.ts",
+      "relation": "applies-to",
+      "evidence": "derived",
+      "explanation": "Skill paths \"packages/**/*.ts\" matches discovered path",
       "supportedOperations": []
     },
     {
@@ -1146,5 +1162,20 @@
       "supportedOperations": []
     }
   ],
-  "diagnostics": []
+  "diagnostics": [
+    {
+      "code": "glob-no-match",
+      "message": "Glob \"src/**/*.ts\" matches no discovered files.",
+      "severity": "info",
+      "nodeId": "rule:.cursor/rules/frontend/react.mdc",
+      "path": ".cursor/rules/frontend/react.mdc"
+    },
+    {
+      "code": "glob-no-match",
+      "message": "Glob \"src/**/*.tsx\" matches no discovered files.",
+      "severity": "info",
+      "nodeId": "rule:.cursor/rules/frontend/react.mdc",
+      "path": ".cursor/rules/frontend/react.mdc"
+    }
+  ]
 }

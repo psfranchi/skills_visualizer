@@ -356,6 +356,7 @@
         "dir": ".cursor/skills/add-test",
         "root": ".cursor",
         "scope": ".",
+        "paths": [],
         "description": "Add the smallest useful test for a behavior or bug. Use when the user asks to add a test, cover a bug, write a characterization / regression test, or notes a missing test for existing or just-fixed behavior.",
         "frontmatter": {
           "name": "add-test",
@@ -378,6 +379,7 @@
         "dir": ".cursor/skills/adopt-base",
         "root": ".cursor",
         "scope": ".",
+        "paths": [],
         "description": "Install this agentic template into an application repo by copying agents, rules, skills, and docs, then running fill-stack-overlay. Use when the user says adopt-base, install agentic base, use this as the agentic template, apply agentic template to …, wire Cursor agents into my app, or points at agentic_base as the template for another project.",
         "frontmatter": {
           "name": "adopt-base",
@@ -400,6 +402,7 @@
         "dir": ".cursor/skills/debug-incident",
         "root": ".cursor",
         "scope": ".",
+        "paths": [],
         "description": "Reproduce, diagnose, and minimally fix bugs or regressions. Use when the user reports an incident, production bug, flaky failure, “doesn’t work”, asks to reproduce, bisect, find a regression, or chase a failing test / runtime error.",
         "frontmatter": {
           "name": "debug-incident",
@@ -422,6 +425,7 @@
         "dir": ".cursor/skills/explore-codebase",
         "root": ".cursor",
         "scope": ".",
+        "paths": [],
         "description": "Spawn a readonly explorer (Task explore) for search, grep, layout discovery, and research so the main/builder context stays clean. Use when locating symbols/files, mapping a subsystem, answering “where/how does X work?”, or gathering evidence before planning or building.",
         "frontmatter": {
           "name": "explore-codebase",
@@ -444,6 +448,7 @@
         "dir": ".cursor/skills/fill-stack-overlay",
         "root": ".cursor",
         "scope": ".",
+        "paths": [],
         "description": "Detect the app tech stack from the repo and generate overlays/<stack>/ from overlays/_template (commands, dirs, conventions). Use after adopt-base, when the project is Laravel/Next/Node/etc., or when the user says create overlay / fill stack / wire stack.",
         "frontmatter": {
           "name": "fill-stack-overlay",
@@ -466,6 +471,7 @@
         "dir": ".cursor/skills/migrate-schema",
         "root": ".cursor",
         "scope": ".",
+        "paths": [],
         "description": "Plan and execute schema or data-shape changes safely. Use when the user asks for a migration, schema change, expand/contract rollout, backfill, or zero-downtime DB/API column/table evolution.",
         "frontmatter": {
           "name": "migrate-schema",
@@ -488,6 +494,7 @@
         "dir": ".cursor/skills/pr-review",
         "root": ".cursor",
         "scope": ".",
+        "paths": [],
         "description": "Structured PR or diff review output (critical / suggestion / nit). Use when reviewing pull requests, or when the user asks for a PR review format. Complements the reviewer agent.",
         "frontmatter": {
           "name": "pr-review",
@@ -510,6 +517,7 @@
         "dir": ".cursor/skills/ship-checklist",
         "root": ".cursor",
         "scope": ".",
+        "paths": [],
         "description": "Pre-merge checklist when the user asks to ship / merge-ready: diff scope, tests, secrets, docs, reviewer/security/verifier. Use before opening or merging a PR, when claiming ship-ready, or when the user says ship-checklist.",
         "frontmatter": {
           "name": "ship-checklist",

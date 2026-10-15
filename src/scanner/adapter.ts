@@ -36,6 +36,11 @@ export interface ClientAdapter {
   parse(discovered: Discovered, file: LoadedFile): GraphFragment;
   /** Cross-file checks after all parses (e.g. agent name shadowing). */
   finalize?(fragments: readonly GraphFragment[]): GraphDiagnostic[];
+  /**
+   * Optional second pass with the discovered file list (e.g. glob/paths match edges).
+   * Matching is against this list only — no filesystem walk.
+   */
+  enrich?(fragments: readonly GraphFragment[], files: readonly RepoPath[]): GraphFragment;
   /** M3: whether the file may be edited through the app. */
   editable(discovered: Discovered): boolean;
 }

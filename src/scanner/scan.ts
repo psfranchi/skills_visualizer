@@ -54,6 +54,8 @@ export async function scan(
     );
   }
   diagnostics.push(...(adapter.finalize?.(fragments) ?? []));
+  const enriched = adapter.enrich?.(fragments, files);
+  if (enriched) fragments.push(enriched);
 
   const hashes = new Map<RepoPath, string>();
   for (const path of fileNodePaths(files, fragments)) {

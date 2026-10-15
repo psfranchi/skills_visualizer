@@ -214,6 +214,12 @@ function skillChecks(
   return [...diagnostics, ...unknownFieldDiagnostics(fm.data, KNOWN_FIELDS.skill, ctx)];
 }
 
+/** Skill `paths`, with legacy `globs` fallback (Cursor). */
+function skillPaths(data: Record<string, unknown>): string[] {
+  const fromPaths = parseGlobs(data.paths);
+  return fromPaths.length > 0 ? fromPaths : parseGlobs(data.globs);
+}
+
 export function parseSkill(d: Discovered, file: LoadedFile): GraphFragment {
   const skillDir = d.skillDir ?? d.path;
   const id = nodeId('skill', skillDir);
@@ -223,6 +229,7 @@ export function parseSkill(d: Discovered, file: LoadedFile): GraphFragment {
   const folder = basename(skillDir);
   const description = stringField(fm.data, 'description');
   const nested = d.scope !== ROOT_DIR;
+  const paths = skillPaths(fm.data);
   const node: AgentNode = {
     id,
     kind: 'skill',
@@ -233,6 +240,7 @@ export function parseSkill(d: Discovered, file: LoadedFile): GraphFragment {
       dir: skillDir,
       root: d.root,
       scope: d.scope,
+      paths,
       ...(description ? { description } : {}),
       frontmatter: fm.data,
     },

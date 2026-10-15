@@ -79,4 +79,41 @@ describe('cursor adapter', () => {
     expect(graph.diagnostics.map((d) => d.code)).toContain('ambiguous-reference');
     expect(graph.edges.find((e) => e.evidence === 'explicit')?.target).toBe('file:guide.md');
   });
+
+  it('derives applies-to edges from rule globs and skill paths', async () => {
+    const graph = await scanFiles({
+      '.cursor/rules/ts.mdc': '---\nglobs: src/**/*.ts\nalwaysApply: false\n---\n',
+      '.cursor/skills/pack/SKILL.md':
+        '---\nname: pack\ndescription: Pack.\npaths: packages/**/*.ts\n---\n',
+      'src/a.ts': 'export {}',
+      'src/b.tsx': 'export {}',
+      'packages/x/y.ts': 'export {}',
+      'README.md': '# hi',
+    });
+    const globEdges = graph.edges.filter(
+      (e) => e.evidence === 'derived' && e.explanation.includes('matches discovered path'),
+    );
+    expect(globEdges.map((e) => `${e.source}->${e.target}`).sort()).toEqual([
+      'rule:.cursor/rules/ts.mdc->file:src/a.ts',
+      'skill:.cursor/skills/pack->file:packages/x/y.ts',
+    ]);
+    expect(graph.nodes.find((n) => n.id === 'skill:.cursor/skills/pack')?.attributes.paths).toEqual(
+      ['packages/**/*.ts'],
+    );
+  });
+
+  it('diagnoses globs that match nothing', async () => {
+    const graph = await scanFiles({
+      '.cursor/rules/empty.mdc': '---\nglobs: docs/**/*.md\nalwaysApply: false\n---\n',
+      'src/a.ts': 'export {}',
+    });
+    expect(graph.diagnostics.filter((d) => d.code === 'glob-no-match')).toEqual([
+      expect.objectContaining({
+        code: 'glob-no-match',
+        severity: 'info',
+        nodeId: 'rule:.cursor/rules/empty.mdc',
+        message: 'Glob "docs/**/*.md" matches no discovered files.',
+      }),
+    ]);
+  });
 });

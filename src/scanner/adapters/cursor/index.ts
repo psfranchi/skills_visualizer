@@ -1,6 +1,7 @@
 import { type GraphDiagnostic, type GraphFragment, ROOT_DIR } from '../../../core';
 import type { ClientAdapter, Discovered, LoadedFile } from '../../adapter';
 import { classifyCursorPaths } from './classify';
+import { globApplyFragment } from './glob-edges';
 import { ADAPTER_ID, parseAgent, parseInstruction, parseRule, parseSkill } from './markdown-kinds';
 import { parseMcpConfig } from './mcp';
 
@@ -64,5 +65,6 @@ export const cursorAdapter: ClientAdapter = {
   classify: classifyCursorPaths,
   parse,
   finalize: agentShadowing,
+  enrich: globApplyFragment,
   editable: (d) => d.kind === 'skill',
 };
