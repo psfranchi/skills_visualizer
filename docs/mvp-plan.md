@@ -205,9 +205,11 @@ planReplace(original: Uint8Array, newText: string): { bytes: Uint8Array; eol: 'l
 
 **Accept:**
 
-- [ ] Only the intended file changes.
-- [ ] Stale overwrite blocked.
-- [ ] Reparse reflects the edit.
+- [x] Only the intended file changes.
+- [x] Stale overwrite blocked.
+- [x] Reparse reflects the edit.
+
+**Status (2026-10-15): done.** Verifier: `pnpm check` (324 tests) + `pnpm build` green; edit routes cover write:false→403, preview diff/diagnostics/impact, malformed YAML blocks apply while warnings do not, hash 409 with file untouched, temp+rename with mode preserved, symlink refused, path-boundary denials, single-file apply, EOL/BOM/Unicode preservation; local auth cookie/Bearer → 401 without token and token absent from API bodies; live smoke on port 5340 (materialized `cursor-basic`, `SV_STATE_DIR` temp) proved 401 → token exchange → Bearer preview+apply touches only the skill → stale hash 409; no `Co-authored-by` on recent commits. Residual: macOS parent-dir rename TOCTOU still documented in the security backlog.
 
 ## Later (not detailed)
 
