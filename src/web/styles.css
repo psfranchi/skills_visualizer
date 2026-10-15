@@ -1,0 +1,503 @@
+:root {
+  --bg: #f8fafc;
+  --panel: #ffffff;
+  --border: #e2e8f0;
+  --text: #0f172a;
+  --muted: #64748b;
+  --accent: #2563eb;
+  --explicit: #2563eb;
+  --derived: #64748b;
+  --inferred: #d97706;
+  --annotation: #7c3aed;
+  --info: #0284c7;
+  --warning: #d97706;
+  --error: #dc2626;
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-size: 14px;
+  color: var(--text);
+  background: var(--bg);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+}
+
+.app {
+  display: grid;
+  grid-template-columns: 260px 1fr 400px;
+  grid-template-rows: auto auto 1fr;
+  grid-template-areas:
+    "toolbar toolbar toolbar"
+    "banner banner banner"
+    "list canvas inspector";
+  height: 100vh;
+}
+
+.loading {
+  display: grid;
+  place-items: center;
+  height: 100vh;
+}
+
+.error {
+  color: var(--error);
+}
+
+.banner {
+  grid-area: banner;
+  margin: 0;
+  padding: 6px 12px;
+  background: #fef2f2;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.count {
+  color: var(--muted);
+  font-weight: normal;
+  font-size: 12px;
+}
+
+/* Toolbar */
+.toolbar {
+  grid-area: toolbar;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  padding: 8px 12px;
+  background: var(--panel);
+  border-bottom: 1px solid var(--border);
+}
+
+.toolbar-title {
+  font-size: 16px;
+  margin: 0 8px 0 0;
+}
+
+.toolbar-search {
+  min-width: 200px;
+  padding: 4px 8px;
+}
+
+.toolbar-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 2px 6px 4px;
+  margin: 0;
+}
+
+.toolbar-group legend {
+  font-size: 11px;
+  color: var(--muted);
+  padding: 0 4px;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.toolbar-actions {
+  display: flex;
+  gap: 6px;
+  margin-left: auto;
+}
+
+button {
+  font: inherit;
+  padding: 4px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--panel);
+  cursor: pointer;
+}
+
+button:hover:not(:disabled) {
+  border-color: var(--accent);
+}
+
+button.link {
+  border: none;
+  padding: 0;
+  background: none;
+  color: var(--accent);
+  text-align: left;
+}
+
+button.link.small {
+  font-size: 12px;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+/* Node list */
+.node-list {
+  grid-area: list;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  background: var(--panel);
+  border-right: 1px solid var(--border);
+}
+
+.node-list h2,
+.inspector h2,
+.legend h2 {
+  font-size: 14px;
+  margin: 10px 12px 6px;
+}
+
+.node-list .options {
+  list-style: none;
+  margin: 0;
+  padding: 0 4px 8px;
+  overflow: auto;
+  flex: 1;
+}
+
+.node-list [role="option"] {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.node-list [role="option"]:hover {
+  background: #f1f5f9;
+}
+
+.node-list [role="option"].selected {
+  background: #dbeafe;
+}
+
+.node-list .name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+}
+
+.kind-badge {
+  font-size: 10px;
+  padding: 1px 5px;
+  border-radius: 8px;
+  background: var(--kind-badge, #e2e8f0);
+  white-space: nowrap;
+}
+
+/* Per-kind colors, used by graph nodes (fill) and badges (background). */
+.kind-instruction {
+  --kind-fill: #ecfdf5;
+  --kind-badge: #d1fae5;
+}
+
+.kind-rule {
+  --kind-fill: #eff6ff;
+  --kind-badge: #dbeafe;
+}
+
+.kind-skill {
+  --kind-fill: #fdf4ff;
+  --kind-badge: #fae8ff;
+}
+
+.kind-agent {
+  --kind-fill: #fff7ed;
+  --kind-badge: #ffedd5;
+}
+
+.kind-mcp-config,
+.kind-mcp-server {
+  --kind-fill: #f0fdfa;
+  --kind-badge: #ccfbf1;
+}
+
+.kind-directory {
+  --kind-fill: #f8fafc;
+  --kind-badge: #f1f5f9;
+}
+
+.severity-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex: none;
+}
+
+.severity-dot.severity-info {
+  background: var(--info);
+}
+
+.severity-dot.severity-warning {
+  background: var(--warning);
+}
+
+.severity-dot.severity-error {
+  background: var(--error);
+}
+
+/* Canvas */
+.canvas {
+  grid-area: canvas;
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+}
+
+.graph-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+  cursor: grab;
+}
+
+.graph-canvas .node {
+  cursor: pointer;
+}
+
+.graph-canvas .node rect {
+  fill: var(--kind-fill, var(--panel));
+  stroke: #94a3b8;
+  stroke-width: 1.5;
+}
+
+.graph-canvas .node.selected rect {
+  stroke: var(--accent);
+  stroke-width: 3;
+}
+
+.graph-canvas .node.dimmed {
+  opacity: 0.25;
+}
+
+.graph-canvas .node .label {
+  font-size: 12px;
+  pointer-events: none;
+}
+
+.graph-canvas .severity-none {
+  display: none;
+}
+
+.graph-canvas .severity-info {
+  fill: var(--info);
+}
+
+.graph-canvas .severity-warning {
+  fill: var(--warning);
+}
+
+.graph-canvas .severity-error {
+  fill: var(--error);
+}
+
+/* Per-evidence colors, used by edges (stroke), arrowheads (fill), and badges (background). */
+.evidence-explicit {
+  --evidence: var(--explicit);
+}
+
+.evidence-derived {
+  --evidence: var(--derived);
+}
+
+.evidence-inferred {
+  --evidence: var(--inferred);
+}
+
+.evidence-annotation {
+  --evidence: var(--annotation);
+}
+
+.edge {
+  fill: none;
+  stroke: var(--evidence, var(--muted));
+  stroke-width: 1.5;
+}
+
+.edge.dimmed {
+  opacity: 0.15;
+}
+
+.edge.incident {
+  stroke-width: 2.5;
+}
+
+.edge.evidence-derived {
+  stroke-dasharray: 6 3;
+}
+
+.edge.evidence-inferred {
+  stroke-dasharray: 2 4;
+}
+
+.edge.evidence-annotation {
+  stroke-dasharray: 8 3 2 3;
+}
+
+.arrow path {
+  fill: var(--evidence, var(--muted));
+  stroke: none;
+}
+
+/* Legend */
+.legend {
+  position: absolute;
+  left: 12px;
+  bottom: 12px;
+  background: rgb(255 255 255 / 0.92);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0 10px 6px 0;
+  font-size: 12px;
+}
+
+.legend ul {
+  list-style: none;
+  margin: 0;
+  padding: 0 12px;
+}
+
+.legend li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Inspector */
+.inspector {
+  grid-area: inspector;
+  overflow: auto;
+  padding: 0 12px 16px;
+  background: var(--panel);
+  border-left: 1px solid var(--border);
+  min-height: 0;
+}
+
+.inspector h2 {
+  margin-left: 0;
+  word-break: break-all;
+}
+
+.inspector h3 {
+  font-size: 13px;
+  margin: 14px 0 6px;
+}
+
+.inspector code {
+  font-size: 12px;
+  word-break: break-all;
+}
+
+.attributes {
+  margin: 0;
+  font-size: 12px;
+}
+
+.attributes > div {
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  gap: 6px;
+  padding: 2px 0;
+}
+
+.attributes dt {
+  color: var(--muted);
+  word-break: break-all;
+}
+
+.attributes dd {
+  margin: 0;
+  word-break: break-all;
+}
+
+.attr-list {
+  margin: 0;
+  padding-left: 14px;
+}
+
+.diagnostics,
+.edges {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-size: 12px;
+}
+
+.diagnostics li,
+.edges li {
+  padding: 4px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.diagnostics .severity-info strong {
+  color: var(--info);
+}
+
+.diagnostics .severity-warning strong {
+  color: var(--warning);
+}
+
+.diagnostics .severity-error strong {
+  color: var(--error);
+}
+
+.edges li.focused {
+  background: #fefce8;
+}
+
+.evidence-badge {
+  font-size: 10px;
+  padding: 0 5px;
+  border-radius: 8px;
+  color: white;
+  background: var(--evidence, var(--muted));
+}
+
+.relation {
+  color: var(--muted);
+}
+
+.explanation {
+  color: var(--muted);
+}
+
+.source-header {
+  font-size: 12px;
+  margin-bottom: 4px;
+}
+
+.source pre {
+  position: relative;
+  max-height: 360px;
+  overflow: auto;
+  margin: 0;
+  padding: 8px;
+  font-size: 12px;
+  background: #f8fafc;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.source mark {
+  background: #fde68a;
+}
