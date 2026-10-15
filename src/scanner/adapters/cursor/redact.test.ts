@@ -176,4 +176,34 @@ describe('maskCommand', () => {
     expect(maskCommand('npx')).toBe('npx');
     expect(maskCommand(42)).toBe(REDACTED);
   });
+
+  it('keeps quoted header values together so the whole value is masked', () => {
+    expect(maskCommand(`npx mcp-remote https://x/sse --header "X-Api-Key: ${S}Q1"`)).toBe(
+      `npx mcp-remote https://x/sse --header "X-Api-Key: ${REDACTED}"`,
+    );
+    expect(maskCommand(`npx srv -H 'Authorization: Bearer ${S}Q2'`)).toBe(
+      `npx srv -H 'Authorization: ${REDACTED}'`,
+    );
+  });
+
+  it('masks nested command strings and escaped quotes', () => {
+    const nested = maskCommand(`sh -c "curl -H 'Authorization: Bearer ${S}Q3' https://h"`);
+    expect(nested).not.toContain(S);
+    expect(nested.startsWith('sh -c ')).toBe(true);
+    const inner = maskCommand(`sh -c "curl -H 'X-Api-Key: ${S}Q4' https://h"`);
+    expect(inner).toBe(`sh -c "curl -H 'X-Api-Key: ${REDACTED}' https://h/"`);
+    expect(maskCommand(`sh -c "curl -H \\"X-Api-Key: ${S}Q5\\" https://h"`)).not.toContain(S);
+  });
+
+  it('treats the token after a standalone Bearer / Basic as secret', () => {
+    expect(maskCommand(`curl -H Authorization: Bearer ${S}Q6 https://h`)).not.toContain(S);
+    expect(maskCommand(`tool --auth Basic ${S}Q7`)).toBe(`tool --auth Basic ${REDACTED}`);
+    expect(maskArgs(['Bearer', `${S}Q8`])).toEqual(['Bearer', REDACTED]);
+  });
+
+  it('fails closed on unterminated quotes and strips quotes before token checks', () => {
+    expect(maskCommand(`npx srv --header "X-Api-Key: ${S}Q9`)).not.toContain(S);
+    const prefixed = ['gh', 'p_'].join('');
+    expect(maskArgs([`"${prefixed}${S}QA"`])).toEqual([REDACTED]);
+  });
 });

@@ -7,6 +7,9 @@ const HEADER_FLAG = /^(?:--headers?|-H)$/;
 /** Short flags whose attached value is a secret (`mysql -pSECRET`). */
 const SECRET_SHORT_FLAG = /^-p./s;
 const AUTH_MARKER = /authorization\s*:|bearer\s|basic\s/i;
+/** A standalone auth scheme word; the next token is its credential. */
+const AUTH_SCHEME = /^(?:bearer|basic)$/i;
+const MAX_COMMAND_DEPTH = 2;
 const TOKEN_PREFIX = /^(?:ghp_|gho_|ghu_|ghs_|ghr_|github_pat_|glpat-|xox[abpr]-|sk-|AKIA|eyJ)/;
 const INLINE_SECRET =
   /((?:^|[\s;&,])(?:password|pwd|passwd|token|secret|api[-_]?key)\s*=\s*)[^\s;&,]+/gi;
@@ -99,11 +102,22 @@ function looksLikeOpaqueToken(value: string): boolean {
   );
 }
 
+function stripQuotes(value: string): string {
+  const first = value.charAt(0);
+  return value.length >= 2 && (first === '"' || first === "'") && value.endsWith(first)
+    ? value.slice(1, -1)
+    : value;
+}
+
 /** A positional arg or the value part of `--flag=value` / `NAME=value`. */
-function maskValue(value: string): string {
+function maskValue(value: string, depth: number): string {
   if (ENV_REFERENCE.test(value)) return value;
-  if (AUTH_MARKER.test(value) || TOKEN_PREFIX.test(value) || looksLikeOpaqueToken(value)) {
+  const unquoted = stripQuotes(value);
+  if (AUTH_MARKER.test(unquoted) || TOKEN_PREFIX.test(unquoted) || looksLikeOpaqueToken(unquoted)) {
     return REDACTED;
+  }
+  if (/\s/.test(value)) {
+    return depth < MAX_COMMAND_DEPTH ? maskCommandText(value, depth + 1) : REDACTED;
   }
   if (looksLikeUrl(value)) return sanitizeUrl(value);
   return sanitizeEmbeddedUrls(value.replace(INLINE_SECRET, `$1${REDACTED}`));
@@ -119,8 +133,8 @@ function maskHeader(value: string): string {
 
 type Pending = 'secret' | 'header' | null;
 
-function maskArg(arg: string): { text: string; next: Pending } {
-  const flag = /^(--?[\w-]+)(?:=(.*))?$/.exec(arg);
+function maskArg(arg: string, depth: number): { text: string; next: Pending } {
+  const flag = /^(--?[\w-]+)(?:=(.*))?$/s.exec(arg);
   const name = flag?.[1];
   const inline = flag?.[2];
   if (name !== undefined && HEADER_FLAG.test(name)) {
@@ -128,6 +142,7 @@ function maskArg(arg: string): { text: string; next: Pending } {
       ? { text: arg, next: 'header' }
       : { text: `${name}=${maskHeader(inline)}`, next: null };
   }
+  if (AUTH_SCHEME.test(arg)) return { text: arg, next: 'secret' };
   if (AUTH_MARKER.test(arg)) return { text: REDACTED, next: null };
   const secretName = name !== undefined && SECRET_NAME.test(name);
   if (SECRET_SHORT_FLAG.test(arg)) {
@@ -140,16 +155,16 @@ function maskArg(arg: string): { text: string; next: Pending } {
     return { text: isEnvReference(inline) ? arg : `${name}=${REDACTED}`, next: null };
   }
   if (name !== undefined && inline !== undefined) {
-    return { text: `${name}=${maskValue(inline)}`, next: null };
+    return { text: `${name}=${maskValue(inline, depth)}`, next: null };
   }
-  const pair = /^([A-Za-z_][\w-]*)=(.*)$/.exec(arg);
+  const pair = /^([A-Za-z_][\w-]*)=(.*)$/s.exec(arg);
   if (pair?.[1] !== undefined && pair[2] !== undefined) {
     if (SECRET_NAME.test(pair[1])) {
       return { text: isEnvReference(pair[2]) ? arg : `${pair[1]}=${REDACTED}`, next: null };
     }
-    return { text: `${pair[1]}=${maskValue(pair[2])}`, next: null };
+    return { text: `${pair[1]}=${maskValue(pair[2], depth)}`, next: null };
   }
-  return { text: name !== undefined ? arg : maskValue(arg), next: null };
+  return { text: name !== undefined ? arg : maskValue(arg, depth), next: null };
 }
 
 /**
@@ -159,7 +174,10 @@ function maskArg(arg: string): { text: string; next: Pending } {
  * (including URLs embedded in `NAME=` / `--flag=` values or longer strings).
  */
 export function maskArgs(value: unknown): string[] | string {
-  if (!Array.isArray(value)) return REDACTED;
+  return Array.isArray(value) ? maskTokens(value, 0) : REDACTED;
+}
+
+function maskTokens(value: readonly unknown[], depth: number): string[] {
   const masked: string[] = [];
   let pending: Pending = null;
   for (const arg of value) {
@@ -174,21 +192,75 @@ export function maskArgs(value: unknown): string[] | string {
       continue;
     }
     if (pending === 'secret') {
+      // `--auth Basic X`: the scheme word is not the secret; the token after it is.
+      if (AUTH_SCHEME.test(arg)) {
+        masked.push(arg);
+        continue;
+      }
       masked.push(isEnvReference(arg) ? arg : REDACTED);
       pending = null;
       continue;
     }
-    const result = maskArg(arg);
+    const result = maskArg(arg, depth);
     masked.push(result.text);
     pending = result.next;
   }
   return masked;
 }
 
-/** A `command` string such as `docker run -e API_TOKEN=X img`: tokens masked like args, re-joined with spaces. */
+interface ShellToken {
+  value: string;
+  /** First quote character used in the token, re-applied for display. */
+  quote: string;
+}
+
+/**
+ * Splits on unquoted whitespace with POSIX-like quoting: quotes group words and are removed,
+ * a backslash escapes the next character outside single quotes. An unterminated quote runs to
+ * the end of the text, so its content stays one token (and is masked as a whole).
+ */
+function shellTokens(text: string): ShellToken[] {
+  const tokens: ShellToken[] = [];
+  let current: ShellToken | null = null;
+  let open: string | null = null;
+  for (let i = 0; i < text.length; i++) {
+    const ch = text.charAt(i);
+    if (open === null && /\s/.test(ch)) {
+      if (current) tokens.push(current);
+      current = null;
+      continue;
+    }
+    current ??= { value: '', quote: '' };
+    if (ch === '\\' && open !== "'" && i + 1 < text.length) {
+      current.value += text.charAt(++i);
+    } else if (open !== null) {
+      if (ch === open) open = null;
+      else current.value += ch;
+    } else if (ch === '"' || ch === "'") {
+      open = ch;
+      current.quote ||= ch;
+    } else {
+      current.value += ch;
+    }
+  }
+  if (current) tokens.push(current);
+  return tokens;
+}
+
+function maskCommandText(text: string, depth: number): string {
+  const tokens = shellTokens(text);
+  const masked = maskTokens(
+    tokens.map((t) => t.value),
+    depth,
+  );
+  return masked.map((m, i) => `${tokens[i]?.quote ?? ''}${m}${tokens[i]?.quote ?? ''}`).join(' ');
+}
+
+/**
+ * A `command` string such as `docker run -e API_TOKEN=X img`: split shell-style (quoted header
+ * values stay one token), masked like args, re-joined with spaces. Nested command strings
+ * (`sh -c "…"`) are masked recursively up to a small depth, then redacted whole.
+ */
 export function maskCommand(value: unknown): string {
-  if (typeof value !== 'string') return REDACTED;
-  const tokens = value.trim().split(/\s+/);
-  const masked = maskArgs(tokens);
-  return Array.isArray(masked) ? masked.join(' ') : REDACTED;
+  return typeof value === 'string' ? maskCommandText(value, 0) : REDACTED;
 }

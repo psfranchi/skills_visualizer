@@ -41,6 +41,10 @@ export function leakyMcpConfig(): { mcpServers: Record<string, unknown>; secrets
       },
       'command-string': { command: `docker run -e API_TOKEN=${S}10 img` },
       'env-command': { command: `env GITHUB_TOKEN=${S}11 npx srv` },
+      'quoted-header': {
+        command: `npx mcp-remote https://x/sse --header "X-Api-Key: ${S}22"`,
+      },
+      'nested-shell': { command: `sh -c "curl -H 'Authorization: Bearer ${S}23' https://h"` },
       'path-key': { url: 'https://actions.example.com/mcp/SENTINELNOTASECRET0P1234/sse' },
       positional: {
         command: 'npx',
