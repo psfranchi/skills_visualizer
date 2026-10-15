@@ -195,10 +195,10 @@
   ],
   "diagnostics": [
     {
-      "code": "skill-outside-root",
-      "message": "SKILL.md is outside every skill root; not treated as a skill.",
+      "code": "unverified-claude-rules",
+      "message": "Claude `.claude/rules` files are documented but not given Cursor rule-activation semantics; surfaced as a diagnostic only.",
       "severity": "info",
-      "path": ".claude/skills/code-review/SKILL.md"
+      "path": ".claude/rules/style.md"
     },
     {
       "code": "skill-shadowed",

@@ -63,12 +63,5 @@
     }
   ],
   "edges": [],
-  "diagnostics": [
-    {
-      "code": "skill-outside-root",
-      "message": "SKILL.md is outside every skill root; not treated as a skill.",
-      "severity": "info",
-      "path": ".codex/skills/ship/SKILL.md"
-    }
-  ]
+  "diagnostics": []
 }

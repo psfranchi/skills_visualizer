@@ -64,16 +64,16 @@ export function classifyCursorPaths(paths: readonly RepoPath[]): ClassifyResult 
         discovered.push(skill);
         continue;
       }
-      // `.claude` / `.codex` skills are owned by other adapters; everything else is a near-miss.
-      if (!match || (match.root !== '.claude' && match.root !== '.codex')) {
-        diagnostics.push(
-          info(
-            'skill-outside-root',
-            path,
-            'SKILL.md is outside every skill root; not treated as a skill.',
-          ),
-        );
-      }
+      // Foreign roots are matched separately — cursor classify only looks at `.cursor`/`.agents`.
+      const foreign = matchRoot(path, ['.claude', '.codex']);
+      if (foreign) continue;
+      diagnostics.push(
+        info(
+          'skill-outside-root',
+          path,
+          'SKILL.md is outside every skill root; not treated as a skill.',
+        ),
+      );
       continue;
     }
 

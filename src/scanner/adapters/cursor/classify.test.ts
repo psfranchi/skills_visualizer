@@ -89,6 +89,20 @@ describe('classifyCursorPaths', () => {
   });
 });
 
+describe('classifyCursorPaths foreign roots', () => {
+  it('does not emit skill-outside-root for .claude or .codex skills', () => {
+    const { discovered, diagnostics } = classify([
+      '.claude/skills/s3/SKILL.md',
+      '.codex/skills/group/s4/SKILL.md',
+      'docs/SKILL.md',
+    ]);
+    expect(discovered).toEqual([]);
+    expect(diagnostics.map((d) => [d.code, d.path])).toEqual([
+      ['skill-outside-root', 'docs/SKILL.md'],
+    ]);
+  });
+});
+
 describe('classifyAll (multi-engine)', () => {
   it('merges Cursor, Claude, and Codex discoveries with engine tags', () => {
     const { discovered } = classifyAll([
