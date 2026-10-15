@@ -186,6 +186,8 @@ interface Services {   // src/server/node implements it; a hosted mode would imp
 - [ ] Drag/pin survives reload.
 - [ ] Repo files stay byte-identical.
 
+**Status (2026-10-15): done.** Verifier: `pnpm check` (276 tests) + `pnpm build` green; live API probes (Host/Origin/content-type guards, traversal rejection, graph-only file serving, frame headers) pass; repo byte-identical after a server session; no sentinel in CLI/API output. Browser check: selecting a node shows attributes, edges with evidence, and source with the provenance range highlighted; pinned positions restore after reload and Reset layout clears them. Gap: the drag gesture itself could not be automated (Cursor's browser blocks CDP pointer input), so drag → pin is covered by unit tests (`shouldPin`, `DebouncedSaver`) only. Later: Playwright E2E for drag-to-pin.
+
 ## M3 — Raw `SKILL.md` edit → diff → hash-checked apply → rescan
 
 ```ts
