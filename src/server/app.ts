@@ -50,7 +50,14 @@ const MAX_BODY_BYTES = 1024 * 1024;
 
 /** Basenames that may hold credentials; never served even when the graph references them. */
 const SECRET_BEARING_FILE =
-  /^(?:\.env(?:\..*)?|\.envrc|\.npmrc|\.pypirc|\.netrc|id_.*|credentials.*|.*\.(?:pem|key|p12|pfx|keystore))$/i;
+  /^(?:\.env(?:\..*)?|.*\.env|\.envrc|\.npmrc|\.pypirc|\.netrc|\.git-credentials|\.pgpass|id_(?:rsa|dsa|ecdsa|ed25519)(?:\.pub)?|credentials.*|secrets\..*|.*\.(?:pem|key|p12|pfx|keystore|jks|ppk|tfvars|tfstate(?:\.backup)?))$/i;
+/** Agent / tool configs that may hold tokens; identified by their parent folder. */
+const SECRET_BEARING_CONFIG =
+  /(?:^|\/)(?:\.claude\/settings\.local\.json|\.codex\/config\.toml|\.gemini\/settings\.json|\.docker\/config\.json|\.kube\/config)$/i;
+/** MCP configs are served re-serialized without secrets. */
+const MCP_CONFIG_FILE = /^\.?mcp\.json$/i;
+/** File / script nodes are servable only when something references them for sure. */
+const SERVABLE_EVIDENCE = new Set(['explicit', 'derived']);
 
 export function hostnameOf(host: string | undefined): string | null {
   if (!host) return null;
@@ -61,8 +68,12 @@ export function hostnameOf(host: string | undefined): string | null {
   }
 }
 
+function basename(path: string): string {
+  return path.slice(path.lastIndexOf('/') + 1);
+}
+
 export function isSecretBearingPath(path: string): boolean {
-  return SECRET_BEARING_FILE.test(path.slice(path.lastIndexOf('/') + 1));
+  return SECRET_BEARING_FILE.test(basename(path)) || SECRET_BEARING_CONFIG.test(path);
 }
 
 function error(c: Context, status: 400 | 403 | 404 | 413 | 415 | 500, message: string) {
@@ -105,17 +116,23 @@ function parseWith<T extends z.ZodType>(schema: T) {
   };
 }
 
-/** Repo paths that are some node's source, mapped to whether they must be redacted. */
+/**
+ * Repo paths that are some node's source, mapped to whether they must be redacted. File / script
+ * nodes count only when an explicit or derived edge reaches them (inferred guesses do not).
+ */
 function servablePaths(graph: AgentGraph): Map<string, { redact: boolean }> {
+  const referenced = new Set(
+    graph.edges.filter((e) => SERVABLE_EVIDENCE.has(e.evidence)).map((e) => e.target),
+  );
   const paths = new Map<string, { redact: boolean }>();
   for (const node of graph.nodes) {
     const path = node.source?.path;
     if (path === undefined) continue;
+    if ((node.kind === 'file' || node.kind === 'script') && !referenced.has(node.id)) continue;
     const redact =
       node.kind === 'mcp-config' ||
       node.kind === 'mcp-server' ||
-      path.endsWith('/mcp.json') ||
-      path === 'mcp.json';
+      MCP_CONFIG_FILE.test(basename(path));
     paths.set(path, { redact: redact || (paths.get(path)?.redact ?? false) });
   }
   return paths;
