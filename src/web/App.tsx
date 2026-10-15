@@ -2,7 +2,14 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { AgentGraph, NodeKind, Position } from '../core';
 import { layoutHierarchy } from '../layout';
 import type { Meta } from '../server/app';
-import { fetchGraph, fetchMeta, fetchViewState, rescan, saveViewState } from './api';
+import {
+  fetchGraph,
+  fetchMeta,
+  fetchViewState,
+  rescan,
+  saveViewState,
+  saveViewStateOnExit,
+} from './api';
 import { GraphCanvas } from './GraphCanvas';
 import { Inspector } from './Inspector';
 import { Legend } from './Legend';
@@ -15,38 +22,49 @@ import {
   visibleGraph,
 } from './model';
 import { NodeList } from './NodeList';
+import { DebouncedSaver } from './pin-saver';
 import { Toolbar } from './Toolbar';
 
 const SAVE_DELAY_MS = 500;
 
 type Pins = Record<string, Position>;
 
-/** Persists pins after a quiet period; `flush` saves immediately. */
+/** Persists pins after a quiet period; `flush` saves immediately; leaving the page flushes. */
 function usePinPersistence(onError: (message: string) => void) {
-  const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
-  const save = useCallback(
-    (pinned: Pins) => {
-      saveViewState({ schemaVersion: 1, pinned }).catch((error: unknown) =>
-        onError(error instanceof Error ? error.message : 'Saving view state failed'),
-      );
-    },
-    [onError],
+  const onErrorRef = useRef(onError);
+  onErrorRef.current = onError;
+  const [saver] = useState(
+    () =>
+      new DebouncedSaver<Pins>(
+        {
+          save: (pinned) =>
+            saveViewState({ schemaVersion: 1, pinned }).catch((error: unknown) =>
+              onErrorRef.current(
+                error instanceof Error ? error.message : 'Saving view state failed',
+              ),
+            ),
+          saveOnExit: (pinned) => saveViewStateOnExit({ schemaVersion: 1, pinned }),
+          setTimer: (callback, ms) => setTimeout(callback, ms),
+          clearTimer: (handle) => clearTimeout(handle as ReturnType<typeof setTimeout>),
+        },
+        SAVE_DELAY_MS,
+      ),
   );
-  const schedule = useCallback(
-    (pinned: Pins) => {
-      clearTimeout(timer.current);
-      timer.current = setTimeout(() => save(pinned), SAVE_DELAY_MS);
-    },
-    [save],
-  );
-  const flush = useCallback(
-    (pinned: Pins) => {
-      clearTimeout(timer.current);
-      save(pinned);
-    },
-    [save],
-  );
-  useEffect(() => () => clearTimeout(timer.current), []);
+  useEffect(() => {
+    const onPageHide = () => saver.flushOnExit();
+    const onVisibility = () => {
+      if (document.visibilityState === 'hidden') saver.flushOnExit();
+    };
+    window.addEventListener('pagehide', onPageHide);
+    document.addEventListener('visibilitychange', onVisibility);
+    return () => {
+      window.removeEventListener('pagehide', onPageHide);
+      document.removeEventListener('visibilitychange', onVisibility);
+      saver.dispose();
+    };
+  }, [saver]);
+  const schedule = useCallback((pinned: Pins) => saver.schedule(pinned), [saver]);
+  const flush = useCallback((pinned: Pins) => saver.flush(pinned), [saver]);
   return { schedule, flush };
 }
 

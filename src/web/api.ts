@@ -39,3 +39,13 @@ export async function fetchViewState(): Promise<GraphViewState> {
 export async function saveViewState(view: GraphViewState): Promise<void> {
   await ok(await client.api['view-state'].$put({ json: view }), 'Saving view state');
 }
+
+/** Best-effort save while the page unloads; `keepalive` lets the request outlive the page. */
+export function saveViewStateOnExit(view: GraphViewState): void {
+  fetch('/api/view-state', {
+    method: 'PUT',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify(view),
+    keepalive: true,
+  }).catch(() => {});
+}
