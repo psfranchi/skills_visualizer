@@ -1,4 +1,4 @@
-import { mkdir, mkdtemp, rm, symlink, writeFile } from 'node:fs/promises';
+import { lstat, mkdir, mkdtemp, readFile, rm, symlink, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
@@ -73,6 +73,44 @@ describe('LocalFileSource', () => {
       await scan(await LocalFileSource.open(dir));
       expect(await directoryHash(dir)).toBe(before);
     }
+  });
+
+  it('advertises write capability', async () => {
+    expect((await LocalFileSource.open(root)).capabilities).toEqual({ write: true, watch: false });
+  });
+
+  it('replaces a file only when the hash matches, preserving mode and refusing symlinks', async () => {
+    const dir = await mkdtemp(path.join(tmpdir(), 'sv-write-'));
+    const skill = path.join(dir, '.cursor', 'skills', 'demo');
+    await mkdir(skill, { recursive: true });
+    const target = path.join(skill, 'SKILL.md');
+    const original = '---\nname: demo\ndescription: before\n---\n# Demo\n';
+    await writeFile(target, original, { mode: 0o640 });
+    const source = await LocalFileSource.open(dir);
+    const repoPath = '.cursor/skills/demo/SKILL.md' as RepoPath;
+    const bytes = new TextEncoder().encode(original);
+    const { sha256Hex } = await import('../../core');
+    const hash = await sha256Hex(bytes);
+    const next = new TextEncoder().encode('---\nname: demo\ndescription: after\n---\n# Demo\n');
+
+    const conflict = await source.replaceIfUnchanged(repoPath, '0'.repeat(64), next);
+    expect(conflict).toEqual({ ok: false, reason: 'conflict', currentHash: hash });
+    expect(await readFile(target, 'utf8')).toBe(original);
+
+    const ok = await source.replaceIfUnchanged(repoPath, hash, next);
+    expect(ok.ok).toBe(true);
+    expect(await readFile(target, 'utf8')).toBe(
+      '---\nname: demo\ndescription: after\n---\n# Demo\n',
+    );
+    expect((await lstat(target)).mode & 0o777).toBe(0o640);
+
+    await symlink(target, path.join(dir, 'link.md'));
+    expect(await source.replaceIfUnchanged('link.md' as RepoPath, hash, next)).toEqual({
+      ok: false,
+      reason: 'missing',
+    });
+
+    await rm(dir, { recursive: true, force: true });
   });
 });
 

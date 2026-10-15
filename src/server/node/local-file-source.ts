@@ -1,12 +1,24 @@
-import { lstat, readFile, realpath } from 'node:fs/promises';
+import { randomBytes } from 'node:crypto';
+import {
+  chmod,
+  lstat,
+  open,
+  readFile,
+  realpath,
+  rename,
+  unlink,
+  writeFile,
+} from 'node:fs/promises';
 import path from 'node:path';
 import { glob } from 'tinyglobby';
 import {
-  type FileSource,
   type GraphDiagnostic,
   IGNORED_DIR_NAMES,
   normalizeRepoPath,
+  type ReplaceResult,
   type RepoPath,
+  sha256Hex,
+  type WritableFileSource,
 } from '../../core';
 
 export const MAX_FILE_BYTES = 1024 * 1024;
@@ -24,12 +36,13 @@ interface Listing {
 }
 
 /**
- * Read-only view of a local directory. Applies the fixed ignore list, never follows or lists
- * symlinks, keeps every path inside the real root, and skips files over 1 MB with a diagnostic.
+ * Local directory source. Applies the fixed ignore list, never follows or lists symlinks, keeps
+ * every path inside the real root, skips files over 1 MB, and (for M3) can replace a file only
+ * when its content hash still matches.
  */
-export class LocalFileSource implements FileSource {
+export class LocalFileSource implements WritableFileSource {
   readonly id: string;
-  readonly capabilities = { write: false, watch: false };
+  readonly capabilities = { write: true, watch: false };
   readonly #root: string;
   #listing: Promise<Listing> | undefined;
 
@@ -61,6 +74,73 @@ export class LocalFileSource implements FileSource {
       return new Uint8Array(await readFile(absolute));
     } catch {
       return null;
+    }
+  }
+
+  /**
+   * Atomic replace: write a temp file in the same directory (mode preserved), then rename.
+   * Refuses symlinks and non-regular files. Re-checks that the real path still sits inside the root.
+   */
+  async replaceIfUnchanged(
+    repoPath: RepoPath,
+    expectedHash: string,
+    bytes: Uint8Array,
+  ): Promise<ReplaceResult> {
+    if (bytes.byteLength > MAX_FILE_BYTES) {
+      return { ok: false, reason: 'missing' };
+    }
+    const absolute = await this.#resolveSafe(repoPath);
+    if (!absolute) return { ok: false, reason: 'missing' };
+
+    let mode: number;
+    try {
+      const before = await lstat(absolute);
+      if (!before.isFile() || before.isSymbolicLink()) return { ok: false, reason: 'missing' };
+      mode = before.mode;
+      const current = new Uint8Array(await readFile(absolute));
+      const currentHash = await sha256Hex(current);
+      if (currentHash !== expectedHash) {
+        return { ok: false, reason: 'conflict', currentHash };
+      }
+    } catch {
+      return { ok: false, reason: 'missing' };
+    }
+
+    const temp = path.join(
+      path.dirname(absolute),
+      `.sv-write-${process.pid}-${randomBytes(8).toString('hex')}`,
+    );
+    try {
+      await writeFile(temp, bytes, { flag: 'wx' });
+      await chmod(temp, mode);
+      // Re-check the destination has not become a symlink or escaped the root.
+      const again = await this.#resolveSafe(repoPath);
+      if (again !== absolute) {
+        await unlink(temp).catch(() => {});
+        return { ok: false, reason: 'missing' };
+      }
+      const handle = await open(absolute, 'r');
+      try {
+        const afterStat = await handle.stat();
+        if (!afterStat.isFile()) {
+          await unlink(temp).catch(() => {});
+          return { ok: false, reason: 'missing' };
+        }
+        const current = new Uint8Array(await readFile(absolute));
+        const currentHash = await sha256Hex(current);
+        if (currentHash !== expectedHash) {
+          await unlink(temp).catch(() => {});
+          return { ok: false, reason: 'conflict', currentHash };
+        }
+      } finally {
+        await handle.close();
+      }
+      await rename(temp, absolute);
+      this.#listing = undefined;
+      return { ok: true, hash: await sha256Hex(bytes) };
+    } catch (error) {
+      await unlink(temp).catch(() => {});
+      throw error;
     }
   }
 
