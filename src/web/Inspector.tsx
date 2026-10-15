@@ -14,7 +14,7 @@ import {
   filterDiagnostics,
   incidentEdges,
   safeHref,
-  splitHighlight,
+  sourceDisplay,
 } from './model';
 
 interface InspectorProps {
@@ -162,6 +162,7 @@ function SourceView({ focus }: { focus: SourceLocation }) {
     if (pre) pre.scrollTop = mark ? Math.max(0, mark.offsetTop - pre.clientHeight / 3) : 0;
   }, [state, start]);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: refetch after a rescan changes the hash.
   useEffect(() => {
     let cancelled = false;
     setState({ status: 'loading' });
@@ -174,19 +175,21 @@ function SourceView({ focus }: { focus: SourceLocation }) {
     return () => {
       cancelled = true;
     };
-  }, [focus.path]);
+  }, [focus.path, focus.contentHash]);
 
   if (state.status === 'loading') return <p className="muted">Loading {focus.path}…</p>;
   if (state.status === 'error') return <p className="error">{state.message}</p>;
   const { file } = state;
-  const parts = file.redacted
-    ? null
-    : splitHighlight(file.text, focus.start?.offset, focus.end?.offset);
+  const display = sourceDisplay(file, focus);
+  const parts = display.kind === 'highlight' ? display.parts : null;
   return (
     <div className="source">
       <div className="source-header">
         <code>{location(focus)}</code>
-        {file.redacted && (
+        {display.kind === 'stale' && (
+          <span className="error"> — file changed since scan — rescan</span>
+        )}
+        {display.kind === 'redacted' && (
           <span className="muted"> — secrets redacted; positions do not match the file</span>
         )}
       </div>

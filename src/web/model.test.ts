@@ -9,6 +9,7 @@ import {
   nodeSeverities,
   safeHref,
   searchMatches,
+  sourceDisplay,
   splitHighlight,
   stepSelection,
   visibleGraph,
@@ -205,5 +206,34 @@ describe('splitHighlight', () => {
     expect(splitHighlight('abc', undefined, 2)).toBeNull();
     expect(splitHighlight('abc', 1, 1)).toBeNull();
     expect(splitHighlight('abc', 5, 9)).toBeNull();
+  });
+});
+
+describe('sourceDisplay', () => {
+  const focus = {
+    path: 'a.md',
+    start: { offset: 1, line: 1, column: 2 },
+    end: { offset: 3, line: 1, column: 4 },
+    contentHash: HASH,
+    adapter: 'cursor',
+  };
+
+  it('highlights only when the served bytes match the scanned hash', () => {
+    expect(sourceDisplay({ text: 'abcdef', hash: HASH, redacted: false }, focus)).toEqual({
+      kind: 'highlight',
+      parts: { before: 'a', match: 'bc', after: 'def' },
+    });
+    expect(
+      sourceDisplay({ text: 'xabcdef', hash: 'b'.repeat(64), redacted: false }, focus),
+    ).toEqual({ kind: 'stale' });
+  });
+
+  it('never highlights redacted text, and reports staleness first', () => {
+    expect(sourceDisplay({ text: '{}', hash: HASH, redacted: true }, focus)).toEqual({
+      kind: 'redacted',
+    });
+    expect(sourceDisplay({ text: '{}', hash: 'b'.repeat(64), redacted: true }, focus)).toEqual({
+      kind: 'stale',
+    });
   });
 });

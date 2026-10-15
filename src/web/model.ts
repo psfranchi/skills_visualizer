@@ -6,6 +6,7 @@ import {
   NODE_KINDS,
   type NodeKind,
   type Severity,
+  type SourceLocation,
 } from '../core';
 
 export interface Filters {
@@ -196,4 +197,22 @@ export function splitHighlight(
   const to = Math.max(from, Math.min(text.length, end ?? start));
   if (to === from) return null;
   return { before: text.slice(0, from), match: text.slice(from, to), after: text.slice(to) };
+}
+
+export type SourceDisplay =
+  | { kind: 'stale' }
+  | { kind: 'redacted' }
+  | { kind: 'highlight'; parts: HighlightParts | null };
+
+/** Offsets are only valid for the exact bytes that were scanned and for unredacted text. */
+export function sourceDisplay(
+  file: { text: string; hash: string; redacted: boolean },
+  focus: SourceLocation,
+): SourceDisplay {
+  if (file.hash !== focus.contentHash) return { kind: 'stale' };
+  if (file.redacted) return { kind: 'redacted' };
+  return {
+    kind: 'highlight',
+    parts: splitHighlight(file.text, focus.start?.offset, focus.end?.offset),
+  };
 }
