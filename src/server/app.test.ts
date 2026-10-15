@@ -63,6 +63,7 @@ function repoFiles(): Map<string, Uint8Array | string> {
   const agents = new TextDecoder().decode(files.get('AGENTS.md') as Uint8Array);
   files.set('.mcp.json', leakyMcpJson());
   files.set('.claude/settings.local.json', `{"env":{"TOKEN":"${LEAK_MARKER}-claude"}}`);
+  files.set('.claude/settings.json', `{"env":{"TOKEN":"${LEAK_MARKER}-claude-settings"}}`);
   files.set('docs/id_conventions.md', '# ID conventions\n');
   files.set('docs/inferred-only.md', `token: ${LEAK_MARKER}-inferred\n`);
   files.set(
@@ -70,7 +71,7 @@ function repoFiles(): Map<string, Uint8Array | string> {
     [
       agents,
       'See [env](.env) and [mcp](.cursor/mcp.json) and [root mcp](.mcp.json).',
-      'Also [claude](.claude/settings.local.json) and [ids](docs/id_conventions.md).',
+      'Also [claude](.claude/settings.local.json) and [claude settings](.claude/settings.json) and [ids](docs/id_conventions.md).',
       'Maybe `docs/inferred-only.md` too.',
       '',
     ].join('\n'),
@@ -177,6 +178,7 @@ describe('API routes', () => {
 
   it.each([
     ['.claude/settings.local.json', 403],
+    ['.claude/settings.json', 403],
     ['docs/inferred-only.md', 404],
   ])('GET /api/file?path=%s → %i (secret config / inferred-only)', async (path, status) => {
     const res = await get(app, `/api/file?path=${encodeURIComponent(path)}`);
@@ -330,10 +332,10 @@ describe('helpers', () => {
     ['keys/app.jks', true],
     ['.ssh/id_rsa.pub', true],
     ['.claude/settings.local.json', true],
+    ['.claude/settings.json', true],
     ['.codex/config.toml', true],
     ['.gemini/settings.json', true],
     ['docs/id_conventions.md', false],
-    ['.claude/settings.json', false],
     ['docs/environment.md', false],
     ['.cursor/skills/x/SKILL.md', false],
   ])('isSecretBearingPath(%s) = %s', (path, expected) => {

@@ -75,7 +75,7 @@ const SECRET_BEARING_FILE =
   /^(?:\.env(?:\..*)?|.*\.env|\.envrc|\.npmrc|\.pypirc|\.netrc|\.git-credentials|\.pgpass|id_(?:rsa|dsa|ecdsa|ed25519)(?:\.pub)?|credentials.*|secrets\..*|.*\.(?:pem|key|p12|pfx|keystore|jks|ppk|tfvars|tfstate(?:\.backup)?))$/i;
 /** Agent / tool configs that may hold tokens; identified by their parent folder. */
 const SECRET_BEARING_CONFIG =
-  /(?:^|\/)(?:\.claude\/settings\.local\.json|\.codex\/config\.toml|\.gemini\/settings\.json|\.docker\/config\.json|\.kube\/config)$/i;
+  /(?:^|\/)(?:\.claude\/settings(?:\.local)?\.json|\.codex\/config\.toml|\.gemini\/settings\.json|\.docker\/config\.json|\.kube\/config)$/i;
 /** MCP configs are served re-serialized without secrets. */
 const MCP_CONFIG_FILE = /^\.?mcp\.json$/i;
 /** File / script nodes are servable only when something references them for sure. */
