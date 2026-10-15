@@ -534,6 +534,7 @@
       "target": "directory:.",
       "relation": "applies-to",
       "evidence": "derived",
+      "linkKind": "applies-scope",
       "explanation": "AGENTS.md applies to its directory and below; nested files combine with parents",
       "supportedOperations": []
     },
@@ -543,6 +544,7 @@
       "target": "instruction:AGENTS.md",
       "relation": "references",
       "evidence": "inferred",
+      "linkKind": "inferred-backtick",
       "provenance": {
         "path": ".cursor/agents/security.md",
         "start": {
@@ -568,6 +570,7 @@
       "target": "agent:.cursor/agents/security.md",
       "relation": "references",
       "evidence": "inferred",
+      "linkKind": "inferred-backtick",
       "provenance": {
         "path": "AGENTS.md",
         "start": {
@@ -593,6 +596,7 @@
       "target": "file:.cursor/BUGBOT.md",
       "relation": "references",
       "evidence": "inferred",
+      "linkKind": "inferred-backtick",
       "provenance": {
         "path": "AGENTS.md",
         "start": {
@@ -618,6 +622,7 @@
       "target": "rule:.cursor/rules/00-core.mdc",
       "relation": "references",
       "evidence": "inferred",
+      "linkKind": "inferred-backtick",
       "provenance": {
         "path": "AGENTS.md",
         "start": {
@@ -643,6 +648,7 @@
       "target": "rule:.cursor/rules/15-orchestrator.mdc",
       "relation": "references",
       "evidence": "inferred",
+      "linkKind": "inferred-backtick",
       "provenance": {
         "path": "AGENTS.md",
         "start": {
@@ -668,6 +674,7 @@
       "target": "rule:.cursor/rules/20-communication.mdc",
       "relation": "references",
       "evidence": "inferred",
+      "linkKind": "inferred-backtick",
       "provenance": {
         "path": "AGENTS.md",
         "start": {
@@ -693,6 +700,7 @@
       "target": "instruction:AGENTS.md",
       "relation": "references",
       "evidence": "inferred",
+      "linkKind": "inferred-backtick",
       "provenance": {
         "path": ".cursor/rules/00-core.mdc",
         "start": {
@@ -718,6 +726,7 @@
       "target": "instruction:AGENTS.md",
       "relation": "references",
       "evidence": "inferred",
+      "linkKind": "inferred-backtick",
       "provenance": {
         "path": ".cursor/rules/10-sdlc.mdc",
         "start": {
@@ -743,6 +752,7 @@
       "target": "rule:.cursor/rules/15-orchestrator.mdc",
       "relation": "references",
       "evidence": "inferred",
+      "linkKind": "inferred-backtick",
       "provenance": {
         "path": ".cursor/rules/10-sdlc.mdc",
         "start": {
@@ -768,6 +778,7 @@
       "target": "file:.cursor/BUGBOT.md",
       "relation": "references",
       "evidence": "inferred",
+      "linkKind": "inferred-backtick",
       "provenance": {
         "path": ".cursor/rules/15-orchestrator.mdc",
         "start": {
@@ -793,6 +804,7 @@
       "target": "instruction:AGENTS.md",
       "relation": "references",
       "evidence": "inferred",
+      "linkKind": "inferred-backtick",
       "provenance": {
         "path": ".cursor/rules/15-orchestrator.mdc",
         "start": {
@@ -818,6 +830,7 @@
       "target": "instruction:AGENTS.md",
       "relation": "references",
       "evidence": "inferred",
+      "linkKind": "inferred-backtick",
       "provenance": {
         "path": ".cursor/rules/15-orchestrator.mdc",
         "start": {
@@ -843,6 +856,7 @@
       "target": "instruction:AGENTS.md",
       "relation": "references",
       "evidence": "inferred",
+      "linkKind": "inferred-backtick",
       "provenance": {
         "path": ".cursor/rules/90-stack-placeholder.mdc",
         "start": {
@@ -868,6 +882,7 @@
       "target": "agent:.cursor/agents/security.md",
       "relation": "references",
       "evidence": "inferred",
+      "linkKind": "inferred-backtick",
       "provenance": {
         "path": ".cursor/skills/adopt-base/SKILL.md",
         "start": {
@@ -893,6 +908,7 @@
       "target": "file:.cursor/BUGBOT.md",
       "relation": "references",
       "evidence": "inferred",
+      "linkKind": "inferred-backtick",
       "provenance": {
         "path": ".cursor/skills/adopt-base/SKILL.md",
         "start": {
@@ -918,6 +934,7 @@
       "target": "file:.cursor/hooks.json",
       "relation": "references",
       "evidence": "inferred",
+      "linkKind": "inferred-backtick",
       "provenance": {
         "path": ".cursor/skills/adopt-base/SKILL.md",
         "start": {
@@ -943,6 +960,7 @@
       "target": "instruction:AGENTS.md",
       "relation": "references",
       "evidence": "inferred",
+      "linkKind": "inferred-backtick",
       "provenance": {
         "path": ".cursor/skills/adopt-base/SKILL.md",
         "start": {
@@ -968,6 +986,7 @@
       "target": "instruction:AGENTS.md",
       "relation": "references",
       "evidence": "inferred",
+      "linkKind": "inferred-backtick",
       "provenance": {
         "path": ".cursor/skills/adopt-base/SKILL.md",
         "start": {
@@ -993,6 +1012,7 @@
       "target": "instruction:AGENTS.md",
       "relation": "references",
       "evidence": "inferred",
+      "linkKind": "inferred-backtick",
       "provenance": {
         "path": ".cursor/skills/adopt-base/SKILL.md",
         "start": {
@@ -1018,6 +1038,7 @@
       "target": "rule:.cursor/rules/00-core.mdc",
       "relation": "references",
       "evidence": "inferred",
+      "linkKind": "inferred-backtick",
       "provenance": {
         "path": ".cursor/skills/adopt-base/SKILL.md",
         "start": {
@@ -1043,6 +1064,7 @@
       "target": "agent:.cursor/agents/explorer.md",
       "relation": "references",
       "evidence": "inferred",
+      "linkKind": "inferred-backtick",
       "provenance": {
         "path": ".cursor/skills/explore-codebase/SKILL.md",
         "start": {
@@ -1068,6 +1090,7 @@
       "target": "instruction:AGENTS.md",
       "relation": "references",
       "evidence": "inferred",
+      "linkKind": "inferred-backtick",
       "provenance": {
         "path": ".cursor/skills/fill-stack-overlay/SKILL.md",
         "start": {
@@ -1093,6 +1116,7 @@
       "target": "rule:.cursor/rules/90-stack-placeholder.mdc",
       "relation": "references",
       "evidence": "inferred",
+      "linkKind": "inferred-backtick",
       "provenance": {
         "path": ".cursor/skills/fill-stack-overlay/SKILL.md",
         "start": {

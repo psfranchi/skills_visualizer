@@ -90,9 +90,7 @@ describe('cursor adapter', () => {
       'packages/x/y.ts': 'export {}',
       'README.md': '# hi',
     });
-    const globEdges = graph.edges.filter(
-      (e) => e.evidence === 'derived' && e.explanation.includes('matches discovered path'),
-    );
+    const globEdges = graph.edges.filter((e) => e.linkKind === 'glob-apply');
     expect(globEdges.map((e) => `${e.source}->${e.target}`).sort()).toEqual([
       'rule:.cursor/rules/ts.mdc->file:src/a.ts',
       'skill:.cursor/skills/pack->file:packages/x/y.ts',
@@ -102,7 +100,7 @@ describe('cursor adapter', () => {
     );
   });
 
-  it('diagnoses globs that match nothing', async () => {
+  it('diagnoses globs that match nothing as warnings', async () => {
     const graph = await scanFiles({
       '.cursor/rules/empty.mdc': '---\nglobs: docs/**/*.md\nalwaysApply: false\n---\n',
       'src/a.ts': 'export {}',
@@ -110,9 +108,44 @@ describe('cursor adapter', () => {
     expect(graph.diagnostics.filter((d) => d.code === 'glob-no-match')).toEqual([
       expect.objectContaining({
         code: 'glob-no-match',
-        severity: 'info',
+        severity: 'warning',
         nodeId: 'rule:.cursor/rules/empty.mdc',
         message: 'Glob "docs/**/*.md" matches no discovered files.',
+      }),
+    ]);
+  });
+
+  it('caps glob matches at 50 with a warning and exactly 50 edges', async () => {
+    const files: Record<string, string> = {
+      '.cursor/rules/many.mdc': '---\nglobs: src/**/*.ts\nalwaysApply: false\n---\n',
+    };
+    for (let i = 0; i < 55; i++) {
+      files[`src/f${String(i).padStart(3, '0')}.ts`] = 'export {}';
+    }
+    const graph = await scanFiles(files);
+    const globEdges = graph.edges.filter(
+      (e) => e.source === 'rule:.cursor/rules/many.mdc' && e.linkKind === 'glob-apply',
+    );
+    expect(globEdges).toHaveLength(50);
+    expect(graph.diagnostics.filter((d) => d.code === 'glob-match-capped')).toEqual([
+      expect.objectContaining({
+        code: 'glob-match-capped',
+        severity: 'warning',
+        nodeId: 'rule:.cursor/rules/many.mdc',
+      }),
+    ]);
+  });
+
+  it('emits glob-no-match when the only hit is the config file itself', async () => {
+    const graph = await scanFiles({
+      '.cursor/rules/self.mdc': '---\nglobs: .cursor/rules/self.mdc\nalwaysApply: false\n---\n',
+    });
+    expect(graph.edges.filter((e) => e.linkKind === 'glob-apply')).toHaveLength(0);
+    expect(graph.diagnostics.filter((d) => d.code === 'glob-no-match')).toEqual([
+      expect.objectContaining({
+        severity: 'warning',
+        nodeId: 'rule:.cursor/rules/self.mdc',
+        message: expect.stringContaining('after excluding the config file itself'),
       }),
     ]);
   });

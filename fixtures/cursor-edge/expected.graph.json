@@ -308,6 +308,7 @@
       "target": "directory:.",
       "relation": "applies-to",
       "evidence": "derived",
+      "linkKind": "applies-scope",
       "explanation": "AGENTS.md applies to its directory and below; nested files combine with parents",
       "supportedOperations": []
     },
@@ -317,6 +318,7 @@
       "target": "directory:apps/x",
       "relation": "applies-to",
       "evidence": "derived",
+      "linkKind": "applies-scope",
       "explanation": "Skill root nested under apps/x is scoped to that directory",
       "supportedOperations": []
     },
@@ -326,6 +328,7 @@
       "target": "skill:.cursor/skills/cycle-a",
       "relation": "references",
       "evidence": "explicit",
+      "linkKind": "markdown-link",
       "provenance": {
         "path": "AGENTS.md",
         "start": {
@@ -350,6 +353,7 @@
       "target": "skill:.cursor/skills/cycle-b",
       "relation": "references",
       "evidence": "explicit",
+      "linkKind": "markdown-link",
       "provenance": {
         "path": ".cursor/skills/cycle-a/SKILL.md",
         "start": {
@@ -374,6 +378,7 @@
       "target": "skill:.cursor/skills/cycle-a",
       "relation": "references",
       "evidence": "explicit",
+      "linkKind": "markdown-link",
       "provenance": {
         "path": ".cursor/skills/cycle-b/SKILL.md",
         "start": {

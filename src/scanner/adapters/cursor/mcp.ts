@@ -181,6 +181,7 @@ export function parseMcpConfig(d: Discovered, file: LoadedFile): GraphFragment {
       target: { kind: 'node', id: serverId },
       relation: 'contains',
       evidence: 'explicit',
+      linkKind: 'contains',
       ...(offset === null ? {} : { provenance: { ...source, ...span } }),
       explanation: 'Server declared in mcp.json',
     });

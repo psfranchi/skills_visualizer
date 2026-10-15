@@ -73,6 +73,7 @@ export function linkEdges(doc: MarkdownDoc, ctx: ReferenceContext): PendingEdge[
         },
         relation: 'references',
         evidence: 'explicit',
+        linkKind: 'markdown-link',
         provenance: provenance(ctx, link),
         explanation: `Markdown ${link.kind} to "${link.url}"`,
       },
@@ -108,6 +109,7 @@ export function inlineCodeEdges(doc: MarkdownDoc, ctx: ReferenceContext): Pendin
         },
         relation: 'references',
         evidence: 'inferred',
+        linkKind: 'inferred-backtick',
         provenance: provenance(ctx, code),
         explanation: `Inline code "${code.value}" matches an existing file; heuristic, not a declared reference`,
         confidence: INFERRED_CONFIDENCE,
@@ -150,6 +152,7 @@ export function mentionEdges(doc: MarkdownDoc, ctx: ReferenceContext): PendingEd
         },
         relation: 'references',
         evidence: 'explicit',
+        linkKind: 'mention',
         provenance: provenance(ctx, { start, end: start + 1 + raw.length }),
         explanation: `Rule @-mention "${raw}" (the agent reads the file; it is not inlined)`,
       });

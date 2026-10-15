@@ -7,6 +7,7 @@ import {
   type Evidence,
   type FileSourceCapabilities,
   type GraphDiagnostic,
+  type LinkKind,
   type Relation,
   SCHEMA_VERSION,
   type SourceLocation,
@@ -33,6 +34,8 @@ export interface PendingEdge {
   target: EdgeTarget;
   relation: Relation;
   evidence: Evidence;
+  /** Stable UI label tag; copied onto the resolved edge. */
+  linkKind?: LinkKind;
   provenance?: SourceLocation;
   explanation: string;
   confidence?: number;
@@ -285,6 +288,7 @@ export function buildGraph(input: BuildGraphInput): AgentGraph {
         target: target.id,
         relation: pending.relation,
         evidence: pending.evidence,
+        ...(pending.linkKind ? { linkKind: pending.linkKind } : {}),
         ...(pending.provenance ? { provenance: pending.provenance } : {}),
         explanation: pending.explanation,
         ...(pending.confidence === undefined ? {} : { confidence: pending.confidence }),

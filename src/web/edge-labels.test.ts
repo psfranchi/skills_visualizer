@@ -16,42 +16,21 @@ function edge(
 }
 
 describe('edgeLabel', () => {
-  it('classifies markdown, mention, backtick, contains, glob, and scope', () => {
+  it('maps scanner linkKind tags (not explanation text)', () => {
     expect(
-      classifyEdge(edge({ relation: 'references', explanation: 'Markdown link to "x.md"' })),
+      classifyEdge(
+        edge({
+          relation: 'references',
+          linkKind: 'markdown-link',
+          explanation: 'unrelated text that used to drive classification',
+        }),
+      ),
     ).toBe('markdown-link');
     expect(
       classifyEdge(
         edge({
-          relation: 'references',
-          explanation: 'Rule @-mention "guide.md" (the agent reads the file; it is not inlined)',
-        }),
-      ),
-    ).toBe('mention');
-    expect(
-      classifyEdge(
-        edge({
-          relation: 'references',
-          evidence: 'inferred',
-          explanation:
-            'Inline code "a/b.ts" matches an existing file; heuristic, not a declared reference',
-        }),
-      ),
-    ).toBe('inferred-backtick');
-    expect(
-      classifyEdge(
-        edge({
-          relation: 'contains',
-          evidence: 'derived',
-          explanation: 'File inside the skill folder',
-        }),
-      ),
-    ).toBe('contains');
-    expect(
-      classifyEdge(
-        edge({
           relation: 'applies-to',
-          evidence: 'derived',
+          linkKind: 'glob-apply',
           explanation: 'Rule glob "src/**/*.ts" matches discovered path',
         }),
       ),
@@ -59,13 +38,26 @@ describe('edgeLabel', () => {
     expect(
       classifyEdge(
         edge({
-          relation: 'applies-to',
-          evidence: 'derived',
-          explanation:
-            'AGENTS.md applies to its directory and below; nested files combine with parents',
+          relation: 'references',
+          linkKind: 'mention',
+          explanation: 'anything',
         }),
       ),
+    ).toBe('mention');
+  });
+
+  it('falls back by relation/evidence when linkKind is missing', () => {
+    expect(
+      classifyEdge(edge({ relation: 'contains', evidence: 'derived', explanation: 'x' })),
+    ).toBe('contains');
+    expect(
+      classifyEdge(edge({ relation: 'applies-to', evidence: 'derived', explanation: 'scope' })),
     ).toBe('applies-scope');
+    expect(
+      classifyEdge(
+        edge({ relation: 'references', evidence: 'inferred', explanation: 'Inline code "a"' }),
+      ),
+    ).toBe('inferred-backtick');
   });
 
   it('returns human-readable labels', () => {
@@ -74,12 +66,10 @@ describe('edgeLabel', () => {
         edge({
           relation: 'applies-to',
           evidence: 'derived',
+          linkKind: 'glob-apply',
           explanation: 'Skill paths "packages/**/*.ts" matches discovered path',
         }),
       ),
     ).toBe('Glob / paths apply');
-    expect(edgeLabel(edge({ relation: 'contains', evidence: 'derived', explanation: 'x' }))).toBe(
-      'Contains (folder)',
-    );
   });
 });

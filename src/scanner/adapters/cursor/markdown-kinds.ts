@@ -44,12 +44,14 @@ function pathEdge(
   path: RepoPath,
   relation: PendingEdge['relation'],
   explanation: string,
+  linkKind: PendingEdge['linkKind'],
 ): PendingEdge {
   return {
     source,
     target: { kind: 'path', raw: path, candidates: [path], onMissing: 'ignore' },
     relation,
     evidence: 'derived',
+    ...(linkKind ? { linkKind } : {}),
     explanation,
   };
 }
@@ -87,6 +89,7 @@ export function parseInstruction(d: Discovered, file: LoadedFile): GraphFragment
         d.scope,
         'applies-to',
         'AGENTS.md applies to its directory and below; nested files combine with parents',
+        'applies-scope',
       ),
       ...referenceEdges(ctx, doc, false),
     ],
@@ -248,7 +251,7 @@ export function parseSkill(d: Discovered, file: LoadedFile): GraphFragment {
   };
   const edges: PendingEdge[] = [
     ...(d.memberFiles ?? []).map((member) =>
-      pathEdge(id, member, 'contains', 'File inside the skill folder'),
+      pathEdge(id, member, 'contains', 'File inside the skill folder', 'contains'),
     ),
     ...referenceEdges(ctx, doc, false),
   ];
@@ -259,6 +262,7 @@ export function parseSkill(d: Discovered, file: LoadedFile): GraphFragment {
         d.scope,
         'applies-to',
         `Skill root nested under ${d.scope} is scoped to that directory`,
+        'applies-scope',
       ),
     );
   }

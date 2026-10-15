@@ -1,16 +1,9 @@
-import type { AgentEdge } from '../core';
+import { type AgentEdge, LINK_KINDS, type LinkKind } from '../core';
 
-/** Stable human-facing kinds for inspector / legend (derived from relation + explanation). */
-export type EdgeLabelKind =
-  | 'markdown-link'
-  | 'mention'
-  | 'inferred-backtick'
-  | 'contains'
-  | 'glob-apply'
-  | 'applies-scope'
-  | 'other';
+/** Human-facing kinds for inspector / legend (mapped from scanner `linkKind`). */
+export type EdgeLabelKind = LinkKind;
 
-const LABELS: Record<EdgeLabelKind, string> = {
+const LABELS: Record<LinkKind, string> = {
   'markdown-link': 'Markdown link',
   mention: '@mention',
   'inferred-backtick': 'Inferred backtick path',
@@ -21,16 +14,13 @@ const LABELS: Record<EdgeLabelKind, string> = {
 };
 
 export function classifyEdge(edge: AgentEdge): EdgeLabelKind {
+  if (edge.linkKind && (LINK_KINDS as readonly string[]).includes(edge.linkKind)) {
+    return edge.linkKind;
+  }
+  // Legacy / test edges without a tag: relation-only fallback (never parse explanation).
   if (edge.relation === 'contains') return 'contains';
-  if (edge.explanation.includes('matches discovered path')) return 'glob-apply';
-  if (edge.explanation.startsWith('Markdown ')) return 'markdown-link';
-  if (edge.explanation.includes('@-mention') || edge.explanation.includes('Rule @-mention')) {
-    return 'mention';
-  }
-  if (edge.evidence === 'inferred' || edge.explanation.startsWith('Inline code ')) {
-    return 'inferred-backtick';
-  }
   if (edge.relation === 'applies-to') return 'applies-scope';
+  if (edge.evidence === 'inferred') return 'inferred-backtick';
   return 'other';
 }
 

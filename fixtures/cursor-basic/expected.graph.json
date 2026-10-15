@@ -530,6 +530,7 @@
       "target": "directory:.",
       "relation": "applies-to",
       "evidence": "derived",
+      "linkKind": "applies-scope",
       "explanation": "AGENTS.md applies to its directory and below; nested files combine with parents",
       "supportedOperations": []
     },
@@ -539,6 +540,7 @@
       "target": "directory:packages/api",
       "relation": "applies-to",
       "evidence": "derived",
+      "linkKind": "applies-scope",
       "explanation": "AGENTS.md applies to its directory and below; nested files combine with parents",
       "supportedOperations": []
     },
@@ -548,6 +550,7 @@
       "target": "file:packages/api/src/handler.ts",
       "relation": "applies-to",
       "evidence": "derived",
+      "linkKind": "glob-apply",
       "explanation": "Skill paths \"packages/**/*.ts\" matches discovered path",
       "supportedOperations": []
     },
@@ -557,6 +560,7 @@
       "target": "mcp-server:.cursor/mcp.json#local-http",
       "relation": "contains",
       "evidence": "explicit",
+      "linkKind": "contains",
       "provenance": {
         "path": ".cursor/mcp.json",
         "contentHash": "37d2794f5fd68876f32bbdc1e2d01e96513c08110fc6f1054e1052554869095d",
@@ -581,6 +585,7 @@
       "target": "mcp-server:.cursor/mcp.json#local-tools",
       "relation": "contains",
       "evidence": "explicit",
+      "linkKind": "contains",
       "provenance": {
         "path": ".cursor/mcp.json",
         "contentHash": "37d2794f5fd68876f32bbdc1e2d01e96513c08110fc6f1054e1052554869095d",
@@ -605,6 +610,7 @@
       "target": "mcp-server:.cursor/mcp.json#remote-docs",
       "relation": "contains",
       "evidence": "explicit",
+      "linkKind": "contains",
       "provenance": {
         "path": ".cursor/mcp.json",
         "contentHash": "37d2794f5fd68876f32bbdc1e2d01e96513c08110fc6f1054e1052554869095d",
@@ -629,6 +635,7 @@
       "target": "file:.cursor/skills/code-review/references/checklist.md",
       "relation": "contains",
       "evidence": "derived",
+      "linkKind": "contains",
       "explanation": "File inside the skill folder",
       "supportedOperations": []
     },
@@ -638,6 +645,7 @@
       "target": "script:.cursor/skills/code-review/scripts/run-lint.sh",
       "relation": "contains",
       "evidence": "derived",
+      "linkKind": "contains",
       "explanation": "File inside the skill folder",
       "supportedOperations": []
     },
@@ -647,6 +655,7 @@
       "target": "file:.cursor/skills/release-notes/references/template.md",
       "relation": "contains",
       "evidence": "derived",
+      "linkKind": "contains",
       "explanation": "File inside the skill folder",
       "supportedOperations": []
     },
@@ -656,6 +665,7 @@
       "target": "script:.cursor/skills/release-notes/scripts/collect.sh",
       "relation": "contains",
       "evidence": "derived",
+      "linkKind": "contains",
       "explanation": "File inside the skill folder",
       "supportedOperations": []
     },
@@ -665,6 +675,7 @@
       "target": "file:.cursor/skills/write-tests/references/patterns.md",
       "relation": "contains",
       "evidence": "derived",
+      "linkKind": "contains",
       "explanation": "File inside the skill folder",
       "supportedOperations": []
     },
@@ -674,6 +685,7 @@
       "target": "script:.cursor/skills/write-tests/scripts/coverage.sh",
       "relation": "contains",
       "evidence": "derived",
+      "linkKind": "contains",
       "explanation": "File inside the skill folder",
       "supportedOperations": []
     },
@@ -683,6 +695,7 @@
       "target": "skill:.cursor/skills/code-review",
       "relation": "references",
       "evidence": "explicit",
+      "linkKind": "markdown-link",
       "provenance": {
         "path": ".cursor/agents/fixture-reviewer.md",
         "start": {
@@ -707,6 +720,7 @@
       "target": "skill:.cursor/skills/write-tests",
       "relation": "references",
       "evidence": "explicit",
+      "linkKind": "markdown-link",
       "provenance": {
         "path": ".cursor/agents/fixture-test-writer.md",
         "start": {
@@ -731,6 +745,7 @@
       "target": "file:docs/conventions.md",
       "relation": "references",
       "evidence": "explicit",
+      "linkKind": "markdown-link",
       "provenance": {
         "path": "AGENTS.md",
         "start": {
@@ -755,6 +770,7 @@
       "target": "file:packages/api/src/handler.ts",
       "relation": "references",
       "evidence": "inferred",
+      "linkKind": "inferred-backtick",
       "provenance": {
         "path": "AGENTS.md",
         "start": {
@@ -780,6 +796,7 @@
       "target": "instruction:packages/api/AGENTS.md",
       "relation": "references",
       "evidence": "explicit",
+      "linkKind": "markdown-link",
       "provenance": {
         "path": "AGENTS.md",
         "start": {
@@ -804,6 +821,7 @@
       "target": "skill:.cursor/skills/code-review",
       "relation": "references",
       "evidence": "explicit",
+      "linkKind": "markdown-link",
       "provenance": {
         "path": "AGENTS.md",
         "start": {
@@ -828,6 +846,7 @@
       "target": "file:packages/api/src/handler.ts",
       "relation": "references",
       "evidence": "inferred",
+      "linkKind": "inferred-backtick",
       "provenance": {
         "path": "packages/api/AGENTS.md",
         "start": {
@@ -853,6 +872,7 @@
       "target": "instruction:AGENTS.md",
       "relation": "references",
       "evidence": "inferred",
+      "linkKind": "inferred-backtick",
       "provenance": {
         "path": "packages/api/AGENTS.md",
         "start": {
@@ -878,6 +898,7 @@
       "target": "skill:.cursor/skills/write-tests",
       "relation": "references",
       "evidence": "explicit",
+      "linkKind": "markdown-link",
       "provenance": {
         "path": "packages/api/AGENTS.md",
         "start": {
@@ -902,6 +923,7 @@
       "target": "file:docs/conventions.md",
       "relation": "references",
       "evidence": "explicit",
+      "linkKind": "mention",
       "provenance": {
         "path": ".cursor/rules/core.mdc",
         "start": {
@@ -926,6 +948,7 @@
       "target": "file:docs/testing.md",
       "relation": "references",
       "evidence": "explicit",
+      "linkKind": "mention",
       "provenance": {
         "path": ".cursor/rules/frontend/testing.mdc",
         "start": {
@@ -950,6 +973,7 @@
       "target": "file:.cursor/skills/code-review/references/checklist.md",
       "relation": "references",
       "evidence": "explicit",
+      "linkKind": "markdown-link",
       "provenance": {
         "path": ".cursor/skills/code-review/SKILL.md",
         "start": {
@@ -974,6 +998,7 @@
       "target": "file:docs/conventions.md",
       "relation": "references",
       "evidence": "explicit",
+      "linkKind": "markdown-link",
       "provenance": {
         "path": ".cursor/skills/code-review/SKILL.md",
         "start": {
@@ -998,6 +1023,7 @@
       "target": "script:.cursor/skills/code-review/scripts/run-lint.sh",
       "relation": "references",
       "evidence": "explicit",
+      "linkKind": "markdown-link",
       "provenance": {
         "path": ".cursor/skills/code-review/SKILL.md",
         "start": {
@@ -1022,6 +1048,7 @@
       "target": "file:.cursor/skills/release-notes/references/template.md",
       "relation": "references",
       "evidence": "explicit",
+      "linkKind": "markdown-link",
       "provenance": {
         "path": ".cursor/skills/release-notes/SKILL.md",
         "start": {
@@ -1046,6 +1073,7 @@
       "target": "file:docs/conventions.md",
       "relation": "references",
       "evidence": "explicit",
+      "linkKind": "markdown-link",
       "provenance": {
         "path": ".cursor/skills/release-notes/SKILL.md",
         "start": {
@@ -1070,6 +1098,7 @@
       "target": "script:.cursor/skills/release-notes/scripts/collect.sh",
       "relation": "references",
       "evidence": "explicit",
+      "linkKind": "markdown-link",
       "provenance": {
         "path": ".cursor/skills/release-notes/SKILL.md",
         "start": {
@@ -1094,6 +1123,7 @@
       "target": "file:.cursor/skills/write-tests/references/patterns.md",
       "relation": "references",
       "evidence": "explicit",
+      "linkKind": "markdown-link",
       "provenance": {
         "path": ".cursor/skills/write-tests/SKILL.md",
         "start": {
@@ -1118,6 +1148,7 @@
       "target": "file:docs/conventions.md",
       "relation": "references",
       "evidence": "explicit",
+      "linkKind": "markdown-link",
       "provenance": {
         "path": ".cursor/skills/write-tests/SKILL.md",
         "start": {
@@ -1142,6 +1173,7 @@
       "target": "script:.cursor/skills/write-tests/scripts/coverage.sh",
       "relation": "references",
       "evidence": "inferred",
+      "linkKind": "inferred-backtick",
       "provenance": {
         "path": ".cursor/skills/write-tests/SKILL.md",
         "start": {
@@ -1166,14 +1198,14 @@
     {
       "code": "glob-no-match",
       "message": "Glob \"src/**/*.ts\" matches no discovered files.",
-      "severity": "info",
+      "severity": "warning",
       "nodeId": "rule:.cursor/rules/frontend/react.mdc",
       "path": ".cursor/rules/frontend/react.mdc"
     },
     {
       "code": "glob-no-match",
       "message": "Glob \"src/**/*.tsx\" matches no discovered files.",
-      "severity": "info",
+      "severity": "warning",
       "nodeId": "rule:.cursor/rules/frontend/react.mdc",
       "path": ".cursor/rules/frontend/react.mdc"
     }

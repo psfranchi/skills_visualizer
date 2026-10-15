@@ -19,6 +19,17 @@ export const RELATIONS = ['contains', 'references', 'applies-to', 'annotation'] 
 
 export const EVIDENCE = ['explicit', 'derived', 'inferred', 'annotation'] as const;
 
+/** Stable edge label tag set by the scanner (UI must not parse `explanation`). */
+export const LINK_KINDS = [
+  'markdown-link',
+  'mention',
+  'inferred-backtick',
+  'contains',
+  'glob-apply',
+  'applies-scope',
+  'other',
+] as const;
+
 export const SEVERITIES = ['info', 'warning', 'error'] as const;
 
 /** `offset` is a UTF-16 index into the decoded text (BOM stripped); `line`/`column` are 1-based. */
@@ -52,6 +63,8 @@ export const AgentEdgeSchema = z.object({
   target: z.string().min(1),
   relation: z.enum(RELATIONS),
   evidence: z.enum(EVIDENCE),
+  /** Scanner-set label tag; preferred over parsing `explanation`. */
+  linkKind: z.enum(LINK_KINDS).optional(),
   provenance: SourceLocationSchema.optional(),
   explanation: z.string(),
   confidence: z.number().min(0).max(1).optional(),
@@ -84,6 +97,7 @@ export const AgentGraphSchema = z.object({
 export type NodeKind = (typeof NODE_KINDS)[number];
 export type Relation = (typeof RELATIONS)[number];
 export type Evidence = (typeof EVIDENCE)[number];
+export type LinkKind = (typeof LINK_KINDS)[number];
 export type Severity = (typeof SEVERITIES)[number];
 export type Span = z.infer<typeof SpanSchema>;
 export type SourceLocation = z.infer<typeof SourceLocationSchema>;
