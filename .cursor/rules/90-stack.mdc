@@ -1,0 +1,40 @@
+---
+description: TypeScript stack conventions for skills_visualizer (commands, layout, module boundaries)
+alwaysApply: true
+---
+
+# Stack (`typescript`)
+
+Node 24.22.0 (`nvm use`), pnpm 12.11.2 (corepack). Run from repo root.
+
+## Commands
+
+- Test: `pnpm test` (watch: `pnpm test:watch`)
+- Lint/format: `pnpm lint` / `pnpm format` (Biome)
+- Typecheck: `pnpm typecheck` (core, node, web projects)
+- All gates: `pnpm check` (lint + typecheck + test)
+- Dev: `pnpm dev [dir]` · Serve built app: `pnpm start [dir]` · Scan: `pnpm scan <dir>`
+- Build: `pnpm build` (→ `dist/web/`)
+
+## Layout
+
+- Source: `src/core`, `src/scanner`, `src/layout`, `src/source-editing` (pure core); `src/server`, `src/cli` (Node); `src/web` (React + D3)
+- Tests: `*.test.ts` next to code; Node-only helpers in `src/test-support/`
+- Fixtures: `fixtures/<name>/`, golden `expected.graph.json`
+
+## Do
+
+- Keep pure core free of Node APIs: Web-standard APIs only; I/O via `FileSource`.
+- Let D3 own the graph SVG subtree; React owns panels and the outer `<svg>`.
+- Derive types from zod schemas (`z.infer`).
+- Use `MemoryFileSource` in core tests; add a golden file when a fixture changes.
+- Store fixture agent config under renamed names (`dot-cursor/`, `AGENTS.fixture.md`) and load it via `loadFixture` / `materializeFixture` (`src/test-support/fixtures.ts`).
+
+## Don't
+
+- Import `node:*`, `hono`, `react`, `d3`, `src/server`, `src/web`, or `src/cli` from pure core folders.
+- Import `node:*` from `src/web`.
+- Reformat or normalize files under `fixtures/` (CRLF/BOM must stay byte-exact).
+- Put real secrets in fixtures — use `SENTINEL-NOT-A-SECRET-*`.
+- Invent scripts or folder layouts not present in the project.
+- Commit `.env` or secrets.
