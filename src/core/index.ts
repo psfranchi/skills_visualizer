@@ -7,6 +7,7 @@ export * from './hash';
 export * from './ids';
 export * from './memory-file-source';
 export * from './paths';
+export * from './public-graph';
 export * from './schema';
 export * from './text';
 export * from './view-state';

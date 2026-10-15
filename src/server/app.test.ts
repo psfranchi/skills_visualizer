@@ -15,7 +15,6 @@ import {
   type FileResponse,
   hostnameOf,
   isSecretBearingPath,
-  publicSourceId,
   type RawFile,
   type Services,
 } from './app';
@@ -255,12 +254,6 @@ describe('helpers', () => {
   it('hostnameOf strips ports and lowercases', () => {
     expect(hostnameOf('LOCALHOST:80')).toBe('localhost');
     expect(hostnameOf(undefined)).toBeNull();
-  });
-
-  it('publicSourceId keeps only the folder name', () => {
-    expect(publicSourceId('local:/home/a/projects/repo')).toBe('local:repo');
-    expect(publicSourceId('local:/')).toBe('local:root');
-    expect(publicSourceId('memory:fixture/x')).toBe('memory:fixture/x');
   });
 
   it.each([

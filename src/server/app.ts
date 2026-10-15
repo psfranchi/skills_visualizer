@@ -9,6 +9,7 @@ import {
   type GraphViewState,
   GraphViewStateSchema,
   normalizeRepoPath,
+  publicGraph,
   type RepoPath,
   type SCHEMA_VERSION,
 } from '../core';
@@ -62,17 +63,6 @@ export function hostnameOf(host: string | undefined): string | null {
 
 export function isSecretBearingPath(path: string): boolean {
   return SECRET_BEARING_FILE.test(path.slice(path.lastIndexOf('/') + 1));
-}
-
-/** `local:/abs/path/repo` → `local:repo`; other ids are already non-identifying. */
-export function publicSourceId(id: string): string {
-  if (!id.startsWith('local:')) return id;
-  const segments = id.slice('local:'.length).split(/[\\/]/).filter(Boolean);
-  return `local:${segments.at(-1) ?? 'root'}`;
-}
-
-export function publicGraph(graph: AgentGraph): AgentGraph {
-  return { ...graph, source: { ...graph.source, id: publicSourceId(graph.source.id) } };
 }
 
 function error(c: Context, status: 400 | 403 | 404 | 413 | 415 | 500, message: string) {

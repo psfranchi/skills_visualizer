@@ -1,6 +1,6 @@
 import { writeFile } from 'node:fs/promises';
 import path from 'node:path';
-import { AgentGraphSchema } from '../core';
+import { AgentGraphSchema, publicGraph } from '../core';
 import { scan } from '../scanner';
 import { LocalFileSource } from '../server/node/local-file-source';
 
@@ -114,7 +114,7 @@ async function runScan(args: readonly string[], io: CliIo): Promise<number> {
     return 2;
   }
   const source = await LocalFileSource.open(path.resolve(io.cwd, parsed.dir));
-  const graph = AgentGraphSchema.parse(await scan(source));
+  const graph = publicGraph(AgentGraphSchema.parse(await scan(source)));
   const json = `${JSON.stringify(graph, null, 2)}\n`;
   if (parsed.out) {
     await writeFile(path.resolve(io.cwd, parsed.out), json);

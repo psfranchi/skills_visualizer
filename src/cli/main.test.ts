@@ -81,6 +81,15 @@ describe('scan command', () => {
     expect(out.join('')).not.toContain('SENTINEL-NOT-A-SECRET');
   });
 
+  it('identifies the source by folder name only, never the absolute path', async () => {
+    const { io, out, err } = captureIo(outDir);
+    expect(await run(['scan', repo], io)).toBe(0);
+    const graph = AgentGraphSchema.parse(JSON.parse(out.join('')));
+    expect(graph.source.id).toBe(`local:${path.basename(repo)}`);
+    expect(out.join('')).not.toContain(path.dirname(repo));
+    expect(err.join('')).not.toContain(path.dirname(repo));
+  });
+
   it('writes to --out instead of stdout', async () => {
     const { io, out } = captureIo(outDir);
     expect(await run(['scan', repo, '--out', 'graph.json'], io)).toBe(0);
