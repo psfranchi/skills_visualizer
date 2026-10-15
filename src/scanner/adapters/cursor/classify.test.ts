@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { RepoPath } from '../../../core';
+import { classifyAll } from '../multi';
 import { classifyCursorPaths } from './classify';
 
 function classify(paths: string[]) {
@@ -7,7 +8,7 @@ function classify(paths: string[]) {
 }
 
 describe('classifyCursorPaths', () => {
-  it('discovers every documented root and tags it', () => {
+  it('discovers Cursor and shared .agents surfaces only', () => {
     const { discovered } = classify([
       'AGENTS.md',
       'pkg/AGENTS.md',
@@ -22,19 +23,15 @@ describe('classifyCursorPaths', () => {
       '.codex/agents/a3.md',
       '.cursor/mcp.json',
     ]);
-    expect(discovered.map((d) => [d.kind, d.path, d.root ?? null, d.scope])).toEqual([
-      ['skill', '.agents/skills/s2/SKILL.md', '.agents', '.'],
-      ['agent', '.claude/agents/a2.md', '.claude', '.'],
-      ['skill', '.claude/skills/s3/SKILL.md', '.claude', '.'],
-      ['agent', '.codex/agents/a3.md', '.codex', '.'],
-      ['skill', '.codex/skills/group/s4/SKILL.md', '.codex', '.'],
-      ['agent', '.cursor/agents/a1.md', '.cursor', '.'],
-      ['mcp-config', '.cursor/mcp.json', '.cursor', '.'],
-      ['rule', '.cursor/rules/a.mdc', '.cursor', '.'],
-      ['rule', '.cursor/rules/sub/b.mdc', '.cursor', '.'],
-      ['skill', '.cursor/skills/s1/SKILL.md', '.cursor', '.'],
-      ['instruction', 'AGENTS.md', null, '.'],
-      ['instruction', 'pkg/AGENTS.md', null, 'pkg'],
+    expect(discovered.map((d) => [d.kind, d.path, d.root ?? null, d.scope, d.engine])).toEqual([
+      ['skill', '.agents/skills/s2/SKILL.md', '.agents', '.', 'shared'],
+      ['agent', '.cursor/agents/a1.md', '.cursor', '.', 'cursor'],
+      ['mcp-config', '.cursor/mcp.json', '.cursor', '.', 'cursor'],
+      ['rule', '.cursor/rules/a.mdc', '.cursor', '.', 'cursor'],
+      ['rule', '.cursor/rules/sub/b.mdc', '.cursor', '.', 'cursor'],
+      ['skill', '.cursor/skills/s1/SKILL.md', '.cursor', '.', 'cursor'],
+      ['instruction', 'AGENTS.md', null, '.', 'cursor'],
+      ['instruction', 'pkg/AGENTS.md', null, 'pkg', 'cursor'],
     ]);
   });
 
@@ -44,6 +41,7 @@ describe('classifyCursorPaths', () => {
       kind: 'skill',
       scope: 'apps/x',
       skillDir: 'apps/x/.cursor/skills/s',
+      engine: 'cursor',
     });
   });
 
@@ -87,6 +85,37 @@ describe('classifyCursorPaths', () => {
     expect(diagnostics.map((d) => d.code).sort()).toEqual([
       'unverified-nested-agents',
       'unverified-nested-rules',
+    ]);
+  });
+});
+
+describe('classifyAll (multi-engine)', () => {
+  it('merges Cursor, Claude, and Codex discoveries with engine tags', () => {
+    const { discovered } = classifyAll([
+      'AGENTS.md',
+      'CLAUDE.md',
+      '.claude/CLAUDE.md',
+      '.cursor/skills/s1/SKILL.md',
+      '.claude/skills/s3/SKILL.md',
+      '.codex/skills/group/s4/SKILL.md',
+      '.cursor/agents/a1.md',
+      '.claude/agents/a2.md',
+      '.codex/agents/a3.md',
+    ] as RepoPath[]);
+    expect(
+      discovered
+        .map((d) => [d.adapterId, d.engine, d.kind, d.path])
+        .sort((a, b) => String(a[3]).localeCompare(String(b[3]))),
+    ).toEqual([
+      ['claude', 'claude', 'agent', '.claude/agents/a2.md'],
+      ['claude', 'claude', 'instruction', '.claude/CLAUDE.md'],
+      ['claude', 'claude', 'skill', '.claude/skills/s3/SKILL.md'],
+      ['codex', 'codex', 'agent', '.codex/agents/a3.md'],
+      ['codex', 'codex', 'skill', '.codex/skills/group/s4/SKILL.md'],
+      ['cursor', 'cursor', 'agent', '.cursor/agents/a1.md'],
+      ['cursor', 'cursor', 'skill', '.cursor/skills/s1/SKILL.md'],
+      ['cursor', 'cursor', 'instruction', 'AGENTS.md'],
+      ['claude', 'claude', 'instruction', 'CLAUDE.md'],
     ]);
   });
 });

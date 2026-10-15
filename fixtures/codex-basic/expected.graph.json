@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "source": {
+    "id": "memory:fixture/codex-basic",
+    "capabilities": {
+      "write": false,
+      "watch": false
+    }
+  },
+  "generatedBy": {
+    "adapter": "multi",
+    "version": "0.2.0"
+  },
+  "nodes": [
+    {
+      "id": "agent:.codex/agents/reviewer.md",
+      "kind": "agent",
+      "name": "reviewer",
+      "source": {
+        "path": ".codex/agents/reviewer.md",
+        "contentHash": "9981d4eaf7552ebfc38bec80fa293652bd4680975c0340682e2bf4fee047d49f",
+        "adapter": "codex"
+      },
+      "attributes": {
+        "path": ".codex/agents/reviewer.md",
+        "root": ".codex",
+        "scope": ".",
+        "engine": "codex",
+        "model": "inherit",
+        "readonly": false,
+        "isBackground": false,
+        "description": "Review with Codex.",
+        "frontmatter": {
+          "name": "reviewer",
+          "description": "Review with Codex."
+        }
+      },
+      "diagnostics": []
+    },
+    {
+      "id": "skill:.codex/skills/ship",
+      "kind": "skill",
+      "name": "ship",
+      "source": {
+        "path": ".codex/skills/ship/SKILL.md",
+        "contentHash": "891e7a2031fade2bc7e8f15958b80214bd6f106c840d49caa1c0cc44f43d9971",
+        "adapter": "codex"
+      },
+      "attributes": {
+        "path": ".codex/skills/ship/SKILL.md",
+        "dir": ".codex/skills/ship",
+        "root": ".codex",
+        "scope": ".",
+        "engine": "codex",
+        "paths": [],
+        "description": "Ship checklist for Codex.",
+        "frontmatter": {
+          "name": "ship",
+          "description": "Ship checklist for Codex."
+        }
+      },
+      "diagnostics": []
+    }
+  ],
+  "edges": [],
+  "diagnostics": [
+    {
+      "code": "skill-outside-root",
+      "message": "SKILL.md is outside every skill root; not treated as a skill.",
+      "severity": "info",
+      "path": ".codex/skills/ship/SKILL.md"
+    }
+  ]
+}

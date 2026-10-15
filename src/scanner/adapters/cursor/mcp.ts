@@ -7,7 +7,6 @@ import {
   type PendingEdge,
 } from '../../../core';
 import type { Discovered, LoadedFile } from '../../adapter';
-import { ADAPTER_ID } from './markdown-kinds';
 import { maskArgs, maskCommand, REDACTED, redactMap, sanitizeUrl } from './redact';
 
 const KNOWN_SERVER_FIELDS = ['type', 'command', 'args', 'env', 'envFile', 'url', 'headers', 'auth'];
@@ -117,7 +116,7 @@ function serverKeyOffset(text: string, name: string): number | null {
 /** Parses `.cursor/mcp.json` with strict `JSON.parse`; error messages never echo file content. */
 export function parseMcpConfig(d: Discovered, file: LoadedFile): GraphFragment {
   const id = nodeId('mcp-config', d.path);
-  const source = { path: file.path, contentHash: file.contentHash, adapter: ADAPTER_ID };
+  const source = { path: file.path, contentHash: file.contentHash, adapter: d.adapterId };
   const diagnostics: GraphDiagnostic[] = [];
   const nodes: AgentNode[] = [];
   const edges: PendingEdge[] = [];
@@ -173,7 +172,7 @@ export function parseMcpConfig(d: Discovered, file: LoadedFile): GraphFragment {
       kind: 'mcp-server',
       name,
       source: { ...source, ...span },
-      attributes: redactServer(name, server),
+      attributes: { ...redactServer(name, server), engine: d.engine, root: d.root },
       diagnostics: [],
     });
     edges.push({
@@ -192,7 +191,13 @@ export function parseMcpConfig(d: Discovered, file: LoadedFile): GraphFragment {
     kind: 'mcp-config',
     name: d.path,
     source,
-    attributes: { path: d.path, scope: d.scope, serverCount: nodes.length },
+    attributes: {
+      path: d.path,
+      scope: d.scope,
+      engine: d.engine,
+      root: d.root,
+      serverCount: nodes.length,
+    },
     diagnostics: [],
   });
   return { nodes, edges, diagnostics, owners: [{ path: d.path, nodeId: id }] };

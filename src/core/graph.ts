@@ -230,7 +230,7 @@ export function buildGraph(input: BuildGraphInput): AgentGraph {
       ...(create.kind !== 'directory' && hash
         ? { source: { path: create.path, contentHash: hash, adapter } }
         : {}),
-      attributes: { path: create.path },
+      attributes: { path: create.path, engine: 'shared' },
       diagnostics: [],
     });
   };

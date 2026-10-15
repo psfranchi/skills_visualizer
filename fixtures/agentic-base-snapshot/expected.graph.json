@@ -8,8 +8,8 @@
     }
   },
   "generatedBy": {
-    "adapter": "cursor",
-    "version": "0.1.0"
+    "adapter": "multi",
+    "version": "0.2.0"
   },
   "nodes": [
     {
@@ -25,6 +25,7 @@
         "path": ".cursor/agents/builder.md",
         "root": ".cursor",
         "scope": ".",
+        "engine": "cursor",
         "model": "inherit",
         "readonly": false,
         "isBackground": false,
@@ -51,6 +52,7 @@
         "path": ".cursor/agents/explorer.md",
         "root": ".cursor",
         "scope": ".",
+        "engine": "cursor",
         "model": "inherit",
         "readonly": true,
         "isBackground": false,
@@ -77,6 +79,7 @@
         "path": ".cursor/agents/planner.md",
         "root": ".cursor",
         "scope": ".",
+        "engine": "cursor",
         "model": "inherit",
         "readonly": true,
         "isBackground": false,
@@ -103,6 +106,7 @@
         "path": ".cursor/agents/reviewer.md",
         "root": ".cursor",
         "scope": ".",
+        "engine": "cursor",
         "model": "inherit",
         "readonly": true,
         "isBackground": false,
@@ -129,6 +133,7 @@
         "path": ".cursor/agents/security.md",
         "root": ".cursor",
         "scope": ".",
+        "engine": "cursor",
         "model": "inherit",
         "readonly": true,
         "isBackground": false,
@@ -155,6 +160,7 @@
         "path": ".cursor/agents/verifier.md",
         "root": ".cursor",
         "scope": ".",
+        "engine": "cursor",
         "model": "inherit",
         "readonly": false,
         "isBackground": false,
@@ -173,7 +179,8 @@
       "kind": "directory",
       "name": ".",
       "attributes": {
-        "path": "."
+        "path": ".",
+        "engine": "shared"
       },
       "diagnostics": []
     },
@@ -184,10 +191,11 @@
       "source": {
         "path": ".cursor/BUGBOT.md",
         "contentHash": "c006c9073049ab269dca53c5e95649e581834e0c9880035a7e9592059940ecb9",
-        "adapter": "cursor"
+        "adapter": "multi"
       },
       "attributes": {
-        "path": ".cursor/BUGBOT.md"
+        "path": ".cursor/BUGBOT.md",
+        "engine": "shared"
       },
       "diagnostics": []
     },
@@ -198,10 +206,11 @@
       "source": {
         "path": ".cursor/hooks.json",
         "contentHash": "10a5198da5dfadf30951be43cfeac27f6ade515d9917d5e57fbcc95cfc8017f6",
-        "adapter": "cursor"
+        "adapter": "multi"
       },
       "attributes": {
-        "path": ".cursor/hooks.json"
+        "path": ".cursor/hooks.json",
+        "engine": "shared"
       },
       "diagnostics": []
     },
@@ -216,7 +225,8 @@
       },
       "attributes": {
         "path": "AGENTS.md",
-        "scope": "."
+        "scope": ".",
+        "engine": "cursor"
       },
       "diagnostics": [
         "unresolved-reference"
@@ -235,6 +245,7 @@
         "path": ".cursor/rules/00-core.mdc",
         "root": ".cursor",
         "scope": ".",
+        "engine": "cursor",
         "activation": "always-apply",
         "alwaysApply": true,
         "globs": [],
@@ -259,6 +270,7 @@
         "path": ".cursor/rules/10-sdlc.mdc",
         "root": ".cursor",
         "scope": ".",
+        "engine": "cursor",
         "activation": "always-apply",
         "alwaysApply": true,
         "globs": [],
@@ -283,6 +295,7 @@
         "path": ".cursor/rules/15-orchestrator.mdc",
         "root": ".cursor",
         "scope": ".",
+        "engine": "cursor",
         "activation": "always-apply",
         "alwaysApply": true,
         "globs": [],
@@ -307,6 +320,7 @@
         "path": ".cursor/rules/20-communication.mdc",
         "root": ".cursor",
         "scope": ".",
+        "engine": "cursor",
         "activation": "apply-intelligently",
         "alwaysApply": false,
         "globs": [],
@@ -331,6 +345,7 @@
         "path": ".cursor/rules/90-stack-placeholder.mdc",
         "root": ".cursor",
         "scope": ".",
+        "engine": "cursor",
         "activation": "apply-intelligently",
         "alwaysApply": false,
         "globs": [],
@@ -356,6 +371,7 @@
         "dir": ".cursor/skills/add-test",
         "root": ".cursor",
         "scope": ".",
+        "engine": "cursor",
         "paths": [],
         "description": "Add the smallest useful test for a behavior or bug. Use when the user asks to add a test, cover a bug, write a characterization / regression test, or notes a missing test for existing or just-fixed behavior.",
         "frontmatter": {
@@ -379,6 +395,7 @@
         "dir": ".cursor/skills/adopt-base",
         "root": ".cursor",
         "scope": ".",
+        "engine": "cursor",
         "paths": [],
         "description": "Install this agentic template into an application repo by copying agents, rules, skills, and docs, then running fill-stack-overlay. Use when the user says adopt-base, install agentic base, use this as the agentic template, apply agentic template to …, wire Cursor agents into my app, or points at agentic_base as the template for another project.",
         "frontmatter": {
@@ -402,6 +419,7 @@
         "dir": ".cursor/skills/debug-incident",
         "root": ".cursor",
         "scope": ".",
+        "engine": "cursor",
         "paths": [],
         "description": "Reproduce, diagnose, and minimally fix bugs or regressions. Use when the user reports an incident, production bug, flaky failure, “doesn’t work”, asks to reproduce, bisect, find a regression, or chase a failing test / runtime error.",
         "frontmatter": {
@@ -425,6 +443,7 @@
         "dir": ".cursor/skills/explore-codebase",
         "root": ".cursor",
         "scope": ".",
+        "engine": "cursor",
         "paths": [],
         "description": "Spawn a readonly explorer (Task explore) for search, grep, layout discovery, and research so the main/builder context stays clean. Use when locating symbols/files, mapping a subsystem, answering “where/how does X work?”, or gathering evidence before planning or building.",
         "frontmatter": {
@@ -448,6 +467,7 @@
         "dir": ".cursor/skills/fill-stack-overlay",
         "root": ".cursor",
         "scope": ".",
+        "engine": "cursor",
         "paths": [],
         "description": "Detect the app tech stack from the repo and generate overlays/<stack>/ from overlays/_template (commands, dirs, conventions). Use after adopt-base, when the project is Laravel/Next/Node/etc., or when the user says create overlay / fill stack / wire stack.",
         "frontmatter": {
@@ -471,6 +491,7 @@
         "dir": ".cursor/skills/migrate-schema",
         "root": ".cursor",
         "scope": ".",
+        "engine": "cursor",
         "paths": [],
         "description": "Plan and execute schema or data-shape changes safely. Use when the user asks for a migration, schema change, expand/contract rollout, backfill, or zero-downtime DB/API column/table evolution.",
         "frontmatter": {
@@ -494,6 +515,7 @@
         "dir": ".cursor/skills/pr-review",
         "root": ".cursor",
         "scope": ".",
+        "engine": "cursor",
         "paths": [],
         "description": "Structured PR or diff review output (critical / suggestion / nit). Use when reviewing pull requests, or when the user asks for a PR review format. Complements the reviewer agent.",
         "frontmatter": {
@@ -517,6 +539,7 @@
         "dir": ".cursor/skills/ship-checklist",
         "root": ".cursor",
         "scope": ".",
+        "engine": "cursor",
         "paths": [],
         "description": "Pre-merge checklist when the user asks to ship / merge-ready: diff scope, tests, secrets, docs, reviewer/security/verifier. Use before opening or merging a PR, when claiming ship-ready, or when the user says ship-checklist.",
         "frontmatter": {

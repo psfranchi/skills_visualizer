@@ -42,10 +42,16 @@ describe('cursor adapter', () => {
     });
     const shadowed = graph.diagnostics.filter((d) => d.code === 'agent-shadowed');
     expect(shadowed.map((d) => d.nodeId)).toEqual(['agent:.claude/agents/reviewer.md']);
+    expect(shadowed[0]?.message).toContain('claude');
+    expect(shadowed[0]?.message).toContain('cursor');
     const other = graph.nodes.find((n) => n.id === 'agent:.codex/agents/other.md');
     expect(other?.name).toBe('other');
     expect(other?.attributes.model).toBe('inherit');
     expect(other?.attributes.root).toBe('.codex');
+    expect(other?.attributes.engine).toBe('codex');
+    expect(
+      graph.nodes.find((n) => n.id === 'agent:.cursor/agents/reviewer.md')?.attributes.engine,
+    ).toBe('cursor');
   });
 
   it('never echoes mcp.json content in parse errors', async () => {

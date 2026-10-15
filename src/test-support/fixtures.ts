@@ -27,7 +27,12 @@ export const FIXTURE_METADATA_FILES = ['expected.graph.json'] as const;
 
 export const FIXTURES_DIR = fileURLToPath(new URL('../../fixtures/', import.meta.url));
 
-export type FixtureName = 'cursor-basic' | 'cursor-edge' | 'agentic-base-snapshot';
+export type FixtureName =
+  | 'cursor-basic'
+  | 'cursor-edge'
+  | 'agentic-base-snapshot'
+  | 'claude-basic'
+  | 'codex-basic';
 
 function mapSegments(posixPath: string, table: Readonly<Record<string, string>>): string {
   return posixPath

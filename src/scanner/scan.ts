@@ -10,12 +10,12 @@ import {
   sha256Hex,
 } from '../core';
 import type { ClientAdapter } from './adapter';
-import { cursorAdapter } from './adapters/cursor';
+import { multiEngineAdapter } from './adapters/multi';
 
 /** Lists, classifies, parses, and builds the graph. Reads only; never writes or executes. */
 export async function scan(
   source: FileSource,
-  adapter: ClientAdapter = cursorAdapter,
+  adapter: ClientAdapter = multiEngineAdapter,
 ): Promise<AgentGraph> {
   const files = await source.list();
   const diagnostics: GraphDiagnostic[] = [...((await source.diagnostics?.()) ?? [])];

@@ -3,7 +3,13 @@ import { AgentGraphSchema, decodeUtf8Strict, type RepoPath } from '../core';
 import { type FixtureName, loadFixture } from '../test-support/fixtures';
 import { scan } from './scan';
 
-const FIXTURES: FixtureName[] = ['cursor-basic', 'cursor-edge', 'agentic-base-snapshot'];
+const FIXTURES: FixtureName[] = [
+  'cursor-basic',
+  'cursor-edge',
+  'agentic-base-snapshot',
+  'claude-basic',
+  'codex-basic',
+];
 
 describe.each(FIXTURES)('fixture %s', (name) => {
   it('matches the golden graph and the schema', async () => {
@@ -30,7 +36,9 @@ describe.each(FIXTURES)('fixture %s', (name) => {
     const graph = await scan(source);
     const names = new Map(graph.nodes.map((n) => [n.id, n.name]));
     const explicit = graph.edges.filter((e) => e.evidence === 'explicit');
-    if (name !== 'agentic-base-snapshot') expect(explicit.length).toBeGreaterThan(0);
+    if (name === 'cursor-basic' || name === 'cursor-edge') {
+      expect(explicit.length).toBeGreaterThan(0);
+    }
     for (const edge of explicit) {
       const { provenance } = edge;
       expect(provenance?.start, edge.id).toBeDefined();

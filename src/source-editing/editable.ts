@@ -1,12 +1,12 @@
 import type { AgentGraph, AgentNode, RepoPath } from '../core';
 import type { ClientAdapter } from '../scanner/adapter';
-import { cursorAdapter } from '../scanner/adapters/cursor';
+import { multiEngineAdapter } from '../scanner/adapters/multi';
 
 /** Skill nodes whose source path the adapter marks editable (discovered SKILL.md only). */
 export function editableSkillPaths(
   graph: AgentGraph,
   allPaths: readonly RepoPath[],
-  adapter: ClientAdapter = cursorAdapter,
+  adapter: ClientAdapter = multiEngineAdapter,
 ): Set<RepoPath> {
   const { discovered } = adapter.classify(allPaths);
   const editable = new Set(
@@ -25,7 +25,7 @@ export function isEditableSkill(
   graph: AgentGraph,
   path: RepoPath,
   allPaths: readonly RepoPath[],
-  adapter: ClientAdapter = cursorAdapter,
+  adapter: ClientAdapter = multiEngineAdapter,
 ): boolean {
   return editableSkillPaths(graph, allPaths, adapter).has(path);
 }

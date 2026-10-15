@@ -1,0 +1,211 @@
+{
+  "schemaVersion": 1,
+  "source": {
+    "id": "memory:fixture/claude-basic",
+    "capabilities": {
+      "write": false,
+      "watch": false
+    }
+  },
+  "generatedBy": {
+    "adapter": "multi",
+    "version": "0.2.0"
+  },
+  "nodes": [
+    {
+      "id": "agent:.claude/agents/explorer.md",
+      "kind": "agent",
+      "name": "explorer",
+      "source": {
+        "path": ".claude/agents/explorer.md",
+        "contentHash": "8accf5af373b2a0b5c2c5aa9a294846b68184461847093083b782cb05aebb053",
+        "adapter": "claude"
+      },
+      "attributes": {
+        "path": ".claude/agents/explorer.md",
+        "root": ".claude",
+        "scope": ".",
+        "engine": "claude",
+        "model": "inherit",
+        "readonly": false,
+        "isBackground": false,
+        "description": "Explore the codebase.",
+        "frontmatter": {
+          "name": "explorer",
+          "description": "Explore the codebase."
+        }
+      },
+      "diagnostics": []
+    },
+    {
+      "id": "directory:.",
+      "kind": "directory",
+      "name": ".",
+      "attributes": {
+        "path": ".",
+        "engine": "shared"
+      },
+      "diagnostics": []
+    },
+    {
+      "id": "file:src/app.ts",
+      "kind": "file",
+      "name": "app.ts",
+      "source": {
+        "path": "src/app.ts",
+        "contentHash": "d5684c6907babe396d7ea0bc5593187b77d43a6ab68f1289ce193c099d609501",
+        "adapter": "multi"
+      },
+      "attributes": {
+        "path": "src/app.ts",
+        "engine": "shared"
+      },
+      "diagnostics": []
+    },
+    {
+      "id": "instruction:CLAUDE.md",
+      "kind": "instruction",
+      "name": "CLAUDE.md",
+      "source": {
+        "path": "CLAUDE.md",
+        "contentHash": "1a09b9ef74c19a2343a1b2a34c5610dc840f068c99d9bee61c7b41021e80d98e",
+        "adapter": "claude"
+      },
+      "attributes": {
+        "path": "CLAUDE.md",
+        "scope": ".",
+        "engine": "claude"
+      },
+      "diagnostics": []
+    },
+    {
+      "id": "skill:.claude/skills/code-review",
+      "kind": "skill",
+      "name": "code-review",
+      "source": {
+        "path": ".claude/skills/code-review/SKILL.md",
+        "contentHash": "16a8b1dc11a6b93a96a4542572a578978f53b9deeb21f23685ee743878da3d75",
+        "adapter": "claude"
+      },
+      "attributes": {
+        "path": ".claude/skills/code-review/SKILL.md",
+        "dir": ".claude/skills/code-review",
+        "root": ".claude",
+        "scope": ".",
+        "engine": "claude",
+        "paths": [],
+        "description": "Review Claude-touched changes.",
+        "frontmatter": {
+          "name": "code-review",
+          "description": "Review Claude-touched changes."
+        }
+      },
+      "diagnostics": [
+        "skill-shadowed"
+      ]
+    },
+    {
+      "id": "skill:.cursor/skills/code-review",
+      "kind": "skill",
+      "name": "code-review",
+      "source": {
+        "path": ".cursor/skills/code-review/SKILL.md",
+        "contentHash": "f998dde2ce9ae88689b87deaeb28414d498185e30998351568a9f7b149a47a85",
+        "adapter": "cursor"
+      },
+      "attributes": {
+        "path": ".cursor/skills/code-review/SKILL.md",
+        "dir": ".cursor/skills/code-review",
+        "root": ".cursor",
+        "scope": ".",
+        "engine": "cursor",
+        "paths": [],
+        "description": "Cursor-side code review skill (shadows Claude).",
+        "frontmatter": {
+          "name": "code-review",
+          "description": "Cursor-side code review skill (shadows Claude)."
+        }
+      },
+      "diagnostics": []
+    }
+  ],
+  "edges": [
+    {
+      "id": "applies-to:instruction:CLAUDE.md->directory:.#0",
+      "source": "instruction:CLAUDE.md",
+      "target": "directory:.",
+      "relation": "applies-to",
+      "evidence": "derived",
+      "linkKind": "applies-scope",
+      "explanation": "CLAUDE.md applies to its directory and below; nested files combine with parents",
+      "supportedOperations": []
+    },
+    {
+      "id": "references:instruction:CLAUDE.md->file:src/app.ts#0",
+      "source": "instruction:CLAUDE.md",
+      "target": "file:src/app.ts",
+      "relation": "references",
+      "evidence": "inferred",
+      "linkKind": "inferred-backtick",
+      "provenance": {
+        "path": "CLAUDE.md",
+        "start": {
+          "offset": 28,
+          "line": 3,
+          "column": 5
+        },
+        "end": {
+          "offset": 40,
+          "line": 3,
+          "column": 17
+        },
+        "contentHash": "1a09b9ef74c19a2343a1b2a34c5610dc840f068c99d9bee61c7b41021e80d98e",
+        "adapter": "claude"
+      },
+      "explanation": "Inline code \"src/app.ts\" matches an existing file; heuristic, not a declared reference",
+      "confidence": 0.5,
+      "supportedOperations": []
+    },
+    {
+      "id": "references:skill:.claude/skills/code-review->file:src/app.ts#0",
+      "source": "skill:.claude/skills/code-review",
+      "target": "file:src/app.ts",
+      "relation": "references",
+      "evidence": "inferred",
+      "linkKind": "inferred-backtick",
+      "provenance": {
+        "path": ".claude/skills/code-review/SKILL.md",
+        "start": {
+          "offset": 77,
+          "line": 6,
+          "column": 7
+        },
+        "end": {
+          "offset": 89,
+          "line": 6,
+          "column": 19
+        },
+        "contentHash": "16a8b1dc11a6b93a96a4542572a578978f53b9deeb21f23685ee743878da3d75",
+        "adapter": "claude"
+      },
+      "explanation": "Inline code \"src/app.ts\" matches an existing file; heuristic, not a declared reference",
+      "confidence": 0.5,
+      "supportedOperations": []
+    }
+  ],
+  "diagnostics": [
+    {
+      "code": "skill-outside-root",
+      "message": "SKILL.md is outside every skill root; not treated as a skill.",
+      "severity": "info",
+      "path": ".claude/skills/code-review/SKILL.md"
+    },
+    {
+      "code": "skill-shadowed",
+      "message": "Skill \"code-review\" (claude) is shadowed by skill:.cursor/skills/code-review (cursor; .cursor wins name conflicts).",
+      "severity": "warning",
+      "path": ".claude/skills/code-review/SKILL.md",
+      "nodeId": "skill:.claude/skills/code-review"
+    }
+  ]
+}

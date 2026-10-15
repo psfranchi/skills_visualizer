@@ -1,4 +1,5 @@
 import type { GraphDiagnostic, GraphFragment, RepoPath } from '../core';
+import type { Engine } from './engine';
 
 export type ConfigRoot = '.cursor' | '.agents' | '.claude' | '.codex';
 
@@ -10,6 +11,10 @@ export interface Discovered {
   scope: RepoPath;
   /** Discovery root, when the file lives under one. */
   root?: ConfigRoot;
+  /** Owning product engine for this config surface. */
+  engine: Engine;
+  /** Adapter that claimed this path (`cursor` | `claude` | `codex`). */
+  adapterId: string;
   /** Skills only: the skill folder and the files it contains (excluding `SKILL.md` and nested skills). */
   skillDir?: RepoPath;
   memberFiles?: RepoPath[];

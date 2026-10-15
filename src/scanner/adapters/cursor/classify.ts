@@ -1,33 +1,33 @@
 import { basename, dirname, type GraphDiagnostic, type RepoPath, ROOT_DIR } from '../../../core';
 import type { ClassifyResult, ConfigRoot, Discovered } from '../../adapter';
+import { assignSkillMembers, matchRoot } from '../../classify-util';
+import { engineForRoot } from '../../engine';
 
-const CONFIG_ROOTS: readonly ConfigRoot[] = ['.cursor', '.agents', '.claude', '.codex'];
-const SKILL_ROOTS: readonly ConfigRoot[] = CONFIG_ROOTS;
-const AGENT_ROOTS: readonly ConfigRoot[] = ['.cursor', '.claude', '.codex'];
-
-interface RootMatch {
-  root: ConfigRoot;
-  scope: RepoPath;
-  /** Segments after the root directory. */
-  rest: string[];
-}
-
-function matchRoot(path: RepoPath): RootMatch | null {
-  const segments = path.split('/');
-  const index = segments.findIndex((s) => (CONFIG_ROOTS as readonly string[]).includes(s));
-  if (index === -1) return null;
-  return {
-    root: segments[index] as ConfigRoot,
-    scope: (index === 0 ? ROOT_DIR : segments.slice(0, index).join('/')) as RepoPath,
-    rest: segments.slice(index + 1),
-  };
-}
+const ADAPTER_ID = 'cursor';
+const SKILL_ROOTS: readonly ConfigRoot[] = ['.cursor', '.agents'];
+const AGENT_ROOTS: readonly ConfigRoot[] = ['.cursor'];
 
 function info(code: string, path: RepoPath, message: string): GraphDiagnostic {
   return { code, message, severity: 'info', path };
 }
 
-/** Pure path classification for the Cursor adapter. */
+function base(
+  kind: Discovered['kind'],
+  path: RepoPath,
+  scope: RepoPath,
+  root?: ConfigRoot,
+): Pick<Discovered, 'kind' | 'path' | 'scope' | 'root' | 'engine' | 'adapterId'> {
+  return {
+    kind,
+    path,
+    scope,
+    ...(root ? { root } : {}),
+    engine: kind === 'instruction' ? 'cursor' : engineForRoot(root),
+    adapterId: ADAPTER_ID,
+  };
+}
+
+/** Cursor surfaces: AGENTS.md, `.cursor/**`, and shared `.agents` skills. */
 export function classifyCursorPaths(paths: readonly RepoPath[]): ClassifyResult {
   const discovered: Discovered[] = [];
   const diagnostics: GraphDiagnostic[] = [];
@@ -36,7 +36,7 @@ export function classifyCursorPaths(paths: readonly RepoPath[]): ClassifyResult 
   for (const path of paths) {
     const name = basename(path);
     if (name === 'AGENTS.md') {
-      discovered.push({ kind: 'instruction', path, scope: dirname(path) });
+      discovered.push({ ...base('instruction', path, dirname(path)) });
       continue;
     }
     if (name.toLowerCase() === 'agents.md') {
@@ -50,42 +50,36 @@ export function classifyCursorPaths(paths: readonly RepoPath[]): ClassifyResult 
       continue;
     }
 
-    const match = matchRoot(path);
+    const match = matchRoot(path, ['.cursor', '.agents']);
     const [area, ...below] = match?.rest ?? [];
     const nested = match !== null && match.scope !== ROOT_DIR;
 
-    if (
-      match &&
-      area === 'skills' &&
-      SKILL_ROOTS.includes(match.root) &&
-      name === 'SKILL.md' &&
-      below.length >= 2
-    ) {
-      const skill: Discovered = {
-        kind: 'skill',
-        path,
-        scope: match.scope,
-        root: match.root,
-        skillDir: dirname(path),
-      };
-      skills.push(skill);
-      discovered.push(skill);
-      continue;
-    }
     if (name === 'SKILL.md') {
-      diagnostics.push(
-        info(
-          'skill-outside-root',
-          path,
-          'SKILL.md is outside every skill root; not treated as a skill.',
-        ),
-      );
+      if (match && area === 'skills' && SKILL_ROOTS.includes(match.root) && below.length >= 2) {
+        const skill: Discovered = {
+          ...base('skill', path, match.scope, match.root),
+          skillDir: dirname(path),
+        };
+        skills.push(skill);
+        discovered.push(skill);
+        continue;
+      }
+      // `.claude` / `.codex` skills are owned by other adapters; everything else is a near-miss.
+      if (!match || (match.root !== '.claude' && match.root !== '.codex')) {
+        diagnostics.push(
+          info(
+            'skill-outside-root',
+            path,
+            'SKILL.md is outside every skill root; not treated as a skill.',
+          ),
+        );
+      }
       continue;
     }
 
     if (match?.root === '.cursor' && area === 'rules' && below.length >= 1) {
       if (name.endsWith('.mdc')) {
-        discovered.push({ kind: 'rule', path, scope: match.scope, root: match.root });
+        discovered.push({ ...base('rule', path, match.scope, match.root) });
         if (nested) {
           diagnostics.push(
             info(
@@ -114,7 +108,7 @@ export function classifyCursorPaths(paths: readonly RepoPath[]): ClassifyResult 
       below.length === 1 &&
       name.endsWith('.md')
     ) {
-      discovered.push({ kind: 'agent', path, scope: match.scope, root: match.root });
+      discovered.push({ ...base('agent', path, match.scope, match.root) });
       if (nested) {
         diagnostics.push(
           info(
@@ -128,7 +122,7 @@ export function classifyCursorPaths(paths: readonly RepoPath[]): ClassifyResult 
     }
 
     if (match?.root === '.cursor' && area === 'mcp.json' && below.length === 0) {
-      discovered.push({ kind: 'mcp-config', path, scope: match.scope, root: match.root });
+      discovered.push({ ...base('mcp-config', path, match.scope, match.root) });
       if (nested) {
         diagnostics.push(
           info('unverified-nested-mcp', path, 'Nested .cursor/mcp.json support is not verified.'),
@@ -139,24 +133,4 @@ export function classifyCursorPaths(paths: readonly RepoPath[]): ClassifyResult 
 
   assignSkillMembers(skills, paths);
   return { discovered, diagnostics };
-}
-
-/** Each file belongs to the deepest skill folder containing it; `SKILL.md` files are not members. */
-function assignSkillMembers(skills: Discovered[], paths: readonly RepoPath[]): void {
-  const byDir = new Map<RepoPath, Discovered>();
-  for (const skill of skills) {
-    if (skill.skillDir) byDir.set(skill.skillDir, skill);
-    skill.memberFiles = [];
-  }
-  if (byDir.size === 0) return;
-  for (const path of paths) {
-    if (basename(path) === 'SKILL.md' && byDir.has(dirname(path))) continue;
-    for (let dir = dirname(path); dir !== ROOT_DIR; dir = dirname(dir)) {
-      const owner = byDir.get(dir);
-      if (owner) {
-        owner.memberFiles?.push(path);
-        break;
-      }
-    }
-  }
 }

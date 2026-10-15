@@ -35,8 +35,8 @@ function warning(ctx: ReferenceContext, code: string, message: string): GraphDia
   return { code, message, severity: 'warning', path: ctx.file.path, nodeId: ctx.sourceNodeId };
 }
 
-function sourceOf(file: LoadedFile) {
-  return { path: file.path, contentHash: file.contentHash, adapter: ADAPTER_ID };
+function sourceOf(file: LoadedFile, adapterId: string) {
+  return { path: file.path, contentHash: file.contentHash, adapter: adapterId };
 }
 
 function pathEdge(
@@ -70,15 +70,21 @@ function referenceEdges(
 
 export function parseInstruction(d: Discovered, file: LoadedFile): GraphFragment {
   const id = nodeId('instruction', d.path);
-  const ctx = referenceContext(file, ADAPTER_ID, id);
+  const ctx = referenceContext(file, d.adapterId, id);
   const doc = parseMarkdown(file.text);
   const fm = readFrontmatter(doc, ctx, { lenient: false });
+  const label = basename(d.path);
   const node: AgentNode = {
     id,
     kind: 'instruction',
     name: d.path,
-    source: sourceOf(file),
-    attributes: { path: d.path, scope: d.scope },
+    source: sourceOf(file, d.adapterId),
+    attributes: {
+      path: d.path,
+      scope: d.scope,
+      engine: d.engine,
+      ...(d.root ? { root: d.root } : {}),
+    },
     diagnostics: [],
   };
   return {
@@ -88,7 +94,7 @@ export function parseInstruction(d: Discovered, file: LoadedFile): GraphFragment
         id,
         d.scope,
         'applies-to',
-        'AGENTS.md applies to its directory and below; nested files combine with parents',
+        `${label} applies to its directory and below; nested files combine with parents`,
         'applies-scope',
       ),
       ...referenceEdges(ctx, doc, false),
@@ -131,7 +137,7 @@ function rulesRelativeName(path: RepoPath): string {
 
 export function parseRule(d: Discovered, file: LoadedFile): GraphFragment {
   const id = nodeId('rule', d.path);
-  const ctx = referenceContext(file, ADAPTER_ID, id);
+  const ctx = referenceContext(file, d.adapterId, id);
   const doc = parseMarkdown(file.text);
   const fm = readFrontmatter(doc, ctx, { lenient: true });
   const description = stringField(fm.data, 'description');
@@ -139,11 +145,12 @@ export function parseRule(d: Discovered, file: LoadedFile): GraphFragment {
     id,
     kind: 'rule',
     name: rulesRelativeName(d.path),
-    source: sourceOf(file),
+    source: sourceOf(file, d.adapterId),
     attributes: {
       path: d.path,
       root: d.root,
       scope: d.scope,
+      engine: d.engine,
       activation: ruleActivation(fm.data),
       alwaysApply: booleanField(fm.data, 'alwaysApply') ?? false,
       globs: parseGlobs(fm.data.globs),
@@ -226,7 +233,7 @@ function skillPaths(data: Record<string, unknown>): string[] {
 export function parseSkill(d: Discovered, file: LoadedFile): GraphFragment {
   const skillDir = d.skillDir ?? d.path;
   const id = nodeId('skill', skillDir);
-  const ctx = referenceContext(file, ADAPTER_ID, id);
+  const ctx = referenceContext(file, d.adapterId, id);
   const doc = parseMarkdown(file.text);
   const fm = readFrontmatter(doc, ctx, { lenient: false });
   const folder = basename(skillDir);
@@ -237,12 +244,13 @@ export function parseSkill(d: Discovered, file: LoadedFile): GraphFragment {
     id,
     kind: 'skill',
     name: stringField(fm.data, 'name') ?? folder,
-    source: sourceOf(file),
+    source: sourceOf(file, d.adapterId),
     attributes: {
       path: d.path,
       dir: skillDir,
       root: d.root,
       scope: d.scope,
+      engine: d.engine,
       paths,
       ...(description ? { description } : {}),
       frontmatter: fm.data,
@@ -279,7 +287,7 @@ export function parseSkill(d: Discovered, file: LoadedFile): GraphFragment {
 
 export function parseAgent(d: Discovered, file: LoadedFile): GraphFragment {
   const id = nodeId('agent', d.path);
-  const ctx = referenceContext(file, ADAPTER_ID, id);
+  const ctx = referenceContext(file, d.adapterId, id);
   const doc = parseMarkdown(file.text);
   const fm = readFrontmatter(doc, ctx, { lenient: false });
   const description = stringField(fm.data, 'description');
@@ -287,11 +295,12 @@ export function parseAgent(d: Discovered, file: LoadedFile): GraphFragment {
     id,
     kind: 'agent',
     name: stringField(fm.data, 'name') ?? basename(d.path).replace(/\.md$/, ''),
-    source: sourceOf(file),
+    source: sourceOf(file, d.adapterId),
     attributes: {
       path: d.path,
       root: d.root,
       scope: d.scope,
+      engine: d.engine,
       model: stringField(fm.data, 'model') ?? 'inherit',
       readonly: booleanField(fm.data, 'readonly') ?? false,
       isBackground: booleanField(fm.data, 'is_background') ?? false,

@@ -1,6 +1,6 @@
 import { decodeUtf8Strict, type GraphDiagnostic, type RepoPath, sha256Hex } from '../core';
 import type { ClientAdapter } from '../scanner/adapter';
-import { cursorAdapter } from '../scanner/adapters/cursor';
+import { multiEngineAdapter } from '../scanner/adapters/multi';
 
 export interface SkillValidation {
   diagnostics: GraphDiagnostic[];
@@ -9,14 +9,14 @@ export interface SkillValidation {
 }
 
 /**
- * Reparse a planned skill file with the Cursor adapter. Malformed YAML (and other errors) block
- * apply; Agent Skills / Cursor spec warnings do not.
+ * Reparse a planned skill file with the multi-engine adapter. Malformed YAML (and other errors)
+ * block apply; Agent Skills / Cursor spec warnings do not.
  */
 export async function validateSkillBytes(
   path: RepoPath,
   bytes: Uint8Array,
   allPaths: readonly RepoPath[],
-  adapter: ClientAdapter = cursorAdapter,
+  adapter: ClientAdapter = multiEngineAdapter,
 ): Promise<SkillValidation> {
   const decoded = decodeUtf8Strict(bytes);
   if (!decoded.ok) {

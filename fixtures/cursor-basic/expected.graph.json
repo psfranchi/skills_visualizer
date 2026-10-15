@@ -8,8 +8,8 @@
     }
   },
   "generatedBy": {
-    "adapter": "cursor",
-    "version": "0.1.0"
+    "adapter": "multi",
+    "version": "0.2.0"
   },
   "nodes": [
     {
@@ -25,6 +25,7 @@
         "path": ".cursor/agents/fixture-reviewer.md",
         "root": ".cursor",
         "scope": ".",
+        "engine": "cursor",
         "model": "inherit",
         "readonly": true,
         "isBackground": false,
@@ -51,6 +52,7 @@
         "path": ".cursor/agents/fixture-test-writer.md",
         "root": ".cursor",
         "scope": ".",
+        "engine": "cursor",
         "model": "inherit",
         "readonly": false,
         "isBackground": true,
@@ -67,7 +69,8 @@
       "kind": "directory",
       "name": ".",
       "attributes": {
-        "path": "."
+        "path": ".",
+        "engine": "shared"
       },
       "diagnostics": []
     },
@@ -76,7 +79,8 @@
       "kind": "directory",
       "name": "api",
       "attributes": {
-        "path": "packages/api"
+        "path": "packages/api",
+        "engine": "shared"
       },
       "diagnostics": []
     },
@@ -87,10 +91,11 @@
       "source": {
         "path": ".cursor/skills/code-review/references/checklist.md",
         "contentHash": "15728f04651b7a1e8ea1ff1fe3e289e36e4ad5f580386bd8e13adfae619c4877",
-        "adapter": "cursor"
+        "adapter": "multi"
       },
       "attributes": {
-        "path": ".cursor/skills/code-review/references/checklist.md"
+        "path": ".cursor/skills/code-review/references/checklist.md",
+        "engine": "shared"
       },
       "diagnostics": []
     },
@@ -101,10 +106,11 @@
       "source": {
         "path": ".cursor/skills/release-notes/references/template.md",
         "contentHash": "f92bee48b696caf1abbd720da36771e22e9ad6ea9ec35df38a066705f2c24f79",
-        "adapter": "cursor"
+        "adapter": "multi"
       },
       "attributes": {
-        "path": ".cursor/skills/release-notes/references/template.md"
+        "path": ".cursor/skills/release-notes/references/template.md",
+        "engine": "shared"
       },
       "diagnostics": []
     },
@@ -115,10 +121,11 @@
       "source": {
         "path": ".cursor/skills/write-tests/references/patterns.md",
         "contentHash": "0809a9dddb6f42ff45ffa4d702aed8bc58e0b0925d6f13dfbd47a28f9a29961e",
-        "adapter": "cursor"
+        "adapter": "multi"
       },
       "attributes": {
-        "path": ".cursor/skills/write-tests/references/patterns.md"
+        "path": ".cursor/skills/write-tests/references/patterns.md",
+        "engine": "shared"
       },
       "diagnostics": []
     },
@@ -129,10 +136,11 @@
       "source": {
         "path": "docs/conventions.md",
         "contentHash": "6c4a7718c068f70bff3ac9c4f2e66e26f148d29383d21091a460ff1c298778db",
-        "adapter": "cursor"
+        "adapter": "multi"
       },
       "attributes": {
-        "path": "docs/conventions.md"
+        "path": "docs/conventions.md",
+        "engine": "shared"
       },
       "diagnostics": []
     },
@@ -143,10 +151,11 @@
       "source": {
         "path": "docs/testing.md",
         "contentHash": "b8b2ae57ad6fc19e331065d2ab7ba5c963725b4495fc8d719798c3644979a26f",
-        "adapter": "cursor"
+        "adapter": "multi"
       },
       "attributes": {
-        "path": "docs/testing.md"
+        "path": "docs/testing.md",
+        "engine": "shared"
       },
       "diagnostics": []
     },
@@ -157,10 +166,11 @@
       "source": {
         "path": "packages/api/src/handler.ts",
         "contentHash": "554395216301a347dec874361da68805558c934ee1262488b24cdd22a964efc0",
-        "adapter": "cursor"
+        "adapter": "multi"
       },
       "attributes": {
-        "path": "packages/api/src/handler.ts"
+        "path": "packages/api/src/handler.ts",
+        "engine": "shared"
       },
       "diagnostics": []
     },
@@ -175,7 +185,8 @@
       },
       "attributes": {
         "path": "AGENTS.md",
-        "scope": "."
+        "scope": ".",
+        "engine": "cursor"
       },
       "diagnostics": []
     },
@@ -190,7 +201,8 @@
       },
       "attributes": {
         "path": "packages/api/AGENTS.md",
-        "scope": "packages/api"
+        "scope": "packages/api",
+        "engine": "cursor"
       },
       "diagnostics": []
     },
@@ -206,6 +218,8 @@
       "attributes": {
         "path": ".cursor/mcp.json",
         "scope": ".",
+        "engine": "cursor",
+        "root": ".cursor",
         "serverCount": 3
       },
       "diagnostics": []
@@ -232,7 +246,9 @@
       "attributes": {
         "name": "local-http",
         "transport": "remote",
-        "url": "http://localhost:8931/mcp"
+        "url": "http://localhost:8931/mcp",
+        "engine": "cursor",
+        "root": ".cursor"
       },
       "diagnostics": []
     },
@@ -269,7 +285,9 @@
           "EXAMPLE_HOME": "${env:HOME}",
           "EXAMPLE_TOKEN": "[redacted]"
         },
-        "envFile": ".env.mcp"
+        "envFile": ".env.mcp",
+        "engine": "cursor",
+        "root": ".cursor"
       },
       "diagnostics": []
     },
@@ -304,7 +322,9 @@
           "CLIENT_ID": "[redacted]",
           "CLIENT_SECRET": "[redacted]",
           "scopes": "[redacted]"
-        }
+        },
+        "engine": "cursor",
+        "root": ".cursor"
       },
       "diagnostics": []
     },
@@ -321,6 +341,7 @@
         "path": ".cursor/rules/core.mdc",
         "root": ".cursor",
         "scope": ".",
+        "engine": "cursor",
         "activation": "always-apply",
         "alwaysApply": true,
         "globs": [],
@@ -345,6 +366,7 @@
         "path": ".cursor/rules/frontend/react.mdc",
         "root": ".cursor",
         "scope": ".",
+        "engine": "cursor",
         "activation": "apply-to-specific-files",
         "alwaysApply": false,
         "globs": [
@@ -374,6 +396,7 @@
         "path": ".cursor/rules/frontend/testing.mdc",
         "root": ".cursor",
         "scope": ".",
+        "engine": "cursor",
         "activation": "apply-intelligently",
         "alwaysApply": false,
         "globs": [],
@@ -398,6 +421,7 @@
         "path": ".cursor/rules/manual.mdc",
         "root": ".cursor",
         "scope": ".",
+        "engine": "cursor",
         "activation": "apply-manually",
         "alwaysApply": false,
         "globs": [],
@@ -414,10 +438,11 @@
       "source": {
         "path": ".cursor/skills/code-review/scripts/run-lint.sh",
         "contentHash": "afee74c76d29ceace159af1a77933dd9e446a8b84afa9169759bf403fd328f3e",
-        "adapter": "cursor"
+        "adapter": "multi"
       },
       "attributes": {
-        "path": ".cursor/skills/code-review/scripts/run-lint.sh"
+        "path": ".cursor/skills/code-review/scripts/run-lint.sh",
+        "engine": "shared"
       },
       "diagnostics": []
     },
@@ -428,10 +453,11 @@
       "source": {
         "path": ".cursor/skills/release-notes/scripts/collect.sh",
         "contentHash": "9a9ef798c03347519b4e4a976c90dcd9bb31c3fa138e515ece15e4a5f4bc9e5a",
-        "adapter": "cursor"
+        "adapter": "multi"
       },
       "attributes": {
-        "path": ".cursor/skills/release-notes/scripts/collect.sh"
+        "path": ".cursor/skills/release-notes/scripts/collect.sh",
+        "engine": "shared"
       },
       "diagnostics": []
     },
@@ -442,10 +468,11 @@
       "source": {
         "path": ".cursor/skills/write-tests/scripts/coverage.sh",
         "contentHash": "78e70718a73179163b31bf4b82f936bcb96bf33c55f7779e4aaa6c0dcc94606a",
-        "adapter": "cursor"
+        "adapter": "multi"
       },
       "attributes": {
-        "path": ".cursor/skills/write-tests/scripts/coverage.sh"
+        "path": ".cursor/skills/write-tests/scripts/coverage.sh",
+        "engine": "shared"
       },
       "diagnostics": []
     },
@@ -463,6 +490,7 @@
         "dir": ".cursor/skills/code-review",
         "root": ".cursor",
         "scope": ".",
+        "engine": "cursor",
         "paths": [],
         "description": "Review a diff for correctness, readability, and test coverage. Use before opening a pull request.",
         "frontmatter": {
@@ -486,6 +514,7 @@
         "dir": ".cursor/skills/release-notes",
         "root": ".cursor",
         "scope": ".",
+        "engine": "cursor",
         "paths": [],
         "description": "Draft release notes from merged changes. Use when preparing a release.",
         "frontmatter": {
@@ -510,6 +539,7 @@
         "dir": ".cursor/skills/write-tests",
         "root": ".cursor",
         "scope": ".",
+        "engine": "cursor",
         "paths": [
           "packages/**/*.ts"
         ],
