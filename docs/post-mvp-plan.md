@@ -1,6 +1,6 @@
 # Skills Visualizer — Post-MVP Plan
 
-Status: approved 2026-10-15. MVP (M0–M3) is done: [`mvp-plan.md`](mvp-plan.md). Product brief: [`agent-architecture-explorer-plan.md`](agent-architecture-explorer-plan.md).
+Status: approved 2026-10-15. MVP (M0–M3) is done: [`mvp-plan.md`](mvp-plan.md). Product brief: [`agent-architecture-explorer-plan.md`](agent-architecture-explorer-plan.md). **Post-MVP P1–P4 complete** (2026-10-15).
 
 ## Goal
 
@@ -131,9 +131,11 @@ Today’s Cursor adapter already **discovers** `.claude` / `.codex` / `.agents` 
 
 **Accept:**
 
-- [ ] Skill CodeMirror + live MD preview; other MD read-only rendered preview.
-- [ ] Preview sanitization: http(s) only; secret-bearing paths not richly previewed.
-- [ ] Edit apply still hash-checked; `pnpm check` green.
+- [x] Skill CodeMirror + live MD preview; other MD read-only rendered preview.
+- [x] Preview sanitization: http(s) only; secret-bearing paths not richly previewed.
+- [x] Edit apply still hash-checked; `pnpm check` green.
+
+**Status (2026-10-15): done.** Verifier: `pnpm check` (371 tests) + `pnpm build` green; CodeMirror 6 skill editor + live sanitized preview (`SkillEditor.tsx`, `CodeMirrorEditor.tsx`); Inspector Preview|Source for other MD (`MarkdownPreview.tsx`, `doc-view.ts`); http(s)-only via `rehype-sanitize` + `safeHref`; redacted/secret-bearing paths skip rich preview (403 on secret paths, `redacted` for MCP); edit apply still hash-checked (`/api/edits/*` → 409); secrets clear on P4 diff; no `Co-authored-by` on P4 commits.
 
 ---
 

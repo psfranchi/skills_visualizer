@@ -98,7 +98,7 @@ Pure modules (`core`, `scanner`, `layout`, `source-editing`) must not import `no
 
 ## Status
 
-MVP milestones **M0–M3** are complete (scaffold → scanner → read-only viewer → skill edit with local auth). Post-MVP work is in progress per [`docs/post-mvp-plan.md`](docs/post-mvp-plan.md) (Cursor semantics → multi-engine → visual system → MD surfaces).
+MVP milestones **M0–M3** are complete (scaffold → scanner → read-only viewer → skill edit with local auth). Post-MVP **P1–P4** are complete per [`docs/post-mvp-plan.md`](docs/post-mvp-plan.md) (Cursor semantics → multi-engine → visual system → MD preview/editing). Stretch items remain under P5.
 
 ---
 
