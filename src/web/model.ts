@@ -8,6 +8,10 @@ import {
   type Severity,
   type SourceLocation,
 } from '../core';
+import type { Engine, EngineFilter } from '../scanner/engine';
+
+export { ENGINE_FILTERS, ENGINE_LABELS } from '../scanner/engine';
+export type { Engine, EngineFilter };
 
 export interface Filters {
   search: string;
@@ -15,6 +19,11 @@ export interface Filters {
   showInferred: boolean;
   /** When on and a node is selected, dim nodes/edges outside the selection neighborhood. */
   focusSelection: boolean;
+  /**
+   * Engine chips. `all` shows every engine; otherwise only selected engines plus `shared`
+   * nodes (files, `.agents` skills).
+   */
+  engines: 'all' | ReadonlySet<EngineFilter>;
   /** Diagnostic severities to show; `info` is hidden by default. */
   severities: ReadonlySet<Severity>;
 }
@@ -25,8 +34,24 @@ export function defaultFilters(): Filters {
     kinds: new Set(NODE_KINDS),
     showInferred: false,
     focusSelection: true,
+    engines: 'all',
     severities: new Set<Severity>(['warning', 'error']),
   };
+}
+
+export function nodeEngine(node: AgentNode): Engine {
+  const value = node.attributes.engine;
+  if (value === 'cursor' || value === 'claude' || value === 'codex' || value === 'shared') {
+    return value;
+  }
+  return 'shared';
+}
+
+export function nodeMatchesEngineFilter(node: AgentNode, engines: Filters['engines']): boolean {
+  if (engines === 'all') return true;
+  const engine = nodeEngine(node);
+  if (engine === 'shared') return true;
+  return engines.has(engine);
 }
 
 export interface VisibleGraph {
@@ -55,11 +80,18 @@ export function inferredOnlyNodeIds(graph: AgentGraph): Set<string> {
   );
 }
 
-/** Kind filter and the inferred-edge toggle. Search does not hide nodes (see `searchMatches`). */
+/** Kind / engine filters and the inferred-edge toggle. Search does not hide nodes (see `searchMatches`). */
 export function visibleGraph(graph: AgentGraph, filters: Filters): VisibleGraph {
   const hidden = filters.showInferred ? new Set<string>() : inferredOnlyNodeIds(graph);
   const nodeIds = new Set(
-    graph.nodes.filter((n) => filters.kinds.has(n.kind) && !hidden.has(n.id)).map((n) => n.id),
+    graph.nodes
+      .filter(
+        (n) =>
+          filters.kinds.has(n.kind) &&
+          !hidden.has(n.id) &&
+          nodeMatchesEngineFilter(n, filters.engines),
+      )
+      .map((n) => n.id),
   );
   const edgeIds = new Set(
     graph.edges

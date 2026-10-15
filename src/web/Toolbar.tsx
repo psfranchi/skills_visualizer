@@ -1,5 +1,5 @@
 import { NODE_KINDS, type NodeKind, SEVERITIES, type Severity } from '../core';
-import type { Filters } from './model';
+import { ENGINE_FILTERS, ENGINE_LABELS, type EngineFilter, type Filters } from './model';
 
 interface ToolbarProps {
   title: string;
@@ -19,6 +19,16 @@ function toggle<T>(set: ReadonlySet<T>, value: T): Set<T> {
   return next;
 }
 
+function setEngine(filters: Filters, engine: EngineFilter | 'all', on: boolean): Filters {
+  if (engine === 'all') return { ...filters, engines: 'all' };
+  const current =
+    filters.engines === 'all' ? new Set<EngineFilter>(ENGINE_FILTERS) : new Set(filters.engines);
+  if (on) current.add(engine);
+  else current.delete(engine);
+  if (current.size === ENGINE_FILTERS.length) return { ...filters, engines: 'all' };
+  return { ...filters, engines: current };
+}
+
 export function Toolbar({
   title,
   filters,
@@ -30,6 +40,8 @@ export function Toolbar({
   onRescan,
 }: ToolbarProps) {
   const kinds = NODE_KINDS.filter((kind) => (kindCounts.get(kind) ?? 0) > 0);
+  const engineOn = (engine: EngineFilter) =>
+    filters.engines === 'all' || filters.engines.has(engine);
   return (
     <header className="toolbar">
       <h1 className="toolbar-title">{title}</h1>
@@ -41,6 +53,27 @@ export function Toolbar({
         value={filters.search}
         onChange={(event) => onFilters({ ...filters, search: event.target.value })}
       />
+      <fieldset className="toolbar-group">
+        <legend>Engine</legend>
+        <label className="chip engine-all">
+          <input
+            type="checkbox"
+            checked={filters.engines === 'all'}
+            onChange={() => onFilters({ ...filters, engines: 'all' })}
+          />
+          All
+        </label>
+        {ENGINE_FILTERS.map((engine) => (
+          <label key={engine} className={`chip engine-${engine}`}>
+            <input
+              type="checkbox"
+              checked={engineOn(engine)}
+              onChange={(event) => onFilters(setEngine(filters, engine, event.target.checked))}
+            />
+            {ENGINE_LABELS[engine]}
+          </label>
+        ))}
+      </fieldset>
       <fieldset className="toolbar-group">
         <legend>Kinds</legend>
         {kinds.map((kind) => (

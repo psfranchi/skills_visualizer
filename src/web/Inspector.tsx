@@ -13,8 +13,10 @@ import { fetchFile } from './api';
 import { edgeLabel } from './edge-labels';
 import {
   diagnosticsForNode,
+  ENGINE_LABELS,
   filterDiagnostics,
   incidentEdges,
+  nodeEngine,
   pathToNearestInstruction,
   safeHref,
   sourceDisplay,
@@ -252,6 +254,7 @@ export function Inspector({
   const hiddenCount = all.incoming.length + all.outgoing.length - incoming.length - outgoing.length;
   const focus = focusedEdge?.provenance ?? node.source;
   const activation = activationLabel(node.attributes.activation);
+  const engine = nodeEngine(node);
   const instructionPath = pathToNearestInstruction(graph, node.id, visibleEdgeIds);
 
   return (
@@ -259,6 +262,9 @@ export function Inspector({
       <h2>{node.name}</h2>
       <p>
         <span className={`kind-badge kind-${node.kind}`}>{node.kind}</span>{' '}
+        <span className={`engine-badge engine-${engine}`} title="Engine">
+          {ENGINE_LABELS[engine]}
+        </span>{' '}
         {activation && (
           <span
             className={`activation-badge activation-${String(node.attributes.activation)}`}

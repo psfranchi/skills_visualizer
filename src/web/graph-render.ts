@@ -3,6 +3,7 @@ import type { AgentEdge, AgentNode, Position, Severity } from '../core';
 import { type Box, type LayoutResult, straightRoute } from '../layout';
 import { activationLabel } from './activation';
 import { edgeLabel } from './edge-labels';
+import { nodeEngine } from './model';
 
 export interface RenderInput {
   nodes: readonly AgentNode[];
@@ -126,9 +127,10 @@ export function renderGraph(
   nodeSel
     .attr('class', (d) => {
       const activation = d.node.attributes.activation;
-      return typeof activation === 'string'
-        ? `node kind-${d.node.kind} activation-${activation}`
-        : `node kind-${d.node.kind}`;
+      const engine = nodeEngine(d.node);
+      const parts = [`node`, `kind-${d.node.kind}`, `engine-${engine}`];
+      if (typeof activation === 'string') parts.push(`activation-${activation}`);
+      return parts.join(' ');
     })
     .classed('selected', (d) => d.node.id === input.selectedId)
     .classed('dimmed', (d) => dimmed(d.node.id))

@@ -78,6 +78,24 @@ describe('visibleGraph', () => {
     expect([...narrowed.edgeIds]).toEqual(['e2']);
   });
 
+  it('filters by engine while keeping shared nodes', () => {
+    const tagged: AgentGraph = {
+      ...graph,
+      nodes: graph.nodes.map((n) => ({
+        ...n,
+        attributes: {
+          ...n.attributes,
+          engine: n.kind === 'rule' ? 'cursor' : n.kind === 'skill' ? 'claude' : 'shared',
+        },
+      })),
+    };
+    const onlyCursor = visibleGraph(tagged, {
+      ...defaultFilters(),
+      engines: new Set(['cursor']),
+    });
+    expect([...onlyCursor.nodeIds].sort()).toEqual(['directory:docs', 'file:docs/x.md', 'rule:r']);
+  });
+
   it('hides file/script nodes reached only by inferred edges unless inferred edges are shown', () => {
     const inferredGraph: AgentGraph = {
       ...graph,

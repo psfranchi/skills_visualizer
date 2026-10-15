@@ -1,7 +1,7 @@
 import { type KeyboardEvent, useEffect, useRef } from 'react';
 import type { AgentNode, Severity } from '../core';
 import { activationLabel } from './activation';
-import { stepSelection } from './model';
+import { ENGINE_LABELS, nodeEngine, stepSelection } from './model';
 
 interface NodeListProps {
   nodes: readonly AgentNode[];
@@ -55,6 +55,7 @@ export function NodeList({ nodes, selectedId, severities, onSelect }: NodeListPr
       >
         {nodes.map((node) => {
           const activation = activationLabel(node.attributes.activation);
+          const engine = nodeEngine(node);
           return (
             // biome-ignore lint/a11y/useKeyWithClickEvents: keyboard handled by the listbox (aria-activedescendant).
             <div
@@ -65,9 +66,14 @@ export function NodeList({ nodes, selectedId, severities, onSelect }: NodeListPr
               aria-selected={node.id === selectedId}
               className={node.id === selectedId ? 'selected' : undefined}
               onClick={() => onSelect(node.id)}
-              title={activation ? `${node.id} · ${activation}` : node.id}
+              title={
+                activation
+                  ? `${node.id} · ${ENGINE_LABELS[engine]} · ${activation}`
+                  : `${node.id} · ${ENGINE_LABELS[engine]}`
+              }
             >
               <span className={`kind-badge kind-${node.kind}`}>{node.kind}</span>
+              <span className={`engine-badge engine-${engine}`}>{ENGINE_LABELS[engine]}</span>
               {activation && (
                 <span
                   className={`activation-badge activation-${String(node.attributes.activation)}`}

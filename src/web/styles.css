@@ -203,6 +203,54 @@ button.link.small {
   white-space: nowrap;
 }
 
+.engine-badge {
+  font-size: 10px;
+  padding: 1px 5px;
+  border-radius: 8px;
+  background: var(--engine-badge, #e2e8f0);
+  color: var(--engine-fg, #334155);
+  white-space: nowrap;
+}
+
+.engine-badge.engine-cursor,
+.engine-swatch.engine-cursor,
+.chip.engine-cursor {
+  --engine-badge: #dbeafe;
+  --engine-fg: #1e3a8a;
+  --engine-mark: #2563eb;
+}
+
+.engine-badge.engine-claude,
+.engine-swatch.engine-claude,
+.chip.engine-claude {
+  --engine-badge: #ffedd5;
+  --engine-fg: #9a3412;
+  --engine-mark: #ea580c;
+}
+
+.engine-badge.engine-codex,
+.engine-swatch.engine-codex,
+.chip.engine-codex {
+  --engine-badge: #dcfce7;
+  --engine-fg: #166534;
+  --engine-mark: #16a34a;
+}
+
+.engine-badge.engine-shared,
+.engine-swatch.engine-shared {
+  --engine-badge: #f1f5f9;
+  --engine-fg: #475569;
+  --engine-mark: #64748b;
+}
+
+.engine-swatch {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  background: var(--engine-mark, #94a3b8);
+}
+
 .activation-badge {
   font-size: 10px;
   padding: 1px 5px;
@@ -340,6 +388,22 @@ button.link.small {
   fill: var(--activation-mark, #6366f1);
   stroke: none;
   pointer-events: none;
+}
+
+.graph-canvas .node.engine-cursor rect {
+  stroke: #2563eb;
+}
+
+.graph-canvas .node.engine-claude rect {
+  stroke: #ea580c;
+}
+
+.graph-canvas .node.engine-codex rect {
+  stroke: #16a34a;
+}
+
+.graph-canvas .node.engine-shared rect {
+  stroke: #94a3b8;
 }
 
 .graph-canvas .node.activation-always-apply {
